@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Package and Init-loader For Emacs</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="Simple package manager for Emacs 前回Erlangの開発環境の話を書きましたが、普段はEmacsを使うことがあまりないので、Emacs事情に詳しくありません。そんな" />
+
+  
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@masayuki" />
+    <meta name="twitter:title" content="Package and Init-loader For Emacs" />
+    <meta name="twitter:description" content="Simple package manager for Emacs 前回Erlangの開発環境の話を書きましたが、普段はEmacsを使うことがあまりないので、Emacs事情に詳しくありません。そんな" />
+    <meta name="twitter:image" content="https://masayuki038.github.io/img/avatar.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Package and Init-loader For Emacs" />
+  <meta property="og:description" content="Simple package manager for Emacs 前回Erlangの開発環境の話を書きましたが、普段はEmacsを使うことがあまりないので、Emacs事情に詳しくありません。そんな" />
+  <meta property="og:url" content="https://masayuki038.github.io/blog/2013/09/21/package-el-and-init-loader-el/" />
+  <meta property="og:image" content="https://masayuki038.github.io/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.32" />
+
+
+<link rel="canonical" href="https://masayuki038.github.io/blog/2013/09/21/package-el-and-init-loader-el/" />
+<link rel="alternative" href="https://masayuki038.github.io/blog/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="https://masayuki038.github.io/blog/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="https://masayuki038.github.io/blog/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="https://masayuki038.github.io/blog/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="https://masayuki038.github.io/blog/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="https://masayuki038.github.io/blog/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="https://masayuki038.github.io/blog/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="https://masayuki038.github.io/blog/css/bundle.css" />
+<link rel="stylesheet" href="https://masayuki038.github.io/blog/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://s.gravatar.com/avatar/4b97fb839e6040cfb353bd667ac93e54?s=80" alt="Avatar">
+  
+  <h2 class="title">act-act</h2>
+  
+  <p class="subtitle"></p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="https://masayuki038.github.io/blog/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="https://masayuki038.github.io/blog/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Package and Init-loader For Emacs</h1>
+      <p class="post-meta">@Masayuki Takahashi · Sep 21, 2013 · 3 min read</p>
+    </header>
+    <article class="post-content">
+
+<h1 id="simple-package-manager-for-emacs">Simple package manager for Emacs</h1>
+
+<p>前回Erlangの開発環境の話を書きましたが、普段はEmacsを使うことがあまりないので、Emacs事情に詳しくありません。そんなに使わないので、elispファイルをダウンロードしてパスを通し、設定を追加するのがちょっと億劫でした。</p>
+
+<p>emacs24からpackage.elというEmacs Lispファイルのパッケージマネージャが導入されたということなので、package.elを使ってelispファイルをインストールしてみたいと思います。また、package.elを調べていたところ、設定を用途毎に分割して管理できるinit-loader.elというものを知ったので、それも導入してみました。</p>
+
+<p>package.elやinit-loader.elについては、以下のページを参考にしました。</p>
+
+<ul>
+<li><a href="http://qiita.com/catatsuy/items/5f1cd86e2522fd3384a0">init-loader.el と package.el を導入して快適 Emacs ライフ</a></li>
+</ul>
+
+<p>今回の内容は上記ページそのままなのですが、package.elを使ってinit-loader.elをインストールするようにしており、手順を忘れそうなので備忘録として残しておきます。</p>
+
+<h1 id="install-emacs24">Install emacs24</h1>
+
+<p>package.elはemacs24から使用できますが、今使っている環境にはemacs24がインストールされておらず、apt-cache searchでも見つらない状態だったので、まずはそのあたりから。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>$ sudo add-apt-repository ppa:cassou/emacs
+<span class="ln">2</span>$ sudo apt-get update
+<span class="ln">3</span>$ sudo apt-get install emacs24 emacs24-el emacs24-common-non-dfsg</code></pre></div>
+
+<h1 id="package-el">package.el</h1>
+
+<p>emacs24をインストールした後、.emacs.d/init.elに以下の記述を追加します。</p>
+
+<p>.emacs.d/init.el:
+<div class="highlight"><pre class="chroma"><code class="language-elisp" data-lang="elisp"><span class="ln">1</span><span class="c1">;; package</span>
+<span class="ln">2</span><span class="p">(</span><span class="nb">require</span> <span class="ss">&#39;package</span><span class="p">)</span>
+<span class="ln">3</span><span class="p">(</span><span class="nv">add-to-list</span> <span class="ss">&#39;package-archives</span> <span class="o">&#39;</span><span class="p">(</span><span class="s">&#34;melpa&#34;</span> <span class="o">.</span> <span class="s">&#34;http://melpa.milkbox.net/packages/&#34;</span><span class="p">)</span> <span class="no">t</span><span class="p">)</span>
+<span class="ln">4</span><span class="p">(</span><span class="nv">add-to-list</span> <span class="ss">&#39;package-archives</span> <span class="o">&#39;</span><span class="p">(</span><span class="s">&#34;marmalade&#34;</span> <span class="o">.</span> <span class="s">&#34;http://marmalade-repo.org/packages/&#34;</span><span class="p">))</span>
+<span class="ln">5</span><span class="p">(</span><span class="nv">package-initialize</span><span class="p">)</span></code></pre></div></p>
+
+<p>Emacsを起動して以下のコマンドを実行すると、パッケージリストが表示されます。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>M-x list-packages</code></pre></div>
+
+<p>リストが表示されたら、インストールしたいパッケージを選択(i)して、実行(x)します。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text"><span class="ln"> 1</span>  <span class="nx">gimme</span>              <span class="mf">2.1</span>          <span class="nx">available</span>  <span class="nx">The</span> <span class="nx">XMMS2</span> <span class="kd">interface</span> <span class="nx">we</span> <span class="nx">all</span> <span class="nx">love</span><span class="p">!</span> <span class="nx">Check</span> <span class="nx">out</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//gimmeplayer.org for m$
+</span><span class="ln"> 2</span><span class="c1"></span><span class="nx">I</span> <span class="nx">gist</span>               <span class="mf">20130315.</span><span class="o">...</span> <span class="nx">available</span>  <span class="nx">Emacs</span> <span class="nx">integration</span> <span class="k">for</span> <span class="nx">gist</span><span class="p">.</span><span class="nx">github</span><span class="p">.</span><span class="nx">com</span> <span class="p">[</span><span class="nx">github</span><span class="p">]</span>
+<span class="ln"> 3</span>  <span class="nx">git</span>                <span class="mf">20130915.932</span> <span class="nx">available</span>  <span class="nx">An</span> <span class="nx">Elisp</span> <span class="nx">API</span> <span class="k">for</span> <span class="nx">programmatically</span> <span class="nx">using</span> <span class="nx">Git</span> <span class="p">[</span><span class="nx">github</span><span class="p">]</span>
+<span class="ln"> 4</span>  <span class="nx">git</span><span class="o">-</span><span class="nx">annex</span>          <span class="mf">20130816.</span><span class="o">...</span> <span class="nx">available</span>  <span class="nx">Mode</span> <span class="k">for</span> <span class="nx">easy</span> <span class="nx">editing</span> <span class="nx">of</span> <span class="nx">git</span><span class="o">-</span><span class="nx">annex</span><span class="err">&#39;</span><span class="nx">d</span> <span class="nx">files</span> <span class="p">[</span><span class="nx">github</span><span class="p">]</span>
+<span class="ln"> 5</span>  <span class="nx">git</span><span class="o">-</span><span class="nx">auto</span><span class="o">-</span><span class="nx">commit</span><span class="o">...</span> <span class="mf">20130410.157</span> <span class="nx">available</span>  <span class="nx">Emacs</span> <span class="nx">Minor</span> <span class="nx">mode</span> <span class="nx">to</span> <span class="nx">automatically</span> <span class="nx">commit</span> <span class="nx">and</span> <span class="nx">push</span> <span class="p">[</span><span class="nx">github</span><span class="p">]</span>
+<span class="ln"> 6</span>  <span class="nx">git</span><span class="o">-</span><span class="nx">blame</span>          <span class="mf">20110509.</span><span class="o">...</span> <span class="nx">available</span>  <span class="nx">Minor</span> <span class="nx">mode</span> <span class="k">for</span> <span class="nx">incremental</span> <span class="nx">blame</span> <span class="k">for</span> <span class="nx">Git</span> <span class="p">[</span><span class="nx">github</span><span class="p">]</span>
+<span class="ln"> 7</span>  <span class="nx">git</span><span class="o">-</span><span class="nx">commit</span>         <span class="mf">0.1</span>          <span class="nx">available</span>  <span class="nx">Major</span> <span class="nx">mode</span> <span class="k">for</span> <span class="nx">editing</span> <span class="nx">git</span> <span class="nx">commit</span> <span class="nx">messages</span>
+<span class="ln"> 8</span>  <span class="nx">git</span><span class="o">-</span><span class="nx">commit</span><span class="o">-</span><span class="nx">mode</span>    <span class="mf">20130919.341</span> <span class="nx">available</span>  <span class="nx">Major</span> <span class="nx">mode</span> <span class="k">for</span> <span class="nx">editing</span> <span class="nx">git</span> <span class="nx">commit</span> <span class="nx">messages</span> <span class="p">[</span><span class="nx">github</span><span class="p">]</span>
+<span class="ln"> 9</span>  <span class="nx">git</span><span class="o">-</span><span class="nx">dwim</span>           <span class="mf">20130130.</span><span class="o">...</span> <span class="nx">available</span>  <span class="nx">Context</span><span class="o">-</span><span class="nx">aware</span> <span class="nx">git</span> <span class="nx">commands</span> <span class="nx">such</span> <span class="nx">as</span> <span class="nx">branch</span> <span class="nx">handling</span> <span class="p">[</span><span class="nx">wiki</span><span class="p">]</span>
+<span class="ln">10</span>  <span class="nx">git</span><span class="o">-</span><span class="nx">gutter</span>         <span class="mf">20130919.</span><span class="o">...</span> <span class="nx">available</span>  <span class="nx">Port</span> <span class="nx">of</span> <span class="nx">Sublime</span> <span class="nx">Text</span> <span class="nx">plugin</span> <span class="nx">GitGutter</span> <span class="p">[</span><span class="nx">github</span><span class="p">]</span>
+<span class="ln">11</span>  <span class="nx">git</span><span class="o">-</span><span class="nx">gutter</span><span class="o">+</span>        <span class="mf">20130918.</span><span class="o">...</span> <span class="nx">available</span>  <span class="nx">Manage</span> <span class="nx">Git</span> <span class="nx">hunks</span> <span class="nx">straight</span> <span class="nx">from</span> <span class="nx">the</span> <span class="nx">buffer</span> <span class="p">[</span><span class="nx">github</span><span class="p">]</span>
+<span class="ln">12</span>  <span class="nx">git</span><span class="o">-</span><span class="nx">gutter</span><span class="o">-</span><span class="nx">fringe</span>  <span class="mf">20130416.</span><span class="o">...</span> <span class="nx">available</span>  <span class="nx">Fringe</span> <span class="nx">version</span> <span class="nx">of</span> <span class="nx">git</span><span class="o">-</span><span class="nx">gutter</span><span class="p">.</span><span class="nx">el</span> <span class="p">[</span><span class="nx">github</span><span class="p">]</span>
+<span class="ln">13</span>  <span class="nx">git</span><span class="o">-</span><span class="nx">gutter</span><span class="o">-</span><span class="nx">fringe</span><span class="o">+</span> <span class="mf">20130902.</span><span class="o">...</span> <span class="nx">available</span>  <span class="nx">Fringe</span> <span class="nx">version</span> <span class="nx">of</span> <span class="nx">git</span><span class="o">-</span><span class="nx">gutter</span><span class="o">+</span><span class="p">.</span><span class="nx">el</span> <span class="p">[</span><span class="nx">github</span><span class="p">]</span>
+<span class="ln">14</span>  <span class="nx">git</span><span class="o">-</span><span class="nx">messenger</span>      <span class="mf">20130718.659</span> <span class="nx">available</span>  <span class="nx">Port</span> <span class="nx">of</span> <span class="nx">gitmessenger</span><span class="p">.</span><span class="nx">vim</span> <span class="p">[</span><span class="nx">github</span><span class="p">]</span>
+<span class="ln">15</span>  <span class="nx">git</span><span class="o">-</span><span class="nx">rebase</span><span class="o">-</span><span class="nx">mode</span>    <span class="mf">20130912.</span><span class="o">...</span> <span class="nx">available</span>  <span class="nx">Major</span> <span class="nx">mode</span> <span class="k">for</span> <span class="nx">editing</span> <span class="nx">git</span> <span class="nx">rebase</span> <span class="nx">files</span> <span class="p">[</span><span class="nx">github</span><span class="p">]</span>
+<span class="ln">16</span><span class="o">-</span><span class="nx">UUU</span><span class="p">:</span><span class="o">%*--</span><span class="nx">F1</span>  <span class="o">*</span><span class="nx">Packages</span><span class="o">*</span>     <span class="mi">27</span><span class="o">%</span> <span class="nx">L545</span>   <span class="p">(</span><span class="nx">Package</span> <span class="nx">Menu</span><span class="p">)</span> <span class="mi">9</span><span class="p">:</span><span class="mi">30</span><span class="nx">午後</span> <span class="o">------------------------------------------------------</span>
+<span class="ln">17</span><span class="nx">Install</span> <span class="kn">package</span> <span class="err">`</span><span class="nx">gist</span><span class="err">&#39;?</span> <span class="p">(</span><span class="nx">yes</span> <span class="nx">or</span> <span class="nx">no</span><span class="p">)</span></code></pre></div>
+
+<h1 id="install-init-loader-el">Install init-loader.el</h1>
+
+<p>init-loader.elはinit.elを用途毎に分割配置する為の仕組みです。普段からEmacsを使っているわけではないので、このような仕組みを入れる必要があるほどinit.elに設定を書けてないのですが、用途毎に分かれている方がスッキリするので入れてみました。init-loader.elのインストールは前記のpackage.elを使っています。
+init-loader.elのインストール後、.emacs.d/init.elに以下の設定を追加しています。下記の設定はpackage.elの設定の後に記述する必要があります。</p>
+
+<p><div class="highlight"><pre class="chroma"><code class="language-elisp" data-lang="elisp"><span class="ln">1</span><span class="p">(</span><span class="nb">require</span> <span class="ss">&#39;init-loader</span><span class="p">)</span>
+<span class="ln">2</span><span class="p">(</span><span class="nb">setq</span> <span class="nv">init-loader-show-log-after-init</span> <span class="no">nil</span><span class="p">)</span>
+<span class="ln">3</span><span class="p">(</span><span class="nv">init-loader-load</span> <span class="s">&#34;~/.emacs.d/inits&#34;</span><span class="p">)</span></code></pre></div></p>
+
+<h1 id="spliting-init-el">Spliting init.el</h1>
+
+<p>あとは元々init.elに書いていた内容を分割し、&rdquo;~/.emacs.d/inits&rdquo;の下に配置しています。配置のルールについては、冒頭に記載したページを参照してください。今回は以下のように分割しました。そもそもinit.elに大したことを書いてないので、そんなにファイル数はありませんが…。</p>
+
+<p>~/.emacs.d:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>.
+<span class="ln"> 2</span>└── .emacs.d
+<span class="ln"> 3</span>　   ├── init.el
+<span class="ln"> 4</span>　   └── inits
+<span class="ln"> 5</span>　       ├── <span class="m">00</span>-keybinds.el
+<span class="ln"> 6</span>　       ├── <span class="m">01</span>-encoding.el
+<span class="ln"> 7</span>　       ├── <span class="m">02</span>-files.el
+<span class="ln"> 8</span>　       ├── <span class="m">10</span>-display.el
+<span class="ln"> 9</span>　       ├── <span class="m">80</span>-erlang.el
+<span class="ln">10</span>　       └── <span class="m">80</span>-python.el</code></pre></div></p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>package.elとinit-loader.elが使えるようになりました。これで少しは楽になるはず…。</p>
+
+<p>今回package.elとinit-loader.elを導入してみて、~/.emacs.dの下は管理しておかないと色々忘れそうなので、githubにdotfilesのリポジトリを作成しました。</p>
+
+<ul>
+<li><a href="https://github.com/masayuki038/dotfiles">masayuki038/dotfiles</a></li>
+</ul>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        This post was published <strong>1576</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2018 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="https://masayuki038.github.io/blog/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>

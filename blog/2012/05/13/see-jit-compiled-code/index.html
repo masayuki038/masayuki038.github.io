@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Print JIT-compiled code</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="How do you check performance optimized code? 前回、インライン化を確認する為に最初に調べたことは、インライン化されたコードの確認方法でした。調べた範囲ではアセンブリコードで" />
+
+  
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@masayuki" />
+    <meta name="twitter:title" content="Print JIT-compiled code" />
+    <meta name="twitter:description" content="How do you check performance optimized code? 前回、インライン化を確認する為に最初に調べたことは、インライン化されたコードの確認方法でした。調べた範囲ではアセンブリコードで" />
+    <meta name="twitter:image" content="https://masayuki038.github.io/img/avatar.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Print JIT-compiled code" />
+  <meta property="og:description" content="How do you check performance optimized code? 前回、インライン化を確認する為に最初に調べたことは、インライン化されたコードの確認方法でした。調べた範囲ではアセンブリコードで" />
+  <meta property="og:url" content="https://masayuki038.github.io/blog/2012/05/13/see-jit-compiled-code/" />
+  <meta property="og:image" content="https://masayuki038.github.io/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.32" />
+
+
+<link rel="canonical" href="https://masayuki038.github.io/blog/2012/05/13/see-jit-compiled-code/" />
+<link rel="alternative" href="https://masayuki038.github.io/blog/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="https://masayuki038.github.io/blog/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="https://masayuki038.github.io/blog/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="https://masayuki038.github.io/blog/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="https://masayuki038.github.io/blog/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="https://masayuki038.github.io/blog/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="https://masayuki038.github.io/blog/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="https://masayuki038.github.io/blog/css/bundle.css" />
+<link rel="stylesheet" href="https://masayuki038.github.io/blog/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://s.gravatar.com/avatar/4b97fb839e6040cfb353bd667ac93e54?s=80" alt="Avatar">
+  
+  <h2 class="title">act-act</h2>
+  
+  <p class="subtitle"></p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="https://masayuki038.github.io/blog/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="https://masayuki038.github.io/blog/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Print JIT-compiled code</h1>
+      <p class="post-meta">@Masayuki Takahashi · May 13, 2012 · 3 min read</p>
+    </header>
+    <article class="post-content">
+
+<h1 id="how-do-you-check-performance-optimized-code">How do you check performance optimized code?</h1>
+
+<p>前回、インライン化を確認する為に最初に調べたことは、インライン化されたコードの確認方法でした。調べた範囲ではアセンブリコードで確認するしかなさそうだったので、別の確認方法を探して前回のエントリとなります。</p>
+
+<p>今回は実際にアセンブリコードを確認してみました。</p>
+
+<h1 id="jvm-option-and-disassemble-plugin">JVM Option and disassemble plugin</h1>
+
+<p>JIT-compileされたアセンブリコードの出力は「-XX:+PrintAssembly」を付けることにより出力されます。しかし、debug buildしたOpenJDK7にこのオプションを指定して実行したところ、以下のような出力となりました。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">OpenJDK Client VM warning: PrintAssembly is enabled; turning on DebugNonSafepoints to gain additional output
+VM option &#39;+PrintAssembly&#39;
+Could not load hsdis-i386.so; library not loadable; PrintAssembly is disabled
+...</code></pre></div>
+
+<p>「hsdis-i386.so」というモジュールをロードしようとして失敗しています。調べてみたところ、このモジュールはOpenJDKのJVMのdisassembleプラグインで「-XX:+PrintAssembly」を付けて実行する際に必要になるようです。このモジュールのコードはOpenJDKのソースコードに含まれており、ビルドしてインストールすればPrintAssemblyを有効にすることができます。</p>
+
+<h1 id="build-the-openjdk-disassembly-plugin">Build the OpenJDK disassembly plugin</h1>
+
+<p>このdisassemblyプラグインのビルドのインストラクションは以下に記載されています。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">(OpenJDK source code folder)/hotspot/src/share/tools/hsdis/README</code></pre></div>
+
+<p>binutilsのバージョンに指定があったりと面倒そうだったので、以下の記事を参考にしてイントールしました。</p>
+
+<p><a href="http://gag.org.ua/2010/04/java-how-to-get-printassembly/">java: How to get PrintAssembly</a>
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">sudo apt-get install texinfo
+<span class="nb">cd</span> /opt/openjdk/hotspot/src/share/tools/hsdis/
+mkdir build <span class="o">&amp;&amp;</span> <span class="nb">cd</span> build
+wget http://ftp.gnu.org/gnu/binutils/binutils-2.20.1.tar.bz2
+tar jxf binutils-2.20.1.tar.bz2 <span class="o">&amp;&amp;</span> mv binutils-2.20.1 binutils <span class="o">&amp;&amp;</span> <span class="nb">cd</span> ..
+make</code></pre></div></p>
+
+<p>最後に、出来上がったhsdis-i386.soをLD_LIBRARY_PATHに含めます。
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="nb">export</span> <span class="nv">LD_LIBRARY_PATH</span><span class="o">=(</span>openjdk <span class="nb">source</span> code folder<span class="o">)</span>/hotspot/src/share/tools/hsdis/build/linux-i586:<span class="nv">$LD_LIBRARY_PATH</span></code></pre></div></p>
+
+<p>以上で「-XX:+PrintAssembly」を使用することができます。</p>
+
+<h2 id="output">Output</h2>
+
+<p>「-XX:+PrintAssembly」を付けて実行すると、アセンブリコードがどんどん出力されます。さすがに長いので、出力の一部を貼っておきます。
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java">      <span class="o">;;</span>  <span class="n">block</span> <span class="n">B105</span> <span class="o">[</span><span class="n">10</span><span class="o">,</span> <span class="n">15</span><span class="o">]</span><span class="nl">
+</span><span class="nl">
+</span><span class="nl">      0xb50f3391:</span> <span class="n">mov</span>    <span class="o">%</span><span class="n">esi</span><span class="o">,%</span><span class="n">ecx</span>          <span class="o">;*</span><span class="n">invokespecial</span> <span class="n">grow</span>
+                                            <span class="o">;</span> <span class="o">-</span> <span class="n">java</span><span class="o">.</span><span class="na">io</span><span class="o">.</span><span class="na">ByteArrayOutputStream</span><span class="o">::</span><span class="n">ensureCapacity</span><span class="nd">@12</span> <span class="o">(</span><span class="n">line</span> <span class="n">93</span><span class="o">)</span>
+                                            <span class="o">;</span> <span class="o">-</span> <span class="n">java</span><span class="o">.</span><span class="na">io</span><span class="o">.</span><span class="na">ByteArrayOutputStream</span><span class="o">::</span><span class="n">write</span><span class="nd">@7</span> <span class="o">(</span><span class="n">line</span> <span class="n">122</span><span class="o">)</span>
+                                            <span class="o">;</span> <span class="o">-</span> <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test</span><span class="o">::</span><span class="n">getUtf8</span><span class="nd">@217</span> <span class="o">(</span><span class="n">line</span> <span class="n">85</span><span class="o">)</span><span class="nl">
+</span><span class="nl">      0xb50f3393:</span> <span class="n">call</span>   <span class="n">0xb50ad2a0</span>         <span class="o">;</span> <span class="n">OopMap</span><span class="o">{[</span><span class="n">56</span><span class="o">]=</span><span class="n">Oop</span> <span class="o">[</span><span class="n">60</span><span class="o">]=</span><span class="n">Oop</span> <span class="o">[</span><span class="n">136</span><span class="o">]=</span><span class="n">Oop</span> <span class="n">off</span><span class="o">=</span><span class="n">3432</span><span class="o">}</span>
+                                            <span class="o">;*</span><span class="n">invokespecial</span> <span class="n">grow</span>
+                                            <span class="o">;</span> <span class="o">-</span> <span class="n">java</span><span class="o">.</span><span class="na">io</span><span class="o">.</span><span class="na">ByteArrayOutputStream</span><span class="o">::</span><span class="n">ensureCapacity</span><span class="nd">@12</span> <span class="o">(</span><span class="n">line</span> <span class="n">93</span><span class="o">)</span>
+                                            <span class="o">;</span> <span class="o">-</span> <span class="n">java</span><span class="o">.</span><span class="na">io</span><span class="o">.</span><span class="na">ByteArrayOutputStream</span><span class="o">::</span><span class="n">write</span><span class="nd">@7</span> <span class="o">(</span><span class="n">line</span> <span class="n">122</span><span class="o">)</span>
+                                            <span class="o">;</span> <span class="o">-</span> <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test</span><span class="o">::</span><span class="n">getUtf8</span><span class="nd">@217</span> <span class="o">(</span><span class="n">line</span> <span class="n">85</span><span class="o">)</span>
+                                            <span class="o">;</span>   <span class="o">{</span><span class="n">optimized</span> <span class="n">virtual_call</span><span class="o">}</span><span class="nl">
+</span><span class="nl">      0xb50f3398:</span> <span class="n">mov</span>    <span class="nf">0x74</span><span class="o">(%</span><span class="n">esp</span><span class="o">),%</span><span class="n">ebx</span><span class="nl">
+</span><span class="nl">      0xb50f339c:</span> <span class="n">mov</span>    <span class="nf">0x3c</span><span class="o">(%</span><span class="n">esp</span><span class="o">),%</span><span class="n">eax</span>
+      <span class="o">;;</span>  <span class="n">block</span> <span class="n">B106</span> <span class="o">[</span><span class="n">15</span><span class="o">,</span> <span class="n">223</span><span class="o">]</span><span class="nl">
+</span><span class="nl">
+</span><span class="nl">      0xb50f33a0:</span> <span class="n">mov</span>    <span class="nf">0xc</span><span class="o">(%</span><span class="n">eax</span><span class="o">),%</span><span class="n">edx</span>     <span class="o">;*</span><span class="n">getfield</span> <span class="n">buf</span>
+                                            <span class="o">;</span> <span class="o">-</span> <span class="n">java</span><span class="o">.</span><span class="na">io</span><span class="o">.</span><span class="na">ByteArrayOutputStream</span><span class="o">::</span><span class="n">write</span><span class="nd">@11</span> <span class="o">(</span><span class="n">line</span> <span class="n">123</span><span class="o">)</span>
+                                            <span class="o">;</span> <span class="o">-</span> <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test</span><span class="o">::</span><span class="n">getUtf8</span><span class="nd">@217</span> <span class="o">(</span><span class="n">line</span> <span class="n">85</span><span class="o">)</span><span class="nl">
+</span><span class="nl">      0xb50f33a3:</span> <span class="n">mov</span>    <span class="nf">0x8</span><span class="o">(%</span><span class="n">eax</span><span class="o">),%</span><span class="n">esi</span>     <span class="o">;*</span><span class="n">getfield</span> <span class="n">count</span>
+                                            <span class="o">;</span> <span class="o">-</span> <span class="n">java</span><span class="o">.</span><span class="na">io</span><span class="o">.</span><span class="na">ByteArrayOutputStream</span><span class="o">::</span><span class="n">write</span><span class="nd">@15</span> <span class="o">(</span><span class="n">line</span> <span class="n">123</span><span class="o">)</span>
+                                            <span class="o">;</span> <span class="o">-</span> <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test</span><span class="o">::</span><span class="n">getUtf8</span><span class="nd">@217</span> <span class="o">(</span><span class="n">line</span> <span class="n">85</span><span class="o">)</span><span class="nl">
+</span><span class="nl">      0xb50f33a6:</span> <span class="n">cmp</span>    <span class="nf">0x8</span><span class="o">(%</span><span class="n">edx</span><span class="o">),%</span><span class="n">esi</span>     <span class="o">;</span> <span class="n">implicit</span> <span class="nl">exception:</span> <span class="n">dispatches</span> <span class="n">to</span> <span class="n">0xb50f3f9b</span>
+      <span class="o">;;</span>  <span class="n">824</span> <span class="n">branch</span> <span class="o">[</span><span class="n">AE</span><span class="o">]</span> <span class="o">[</span><span class="nl">RangeCheckStub:</span> <span class="n">0x8209970</span><span class="o">]</span> <span class="o">[</span><span class="nl">bci:</span><span class="n">20</span><span class="o">]</span><span class="nl">
+</span><span class="nl">      0xb50f33a9:</span> <span class="n">jae</span>    <span class="n">0xb50f3fc7</span><span class="nl">
+</span><span class="nl">      0xb50f33af:</span> <span class="n">mov</span>    <span class="o">%</span><span class="n">bl</span><span class="o">,</span><span class="n">0xc</span><span class="o">(%</span><span class="n">edx</span><span class="o">,%</span><span class="n">esi</span><span class="o">,</span><span class="n">1</span><span class="o">)</span>  <span class="o">;*</span><span class="n">bastore</span>
+                                            <span class="o">;</span> <span class="o">-</span> <span class="n">java</span><span class="o">.</span><span class="na">io</span><span class="o">.</span><span class="na">ByteArrayOutputStream</span><span class="o">::</span><span class="n">write</span><span class="nd">@20</span> <span class="o">(</span><span class="n">line</span> <span class="n">123</span><span class="o">)</span>
+                                            <span class="o">;</span> <span class="o">-</span> <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test</span><span class="o">::</span><span class="n">getUtf8</span><span class="nd">@217</span> <span class="o">(</span><span class="n">line</span> <span class="n">85</span><span class="o">)</span><span class="nl">
+</span><span class="nl">      0xb50f33b3:</span> <span class="n">inc</span>    <span class="o">%</span><span class="n">esi</span><span class="nl">
+</span><span class="nl">      0xb50f33b4:</span> <span class="n">mov</span>    <span class="o">%</span><span class="n">esi</span><span class="o">,</span><span class="n">0x8</span><span class="o">(%</span><span class="n">eax</span><span class="o">)</span>     <span class="o">;*</span><span class="n">putfield</span> <span class="n">count</span>
+                                            <span class="o">;</span> <span class="o">-</span> <span class="n">java</span><span class="o">.</span><span class="na">io</span><span class="o">.</span><span class="na">ByteArrayOutputStream</span><span class="o">::</span><span class="n">write</span><span class="nd">@28</span> <span class="o">(</span><span class="n">line</span> <span class="n">124</span><span class="o">)</span>
+                                            <span class="o">;</span> <span class="o">-</span> <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test</span><span class="o">::</span><span class="n">getUtf8</span><span class="nd">@217</span> <span class="o">(</span><span class="n">line</span> <span class="n">85</span><span class="o">)</span><span class="nl">
+</span><span class="nl">      0xb50f33b7:</span> <span class="n">mov</span>    <span class="o">%</span><span class="n">eax</span><span class="o">,%</span><span class="n">esi</span><span class="nl">
+</span><span class="nl">      0xb50f33b9:</span> <span class="n">lea</span>    <span class="nf">0x84</span><span class="o">(%</span><span class="n">esp</span><span class="o">),%</span><span class="n">eax</span><span class="nl">
+</span><span class="nl">      0xb50f33c0:</span> <span class="n">mov</span>    <span class="nf">0x4</span><span class="o">(%</span><span class="n">eax</span><span class="o">),%</span><span class="n">edx</span><span class="nl">
+</span><span class="nl">      0xb50f33c3:</span> <span class="n">mov</span>    <span class="o">(%</span><span class="n">edx</span><span class="o">),%</span><span class="n">ebx</span><span class="nl">
+</span><span class="nl">      0xb50f33c5:</span> <span class="n">and</span>    <span class="n">$0x7</span><span class="o">,%</span><span class="n">ebx</span><span class="nl">
+</span><span class="nl">      0xb50f33c8:</span> <span class="n">cmp</span>    <span class="n">$0x5</span><span class="o">,%</span><span class="n">ebx</span><span class="nl">
+</span><span class="nl">      0xb50f33cb:</span> <span class="n">je</span>     <span class="n">0xb50f33e4</span><span class="nl">
+</span><span class="nl">      0xb50f33d1:</span> <span class="n">mov</span>    <span class="o">(%</span><span class="n">eax</span><span class="o">),%</span><span class="n">ebx</span><span class="nl">
+</span><span class="nl">      0xb50f33d3:</span> <span class="n">test</span>   <span class="o">%</span><span class="n">ebx</span><span class="o">,%</span><span class="n">ebx</span><span class="nl">
+</span><span class="nl">      0xb50f33d5:</span> <span class="n">je</span>     <span class="n">0xb50f33e4</span><span class="nl">
+</span><span class="nl">      0xb50f33db:</span> <span class="n">cmpxchg</span> <span class="o">%</span><span class="n">ebx</span><span class="o">,(%</span><span class="n">edx</span><span class="o">)</span><span class="nl">
+</span><span class="nl">      0xb50f33de:</span> <span class="n">jne</span>    <span class="n">0xb50f3fe0</span>         <span class="o">;*</span><span class="n">synchronization</span> <span class="n">entry</span>
+                                            <span class="o">;</span> <span class="o">-</span> <span class="n">java</span><span class="o">.</span><span class="na">io</span><span class="o">.</span><span class="na">ByteArrayOutputStream</span><span class="o">::</span><span class="n">write</span><span class="err">@</span><span class="o">-</span><span class="n">1</span> <span class="o">(</span><span class="n">line</span> <span class="n">122</span><span class="o">)</span>
+                                            <span class="o">;</span> <span class="o">-</span> <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test</span><span class="o">::</span><span class="n">getUtf8</span><span class="nd">@217</span> <span class="o">(</span><span class="n">line</span> <span class="n">85</span><span class="o">)</span><span class="nl">
+</span><span class="nl">      0xb50f33e4:</span> <span class="n">mov</span>    <span class="nf">0x40</span><span class="o">(%</span><span class="n">esp</span><span class="o">),%</span><span class="n">ebx</span><span class="nl">
+</span><span class="nl">      0xb50f33e8:</span> <span class="n">add</span>    <span class="n">$0x4</span><span class="o">,%</span><span class="n">ebx</span></code></pre></div></p>
+
+<p>Javaのコードの行番号がコメントとして出力されているので、どこのコードがどう変換されたかを確認することができます。これでJITコンパイラによってどう最適化されているか確認することができそうですが、残念ながら私はアセンブリを読めないので今日のところはここまで。アセンブリの基礎くらいまでは勉強しておきたいと思います。</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<ul>
+<li>JITコンパイルされたアセンブリコードを確認する際には「-XX:+PrintAssembly」を指定する</li>
+<li>OpenJDK7ではdisassembly pluginを別途インストールする必要がある</li>
+</ul>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        This post was published <strong>2072</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2018 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="https://masayuki038.github.io/blog/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>

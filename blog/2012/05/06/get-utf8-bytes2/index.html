@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>UTF-8 Encoding Performance in Java Part 2</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="NIO ByteBuffer 前回の続き。結局、BSONEncoder#_putのUTF-8変換のコードが遅い理由が分からなかったので、UTF-8のバイト配列を生成す" />
+
+  
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@masayuki" />
+    <meta name="twitter:title" content="UTF-8 Encoding Performance in Java Part 2" />
+    <meta name="twitter:description" content="NIO ByteBuffer 前回の続き。結局、BSONEncoder#_putのUTF-8変換のコードが遅い理由が分からなかったので、UTF-8のバイト配列を生成す" />
+    <meta name="twitter:image" content="https://masayuki038.github.io/img/avatar.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="UTF-8 Encoding Performance in Java Part 2" />
+  <meta property="og:description" content="NIO ByteBuffer 前回の続き。結局、BSONEncoder#_putのUTF-8変換のコードが遅い理由が分からなかったので、UTF-8のバイト配列を生成す" />
+  <meta property="og:url" content="https://masayuki038.github.io/blog/2012/05/06/get-utf8-bytes2/" />
+  <meta property="og:image" content="https://masayuki038.github.io/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.32" />
+
+
+<link rel="canonical" href="https://masayuki038.github.io/blog/2012/05/06/get-utf8-bytes2/" />
+<link rel="alternative" href="https://masayuki038.github.io/blog/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="https://masayuki038.github.io/blog/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="https://masayuki038.github.io/blog/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="https://masayuki038.github.io/blog/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="https://masayuki038.github.io/blog/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="https://masayuki038.github.io/blog/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="https://masayuki038.github.io/blog/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="https://masayuki038.github.io/blog/css/bundle.css" />
+<link rel="stylesheet" href="https://masayuki038.github.io/blog/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://s.gravatar.com/avatar/4b97fb839e6040cfb353bd667ac93e54?s=80" alt="Avatar">
+  
+  <h2 class="title">act-act</h2>
+  
+  <p class="subtitle"></p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="https://masayuki038.github.io/blog/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="https://masayuki038.github.io/blog/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">UTF-8 Encoding Performance in Java Part 2</h1>
+      <p class="post-meta">@Masayuki Takahashi · May 6, 2012 · 7 min read</p>
+    </header>
+    <article class="post-content">
+
+<h1 id="nio-bytebuffer">NIO ByteBuffer</h1>
+
+<p>前回の続き。結局、BSONEncoder#_putのUTF-8変換のコードが遅い理由が分からなかったので、UTF-8のバイト配列を生成する為に使用しているByteArrayOutputStreamをNIOのByteBufferに変えてみました。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln"> 1</span>    <span class="kd">static</span> <span class="kt">byte</span><span class="o">[]</span> <span class="nf">getUtf8</span><span class="o">(</span><span class="n">String</span> <span class="n">str</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln"> 2</span>        <span class="n">ByteBuffer</span> <span class="n">_buf</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+<span class="ln"> 3</span>        <span class="n">_buf</span> <span class="o">=</span> <span class="n">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="n">str</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">*</span> <span class="n">5</span><span class="o">);</span>
+<span class="ln"> 4</span>
+<span class="ln"> 5</span>        <span class="kd">final</span> <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">str</span><span class="o">.</span><span class="na">length</span><span class="o">();</span>
+<span class="ln"> 6</span>        <span class="kt">int</span> <span class="n">total</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
+<span class="ln"> 7</span>
+<span class="ln"> 8</span>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">len</span><span class="o">;)</span> <span class="o">{</span>
+<span class="ln"> 9</span>            <span class="kt">int</span> <span class="n">c</span> <span class="o">=</span> <span class="n">Character</span><span class="o">.</span><span class="na">codePointAt</span><span class="o">(</span><span class="n">str</span><span class="o">,</span> <span class="n">i</span><span class="o">);</span>
+<span class="ln">10</span>
+<span class="ln">11</span>            <span class="k">if</span> <span class="o">(</span><span class="n">c</span> <span class="o">&lt;</span> <span class="n">0x80</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">12</span>                <span class="n">_buf</span><span class="o">.</span><span class="na">put</span><span class="o">((</span><span class="kt">byte</span><span class="o">)</span> <span class="n">c</span><span class="o">);</span>
+<span class="ln">13</span>                <span class="n">total</span> <span class="o">+=</span> <span class="n">1</span><span class="o">;</span>
+<span class="ln">14</span>            <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">c</span> <span class="o">&lt;</span> <span class="n">0x800</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">15</span>                <span class="n">_buf</span><span class="o">.</span><span class="na">put</span><span class="o">((</span><span class="kt">byte</span><span class="o">)</span> <span class="o">(</span><span class="n">0xc0</span> <span class="o">+</span> <span class="o">(</span><span class="n">c</span> <span class="o">&gt;&gt;</span> <span class="n">6</span><span class="o">)));</span>
+<span class="ln">16</span>                <span class="n">_buf</span><span class="o">.</span><span class="na">put</span><span class="o">((</span><span class="kt">byte</span><span class="o">)</span> <span class="o">(</span><span class="n">0x80</span> <span class="o">+</span> <span class="o">(</span><span class="n">c</span> <span class="o">&amp;</span> <span class="n">0x3f</span><span class="o">)));</span>
+<span class="ln">17</span>                <span class="n">total</span> <span class="o">+=</span> <span class="n">2</span><span class="o">;</span>
+<span class="ln">18</span>            <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">c</span> <span class="o">&lt;</span> <span class="n">0x10000</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">19</span>                <span class="n">_buf</span><span class="o">.</span><span class="na">put</span><span class="o">((</span><span class="kt">byte</span><span class="o">)</span> <span class="o">(</span><span class="n">0xe0</span> <span class="o">+</span> <span class="o">(</span><span class="n">c</span> <span class="o">&gt;&gt;</span> <span class="n">12</span><span class="o">)));</span>
+<span class="ln">20</span>                <span class="n">_buf</span><span class="o">.</span><span class="na">put</span><span class="o">((</span><span class="kt">byte</span><span class="o">)</span> <span class="o">(</span><span class="n">0x80</span> <span class="o">+</span> <span class="o">((</span><span class="n">c</span> <span class="o">&gt;&gt;</span> <span class="n">6</span><span class="o">)</span> <span class="o">&amp;</span> <span class="n">0x3f</span><span class="o">)));</span>
+<span class="ln">21</span>                <span class="n">_buf</span><span class="o">.</span><span class="na">put</span><span class="o">((</span><span class="kt">byte</span><span class="o">)</span> <span class="o">(</span><span class="n">0x80</span> <span class="o">+</span> <span class="o">(</span><span class="n">c</span> <span class="o">&amp;</span> <span class="n">0x3f</span><span class="o">)));</span>
+<span class="ln">22</span>                <span class="n">total</span> <span class="o">+=</span> <span class="n">3</span><span class="o">;</span>
+<span class="ln">23</span>            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+<span class="ln">24</span>                <span class="n">_buf</span><span class="o">.</span><span class="na">put</span><span class="o">((</span><span class="kt">byte</span><span class="o">)</span> <span class="o">(</span><span class="n">0xf0</span> <span class="o">+</span> <span class="o">(</span><span class="n">c</span> <span class="o">&gt;&gt;</span> <span class="n">18</span><span class="o">)));</span>
+<span class="ln">25</span>                <span class="n">_buf</span><span class="o">.</span><span class="na">put</span><span class="o">((</span><span class="kt">byte</span><span class="o">)</span> <span class="o">(</span><span class="n">0x80</span> <span class="o">+</span> <span class="o">((</span><span class="n">c</span> <span class="o">&gt;&gt;</span> <span class="n">12</span><span class="o">)</span> <span class="o">&amp;</span> <span class="n">0x3f</span><span class="o">)));</span>
+<span class="ln">26</span>                <span class="n">_buf</span><span class="o">.</span><span class="na">put</span><span class="o">((</span><span class="kt">byte</span><span class="o">)</span> <span class="o">(</span><span class="n">0x80</span> <span class="o">+</span> <span class="o">((</span><span class="n">c</span> <span class="o">&gt;&gt;</span> <span class="n">6</span><span class="o">)</span> <span class="o">&amp;</span> <span class="n">0x3f</span><span class="o">)));</span>
+<span class="ln">27</span>                <span class="n">_buf</span><span class="o">.</span><span class="na">put</span><span class="o">((</span><span class="kt">byte</span><span class="o">)</span> <span class="o">(</span><span class="n">0x80</span> <span class="o">+</span> <span class="o">(</span><span class="n">c</span> <span class="o">&amp;</span> <span class="n">0x3f</span><span class="o">)));</span>
+<span class="ln">28</span>                <span class="n">total</span> <span class="o">+=</span> <span class="n">4</span><span class="o">;</span>
+<span class="ln">29</span>            <span class="o">}</span>
+<span class="ln">30</span>
+<span class="ln">31</span>            <span class="n">i</span> <span class="o">+=</span> <span class="n">Character</span><span class="o">.</span><span class="na">charCount</span><span class="o">(</span><span class="n">c</span><span class="o">);</span>
+<span class="ln">32</span>        <span class="o">}</span>
+<span class="ln">33</span>
+<span class="ln">34</span>        <span class="n">_buf</span><span class="o">.</span><span class="na">flip</span><span class="o">();</span>
+<span class="ln">35</span>        <span class="kt">byte</span><span class="o">[]</span> <span class="n">ret</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">_buf</span><span class="o">.</span><span class="na">limit</span><span class="o">()];</span>
+<span class="ln">36</span>        <span class="n">_buf</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">ret</span><span class="o">);</span>
+<span class="ln">37</span>        <span class="k">return</span> <span class="n">ret</span><span class="o">;</span>
+<span class="ln">38</span>    <span class="o">}</span></code></pre></div>
+
+<p>ByteArrayOutputStreamをByteBufferに変えて計測してみたところ、大分速くなりました。文字列長100でByteArrayOutputStreamの約1.8倍、1000だと約1.6倍になりました。また、10文字であればString#getBytes(&ldquo;UTF-8&rdquo;)よりもちょっとだけ速くなりました。</p>
+
+<h1 id="byte">byte[]</h1>
+
+<p>ByteBufferの結果から、UTF-8に変換したバイト配列をバッファに格納する箇所が遅いことが分かったので、今度はByteBufferではなくbyte[]に直接格納するようにしてみました。</p>
+
+<p><div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln"> 1</span>    <span class="kd">static</span> <span class="kt">byte</span><span class="o">[]</span> <span class="nf">getUtf8</span><span class="o">(</span><span class="n">String</span> <span class="n">str</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln"> 2</span>        <span class="kt">byte</span><span class="o">[]</span> <span class="n">_buf</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">str</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">*</span> <span class="n">5</span><span class="o">];</span>
+<span class="ln"> 3</span>
+<span class="ln"> 4</span>        <span class="kd">final</span> <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">str</span><span class="o">.</span><span class="na">length</span><span class="o">();</span>
+<span class="ln"> 5</span>        <span class="kt">int</span> <span class="n">total</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
+<span class="ln"> 6</span>
+<span class="ln"> 7</span>        <span class="kt">int</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
+<span class="ln"> 8</span>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">len</span><span class="o">;)</span> <span class="o">{</span>
+<span class="ln"> 9</span>            <span class="kt">int</span> <span class="n">c</span> <span class="o">=</span> <span class="n">Character</span><span class="o">.</span><span class="na">codePointAt</span><span class="o">(</span><span class="n">str</span><span class="o">,</span> <span class="n">i</span><span class="o">);</span>
+<span class="ln">10</span>
+<span class="ln">11</span>            <span class="k">if</span> <span class="o">(</span><span class="n">c</span> <span class="o">&lt;</span> <span class="n">0x80</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">12</span>                <span class="n">_buf</span><span class="o">[</span><span class="n">idx</span><span class="o">++]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)</span> <span class="n">c</span><span class="o">;</span>
+<span class="ln">13</span>                <span class="n">total</span> <span class="o">+=</span> <span class="n">1</span><span class="o">;</span>
+<span class="ln">14</span>            <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">c</span> <span class="o">&lt;</span> <span class="n">0x800</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">15</span>                <span class="n">_buf</span><span class="o">[</span><span class="n">idx</span><span class="o">++]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)</span> <span class="o">(</span><span class="n">0xc0</span> <span class="o">+</span> <span class="o">(</span><span class="n">c</span> <span class="o">&gt;&gt;</span> <span class="n">6</span><span class="o">));</span>
+<span class="ln">16</span>                <span class="n">_buf</span><span class="o">[</span><span class="n">idx</span><span class="o">++]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)</span> <span class="o">(</span><span class="n">0x80</span> <span class="o">+</span> <span class="o">(</span><span class="n">c</span> <span class="o">&amp;</span> <span class="n">0x3f</span><span class="o">));</span>
+<span class="ln">17</span>                <span class="n">total</span> <span class="o">+=</span> <span class="n">2</span><span class="o">;</span>
+<span class="ln">18</span>            <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">c</span> <span class="o">&lt;</span> <span class="n">0x10000</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">19</span>                <span class="n">_buf</span><span class="o">[</span><span class="n">idx</span><span class="o">++]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)</span> <span class="o">(</span><span class="n">0xe0</span> <span class="o">+</span> <span class="o">(</span><span class="n">c</span> <span class="o">&gt;&gt;</span> <span class="n">12</span><span class="o">));</span>
+<span class="ln">20</span>                <span class="n">_buf</span><span class="o">[</span><span class="n">idx</span><span class="o">++]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)</span> <span class="o">(</span><span class="n">0x80</span> <span class="o">+</span> <span class="o">((</span><span class="n">c</span> <span class="o">&gt;&gt;</span> <span class="n">6</span><span class="o">)</span> <span class="o">&amp;</span> <span class="n">0x3f</span><span class="o">));</span>
+<span class="ln">21</span>                <span class="n">_buf</span><span class="o">[</span><span class="n">idx</span><span class="o">++]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)</span> <span class="o">(</span><span class="n">0x80</span> <span class="o">+</span> <span class="o">(</span><span class="n">c</span> <span class="o">&amp;</span> <span class="n">0x3f</span><span class="o">));</span>
+<span class="ln">22</span>                <span class="n">total</span> <span class="o">+=</span> <span class="n">3</span><span class="o">;</span>
+<span class="ln">23</span>            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+<span class="ln">24</span>                <span class="n">_buf</span><span class="o">[</span><span class="n">idx</span><span class="o">++]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)</span> <span class="o">(</span><span class="n">0xf0</span> <span class="o">+</span> <span class="o">(</span><span class="n">c</span> <span class="o">&gt;&gt;</span> <span class="n">18</span><span class="o">));</span>
+<span class="ln">25</span>                <span class="n">_buf</span><span class="o">[</span><span class="n">idx</span><span class="o">++]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)</span> <span class="o">(</span><span class="n">0x80</span> <span class="o">+</span> <span class="o">((</span><span class="n">c</span> <span class="o">&gt;&gt;</span> <span class="n">12</span><span class="o">)</span> <span class="o">&amp;</span> <span class="n">0x3f</span><span class="o">));</span>
+<span class="ln">26</span>                <span class="n">_buf</span><span class="o">[</span><span class="n">idx</span><span class="o">++]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)</span> <span class="o">(</span><span class="n">0x80</span> <span class="o">+</span> <span class="o">((</span><span class="n">c</span> <span class="o">&gt;&gt;</span> <span class="n">6</span><span class="o">)</span> <span class="o">&amp;</span> <span class="n">0x3f</span><span class="o">));</span>
+<span class="ln">27</span>                <span class="n">_buf</span><span class="o">[</span><span class="n">idx</span><span class="o">++]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)</span> <span class="o">(</span><span class="n">0x80</span> <span class="o">+</span> <span class="o">(</span><span class="n">c</span> <span class="o">&amp;</span> <span class="n">0x3f</span><span class="o">));</span>
+<span class="ln">28</span>                <span class="n">total</span> <span class="o">+=</span> <span class="n">4</span><span class="o">;</span>
+<span class="ln">29</span>            <span class="o">}</span>
+<span class="ln">30</span>
+<span class="ln">31</span>            <span class="n">i</span> <span class="o">+=</span> <span class="n">Character</span><span class="o">.</span><span class="na">charCount</span><span class="o">(</span><span class="n">c</span><span class="o">);</span>
+<span class="ln">32</span>        <span class="o">}</span>
+<span class="ln">33</span>
+<span class="ln">34</span>        <span class="kt">byte</span><span class="o">[]</span> <span class="n">ret</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">idx</span><span class="o">];</span>
+<span class="ln">35</span>        <span class="n">System</span><span class="o">.</span><span class="na">arraycopy</span><span class="o">(</span><span class="n">_buf</span><span class="o">,</span> <span class="n">0</span><span class="o">,</span> <span class="n">ret</span><span class="o">,</span> <span class="n">0</span><span class="o">,</span> <span class="n">ret</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+<span class="ln">36</span>        <span class="k">return</span> <span class="n">ret</span><span class="o">;</span>
+<span class="ln">37</span>    <span class="o">}</span></code></pre></div></p>
+
+<p>文字列長が10文字の場合はString#getBytes(&ldquo;UTF-8&rdquo;)の約1.5倍の速さで処理できます。しかし、やはり文字列長が増えるとString#getBytes(&ldquo;UTF-8&rdquo;)の方が速い結果となっています。ByteBuffer、byte[]を加えた処理時間の推移は以下となります。</p>
+
+<p><img src="http://farm9.staticflickr.com/8011/7001791144_90b8ca1f78_c.jpg" alt="converting utf-8 time" /></p>
+
+<p>結局、文字列が長くなるとString#getBytes(&ldquo;UTF-8&rdquo;)が一番速くなっています。うーん。</p>
+
+<h1 id="hprof-cpu-samples">hprof=cpu=samples</h1>
+
+<p>前回のプロファイリングの結果では、UTF-8変換後のバイト配列をバッファに保存する部分はtop10に入っていませんでした。しかし、バッファに保存する部分を変更した結果、パフォーマンスがかなり向上しました。つまり、hprof=cpu=samplesのプロファイリングの仕方では、ボトルネックの検出は難しいということになります。</p>
+
+<p>hprof=cpu=samplesを指定すると、サンプリング用のスレッドが定期的に各スレッドのスタックトレースを取得します。前回は以下の設定でプロファイリングを行いました。</p>
+
+<p><div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">-agentlib:hprof<span class="o">=</span><span class="nv">cpu</span><span class="o">=</span>samples,file<span class="o">=</span>result.hprof,depth<span class="o">=</span><span class="m">20</span></code></pre></div></p>
+
+<p>samplingの間隔はデフォルトで10msとなっています。この間隔を1msにし、コードをByteArrayOutputStreamを使用する形に戻して、再度プロファイリングしてみました。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">-agentlib:hprof<span class="o">=</span><span class="nv">cpu</span><span class="o">=</span>samples,interval<span class="o">=</span><span class="m">1</span>,file<span class="o">=</span>result.hprof,depth<span class="o">=</span><span class="m">20</span></code></pre></div>
+
+<p>結果は以下となっています。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java">    <span class="n">CPU</span> <span class="n">SAMPLES</span> <span class="nf">BEGIN</span> <span class="o">(</span><span class="n">total</span> <span class="o">=</span> <span class="n">7001</span><span class="o">)</span> <span class="n">Sun</span> <span class="n">May</span>  <span class="n">6</span> <span class="nl">18:30:</span><span class="n">33</span> <span class="n">2012</span>
+    <span class="n">rank</span>   <span class="n">self</span>  <span class="n">accum</span>   <span class="n">count</span> <span class="n">trace</span> <span class="n">method</span>
+       <span class="n">1</span> <span class="n">15</span><span class="o">.</span><span class="na">30</span><span class="o">%</span> <span class="n">15</span><span class="o">.</span><span class="na">30</span><span class="o">%</span>    <span class="n">1071</span> <span class="n">300077</span> <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test</span><span class="o">.</span><span class="na">getUtf8</span>
+       <span class="n">2</span> <span class="n">14</span><span class="o">.</span><span class="na">96</span><span class="o">%</span> <span class="n">30</span><span class="o">.</span><span class="na">25</span><span class="o">%</span>    <span class="n">1047</span> <span class="n">300071</span> <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test</span><span class="o">.</span><span class="na">getUtf8</span>
+       <span class="n">3</span> <span class="n">14</span><span class="o">.</span><span class="na">27</span><span class="o">%</span> <span class="n">44</span><span class="o">.</span><span class="na">52</span><span class="o">%</span>     <span class="n">999</span> <span class="n">300075</span> <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test</span><span class="o">.</span><span class="na">getUtf8</span>
+       <span class="n">4</span> <span class="n">12</span><span class="o">.</span><span class="na">70</span><span class="o">%</span> <span class="n">57</span><span class="o">.</span><span class="na">22</span><span class="o">%</span>     <span class="n">889</span> <span class="n">300072</span> <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test</span><span class="o">.</span><span class="na">getUtf8</span>
+       <span class="n">5</span> <span class="n">11</span><span class="o">.</span><span class="na">97</span><span class="o">%</span> <span class="n">69</span><span class="o">.</span><span class="na">19</span><span class="o">%</span>     <span class="n">838</span> <span class="n">300081</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Character</span><span class="o">.</span><span class="na">codePointAt</span>
+       <span class="n">6</span> <span class="n">11</span><span class="o">.</span><span class="na">04</span><span class="o">%</span> <span class="n">80</span><span class="o">.</span><span class="na">23</span><span class="o">%</span>     <span class="n">773</span> <span class="n">300079</span> <span class="n">java</span><span class="o">.</span><span class="na">io</span><span class="o">.</span><span class="na">ByteArrayOutputStream</span><span class="o">.&lt;</span><span class="n">init</span><span class="o">&gt;</span>
+       <span class="n">7</span>  <span class="n">6</span><span class="o">.</span><span class="na">61</span><span class="o">%</span> <span class="n">86</span><span class="o">.</span><span class="na">84</span><span class="o">%</span>     <span class="n">463</span> <span class="n">300080</span> <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test</span><span class="o">.</span><span class="na">getUtf8</span>
+       <span class="n">8</span>  <span class="n">2</span><span class="o">.</span><span class="na">91</span><span class="o">%</span> <span class="n">89</span><span class="o">.</span><span class="na">76</span><span class="o">%</span>     <span class="n">204</span> <span class="n">300076</span> <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test</span><span class="o">.</span><span class="na">getUtf8</span>
+       <span class="n">9</span>  <span class="n">2</span><span class="o">.</span><span class="na">70</span><span class="o">%</span> <span class="n">92</span><span class="o">.</span><span class="na">46</span><span class="o">%</span>     <span class="n">189</span> <span class="n">300078</span> <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test$2</span><span class="o">.</span><span class="na">getUtf8Bytes</span>
+      <span class="n">10</span>  <span class="n">1</span><span class="o">.</span><span class="na">54</span><span class="o">%</span> <span class="n">94</span><span class="o">.</span><span class="na">00</span><span class="o">%</span>     <span class="n">108</span> <span class="n">300073</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">String</span><span class="o">.</span><span class="na">length</span></code></pre></div>
+
+<p>rank6にByteArrayOutputStream#<init>が入ってきました。しかしそれ以外はほとんど変化がありません。</p>
+
+<h1 id="hprof-cpu-times">hprof=cpu=times</h1>
+
+<p>CPU使用率のプロファイリングの仕方として、hprof=cpu=samplesの他に、hprof=cpu=timesがあります。これはサンプリング方式と異なり、全てのメソッドの実行時間を取得することができます。ただし、計測用のバイトコードを実行コードに入れる形で行われる為、実行時間がかなり延びます。</p>
+
+<p>hprof=cpu=timesでプロファイリングしてみました。実行回数は、これまでのように1,000,000回とすると1時間以上経っても終わらなかったので1000回とし、文字列長は1000としました。</p>
+
+<p><div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">-agentlib:hprof<span class="o">=</span>times,file<span class="o">=</span>result.hprof,depth<span class="o">=</span><span class="m">20</span></code></pre></div></p>
+
+<p>top 10は以下となります。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="n">CPU</span> <span class="nf">TIME</span> <span class="o">(</span><span class="n">ms</span><span class="o">)</span> <span class="n">BEGIN</span> <span class="o">(</span><span class="n">total</span> <span class="o">=</span> <span class="n">85813</span><span class="o">)</span> <span class="n">Sun</span> <span class="n">May</span>  <span class="n">6</span> <span class="nl">23:24:</span><span class="n">28</span> <span class="n">2012</span>
+<span class="n">rank</span>   <span class="n">self</span>  <span class="n">accum</span>   <span class="n">count</span> <span class="n">trace</span> <span class="n">method</span>
+    <span class="n">1</span> <span class="n">31</span><span class="o">.</span><span class="na">57</span><span class="o">%</span> <span class="n">31</span><span class="o">.</span><span class="na">57</span><span class="o">%</span>       <span class="n">2</span> <span class="n">302880</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Object</span><span class="o">.</span><span class="na">wait</span>
+    <span class="n">2</span> <span class="n">25</span><span class="o">.</span><span class="na">98</span><span class="o">%</span> <span class="n">57</span><span class="o">.</span><span class="na">55</span><span class="o">%</span>   <span class="n">11000</span> <span class="n">302513</span> <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test</span><span class="o">.</span><span class="na">getUtf8</span>
+    <span class="n">3</span> <span class="n">15</span><span class="o">.</span><span class="na">54</span><span class="o">%</span> <span class="n">73</span><span class="o">.</span><span class="na">09</span><span class="o">%</span> <span class="n">1103000</span> <span class="n">302506</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Character</span><span class="o">.</span><span class="na">codePointAt</span>
+    <span class="n">4</span> <span class="n">11</span><span class="o">.</span><span class="na">91</span><span class="o">%</span> <span class="n">85</span><span class="o">.</span><span class="na">00</span><span class="o">%</span> <span class="n">3049000</span> <span class="n">302507</span> <span class="n">java</span><span class="o">.</span><span class="na">io</span><span class="o">.</span><span class="na">ByteArrayOutputStream</span><span class="o">.</span><span class="na">write</span>
+    <span class="n">5</span>  <span class="n">4</span><span class="o">.</span><span class="na">45</span><span class="o">%</span> <span class="n">89</span><span class="o">.</span><span class="na">45</span><span class="o">%</span> <span class="n">1130000</span> <span class="n">302504</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">String</span><span class="o">.</span><span class="na">charAt</span>
+    <span class="n">6</span>  <span class="n">4</span><span class="o">.</span><span class="na">30</span><span class="o">%</span> <span class="n">93</span><span class="o">.</span><span class="na">76</span><span class="o">%</span> <span class="n">1103000</span> <span class="n">302505</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Character</span><span class="o">.</span><span class="na">isHighSurrogate</span>
+    <span class="n">7</span>  <span class="n">4</span><span class="o">.</span><span class="na">27</span><span class="o">%</span> <span class="n">98</span><span class="o">.</span><span class="na">03</span><span class="o">%</span> <span class="n">1103000</span> <span class="n">302508</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Character</span><span class="o">.</span><span class="na">charCount</span>
+    <span class="n">8</span>  <span class="n">0</span><span class="o">.</span><span class="na">18</span><span class="o">%</span> <span class="n">98</span><span class="o">.</span><span class="na">21</span><span class="o">%</span>   <span class="n">10000</span> <span class="n">302461</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Long</span><span class="o">.</span><span class="na">toString</span>
+    <span class="n">9</span>  <span class="n">0</span><span class="o">.</span><span class="na">13</span><span class="o">%</span> <span class="n">98</span><span class="o">.</span><span class="na">34</span><span class="o">%</span>       <span class="n">1</span> <span class="n">303602</span> <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test</span><span class="o">.</span><span class="na">main</span>
+    <span class="n">10</span>  <span class="n">0</span><span class="o">.</span><span class="na">12</span><span class="o">%</span> <span class="n">98</span><span class="o">.</span><span class="na">46</span><span class="o">%</span>   <span class="n">11000</span> <span class="n">302510</span> <span class="n">java</span><span class="o">.</span><span class="na">util</span><span class="o">.</span><span class="na">Arrays</span><span class="o">.</span><span class="na">copyOf</span></code></pre></div>
+
+<p>rank1はjava.lang.ref.Reference$ReferenceHandlerなのでスルーします。rank2はhprof=cpu=samplesと同様に直接UTF-8のバイト配列に変換しているメソッドでした。rank3もsamplesでtop 10に入ってましたが、それ以降はsamplesの結果と異なっています。</p>
+
+<p>rank4のByteArrayOutputStream#writeですが、この部分を別の実装にすることで大分速くなったので、このメソッドが上位に来ることは納得できます。</p>
+
+<p>top7までの呼び出しシーケンスは以下のとおりです。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="n">TRACE</span> <span class="nl">302880:</span> <span class="o">(</span><span class="n">thread</span><span class="o">=</span><span class="n">200003</span><span class="o">)</span>
+        <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Object</span><span class="o">.</span><span class="na">wait</span><span class="o">(</span><span class="n">Object</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">Unknown</span> <span class="n">line</span><span class="o">)</span>
+        <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">ref</span><span class="o">.</span><span class="na">Reference$ReferenceHandler</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="n">Reference</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">Unknown</span> <span class="n">line</span><span class="o">)</span>
+<span class="n">TRACE</span> <span class="nl">302513:</span> <span class="o">(</span><span class="n">thread</span><span class="o">=</span><span class="n">200001</span><span class="o">)</span>
+        <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test</span><span class="o">.</span><span class="na">getUtf8</span><span class="o">(</span><span class="n">EncodeUTF8Test</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">Unknown</span> <span class="n">line</span><span class="o">)</span>
+        <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test$2</span><span class="o">.</span><span class="na">getUtf8Bytes</span><span class="o">(</span><span class="n">EncodeUTF8Test</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">Unknown</span> <span class="n">line</span><span class="o">)</span>
+        <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test</span><span class="o">.</span><span class="na">main</span><span class="o">(</span><span class="n">EncodeUTF8Test</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">Unknown</span> <span class="n">line</span><span class="o">)</span>
+<span class="n">TRACE</span> <span class="nl">302506:</span> <span class="o">(</span><span class="n">thread</span><span class="o">=</span><span class="n">200001</span><span class="o">)</span>
+        <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Character</span><span class="o">.</span><span class="na">codePointAt</span><span class="o">(</span><span class="n">Character</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">Unknown</span> <span class="n">line</span><span class="o">)</span>
+        <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test</span><span class="o">.</span><span class="na">getUtf8</span><span class="o">(</span><span class="n">EncodeUTF8Test</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">Unknown</span> <span class="n">line</span><span class="o">)</span>
+        <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test$2</span><span class="o">.</span><span class="na">getUtf8Bytes</span><span class="o">(</span><span class="n">EncodeUTF8Test</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">Unknown</span> <span class="n">line</span><span class="o">)</span>
+        <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test</span><span class="o">.</span><span class="na">main</span><span class="o">(</span><span class="n">EncodeUTF8Test</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">Unknown</span> <span class="n">line</span><span class="o">)</span>
+<span class="n">TRACE</span> <span class="nl">302507:</span> <span class="o">(</span><span class="n">thread</span><span class="o">=</span><span class="n">200001</span><span class="o">)</span>
+        <span class="n">java</span><span class="o">.</span><span class="na">io</span><span class="o">.</span><span class="na">ByteArrayOutputStream</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">ByteArrayOutputStream</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">Unknown</span> <span class="n">line</span><span class="o">)</span>
+        <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test</span><span class="o">.</span><span class="na">getUtf8</span><span class="o">(</span><span class="n">EncodeUTF8Test</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">Unknown</span> <span class="n">line</span><span class="o">)</span>
+        <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test$2</span><span class="o">.</span><span class="na">getUtf8Bytes</span><span class="o">(</span><span class="n">EncodeUTF8Test</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">Unknown</span> <span class="n">line</span><span class="o">)</span>
+        <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test</span><span class="o">.</span><span class="na">main</span><span class="o">(</span><span class="n">EncodeUTF8Test</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">Unknown</span> <span class="n">line</span><span class="o">)</span>
+<span class="n">TRACE</span> <span class="nl">302504:</span> <span class="o">(</span><span class="n">thread</span><span class="o">=</span><span class="n">200001</span><span class="o">)</span>
+        <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">String</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">Unknown</span> <span class="n">line</span><span class="o">)</span>
+        <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Character</span><span class="o">.</span><span class="na">codePointAt</span><span class="o">(</span><span class="n">Character</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">Unknown</span> <span class="n">line</span><span class="o">)</span>
+        <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test</span><span class="o">.</span><span class="na">getUtf8</span><span class="o">(</span><span class="n">EncodeUTF8Test</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">Unknown</span> <span class="n">line</span><span class="o">)</span>
+        <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test$2</span><span class="o">.</span><span class="na">getUtf8Bytes</span><span class="o">(</span><span class="n">EncodeUTF8Test</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">Unknown</span> <span class="n">line</span><span class="o">)</span>
+        <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test</span><span class="o">.</span><span class="na">main</span><span class="o">(</span><span class="n">EncodeUTF8Test</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">Unknown</span> <span class="n">line</span><span class="o">)</span>
+<span class="n">TRACE</span> <span class="nl">302505:</span> <span class="o">(</span><span class="n">thread</span><span class="o">=</span><span class="n">200001</span><span class="o">)</span>
+        <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Character</span><span class="o">.</span><span class="na">isHighSurrogate</span><span class="o">(</span><span class="n">Character</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">Unknown</span> <span class="n">line</span><span class="o">)</span>
+        <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Character</span><span class="o">.</span><span class="na">codePointAt</span><span class="o">(</span><span class="n">Character</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">Unknown</span> <span class="n">line</span><span class="o">)</span>
+        <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test</span><span class="o">.</span><span class="na">getUtf8</span><span class="o">(</span><span class="n">EncodeUTF8Test</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">Unknown</span> <span class="n">line</span><span class="o">)</span>
+        <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test$2</span><span class="o">.</span><span class="na">getUtf8Bytes</span><span class="o">(</span><span class="n">EncodeUTF8Test</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">Unknown</span> <span class="n">line</span><span class="o">)</span>
+        <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test</span><span class="o">.</span><span class="na">main</span><span class="o">(</span><span class="n">EncodeUTF8Test</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">Unknown</span> <span class="n">line</span><span class="o">)</span>
+<span class="n">TRACE</span> <span class="nl">302508:</span> <span class="o">(</span><span class="n">thread</span><span class="o">=</span><span class="n">200001</span><span class="o">)</span>
+        <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Character</span><span class="o">.</span><span class="na">charCount</span><span class="o">(</span><span class="n">Character</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">Unknown</span> <span class="n">line</span><span class="o">)</span>
+        <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test</span><span class="o">.</span><span class="na">getUtf8</span><span class="o">(</span><span class="n">EncodeUTF8Test</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">Unknown</span> <span class="n">line</span><span class="o">)</span>
+        <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test$2</span><span class="o">.</span><span class="na">getUtf8Bytes</span><span class="o">(</span><span class="n">EncodeUTF8Test</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">Unknown</span> <span class="n">line</span><span class="o">)</span>
+        <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">encode</span><span class="o">.</span><span class="na">EncodeUTF8Test</span><span class="o">.</span><span class="na">main</span><span class="o">(</span><span class="n">EncodeUTF8Test</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">Unknown</span> <span class="n">line</span><span class="o">)</span></code></pre></div>
+
+<p>UTF-8に変換しているgetUtf8とByteArrayOutputStream#writeを除くと、Character#codePointAt、Character#charAtの2点が残ります。</p>
+
+<p>TRACE 302504より、Character#codePointAtは内部でCharater#charAtを呼び出しているので、charAtに置き換えたら速くなるのでは、と思ったところで、ようやくCharacter#codePointAtというメソッドの意味が分かりました。このメソッドは単に各Unicode文字のコードを返すのではなく、補助文字のU+10000からU+10FFFFを返せるメソッドになっており、UTF-8に変換する際にこの値を見ることによって補助文字の対応を入れることができている(=サロゲート対応が入っている)ことになります。ですので、codePointAtをcharAtに置き換えることはできません。</p>
+
+<p><a href="http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/6-b14/sun/nio/cs/UTF_8.java#391">sun.nio.cs.UTF8#encodeArrayLoop</a>ではこの部分をSurrogate.Parserを使って判定し、変換元文字列はchar[]で扱っている為、Character#codePointAtを呼び出さず、コードの参照も速い(char[]なので)分スピードが出るのかな。</p>
+
+<p>ちなみにCharacter#charCountは補助文字の場合に2が、それ以外は1が返るだけなので、インライン展開すればもしかすると違ってくるかも。でもJITコンパイラがそこまでやってそうな気もします。一応PrintCompilationオプションを使ってgetUtf8がJITコンパイルされていることは確認しました。</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<ul>
+<li>nioのByteBuffer速い
+
+<ul>
+<li>byte[]だとなお速い
+
+<ul>
+<li>ByteBufferはByteArrayOutputStreamと違って初期サイズを変更できないので、その点で配列と同じ。速度を気にするなら配列を使う方が良い</li>
+</ul></li>
+</ul></li>
+<li>hprof=cpu=samplesの結果は評価が難しい
+
+<ul>
+<li>とはいえ大きいアプリケーションではtimesを使って計測するのは大変
+
+<ul>
+<li>samplesで絞り込んで、timesで詳細を確認するとか</li>
+</ul></li>
+</ul></li>
+<li>mongo-java-driverのUTF-8変換はサロゲート対応ができている</li>
+</ul>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        This post was published <strong>2079</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2018 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="https://masayuki038.github.io/blog/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>

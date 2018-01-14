@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>CouchDB Source Code Reading part4</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="couch_db_updater:refresh_validate_doc_funs/1 今回はcouch_db_updater:init/1から呼び出している関数の中でまだ見ていないrefresh_validate_doc_f" />
+
+  
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@masayuki" />
+    <meta name="twitter:title" content="CouchDB Source Code Reading part4" />
+    <meta name="twitter:description" content="couch_db_updater:refresh_validate_doc_funs/1 今回はcouch_db_updater:init/1から呼び出している関数の中でまだ見ていないrefresh_validate_doc_f" />
+    <meta name="twitter:image" content="https://masayuki038.github.io/img/avatar.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="CouchDB Source Code Reading part4" />
+  <meta property="og:description" content="couch_db_updater:refresh_validate_doc_funs/1 今回はcouch_db_updater:init/1から呼び出している関数の中でまだ見ていないrefresh_validate_doc_f" />
+  <meta property="og:url" content="https://masayuki038.github.io/blog/2014/06/08/couchdb-code-reading4/" />
+  <meta property="og:image" content="https://masayuki038.github.io/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.32" />
+
+
+<link rel="canonical" href="https://masayuki038.github.io/blog/2014/06/08/couchdb-code-reading4/" />
+<link rel="alternative" href="https://masayuki038.github.io/blog/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="https://masayuki038.github.io/blog/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="https://masayuki038.github.io/blog/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="https://masayuki038.github.io/blog/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="https://masayuki038.github.io/blog/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="https://masayuki038.github.io/blog/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="https://masayuki038.github.io/blog/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="https://masayuki038.github.io/blog/css/bundle.css" />
+<link rel="stylesheet" href="https://masayuki038.github.io/blog/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://s.gravatar.com/avatar/4b97fb839e6040cfb353bd667ac93e54?s=80" alt="Avatar">
+  
+  <h2 class="title">act-act</h2>
+  
+  <p class="subtitle"></p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="https://masayuki038.github.io/blog/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="https://masayuki038.github.io/blog/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">CouchDB Source Code Reading part4</h1>
+      <p class="post-meta">@Masayuki Takahashi · Jun 8, 2014 · 9 min read</p>
+    </header>
+    <article class="post-content">
+
+<h2 id="couch-db-updater-refresh-validate-doc-funs-1">couch_db_updater:refresh_validate_doc_funs/1</h2>
+
+<p>今回は<code>couch_db_updater:init/1</code>から呼び出している関数の中でまだ見ていない<code>refresh_validate_doc_funs/1</code>を読んで行きます。</p>
+
+<p>couch_db_updater.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>refresh_validate_doc_funs<span class="o">(</span>Db0<span class="o">)</span> -&gt;
+<span class="ln"> 2</span>    <span class="nv">Db</span> <span class="o">=</span> Db0#db<span class="o">{</span><span class="nv">user_ctx</span> <span class="o">=</span> <span class="c1">#user_ctx{roles=[&lt;&lt;&#34;_admin&#34;&gt;&gt;]}},
+</span><span class="ln"> 3</span><span class="c1"></span>    <span class="nv">DesignDocs</span> <span class="o">=</span> couch_db:get_design_docs<span class="o">(</span>Db<span class="o">)</span>,
+<span class="ln"> 4</span>    <span class="nv">ProcessDocFuns</span> <span class="o">=</span> lists:flatmap<span class="o">(</span>
+<span class="ln"> 5</span>        fun<span class="o">(</span>DesignDocInfo<span class="o">)</span> -&gt;
+<span class="ln"> 6</span>            <span class="o">{</span>ok, DesignDoc<span class="o">}</span> <span class="o">=</span> couch_db:open_doc_int<span class="o">(</span>
+<span class="ln"> 7</span>                Db, DesignDocInfo, <span class="o">[</span>ejson_body<span class="o">])</span>,
+<span class="ln"> 8</span>            <span class="k">case</span> couch_doc:get_validate_doc_fun<span class="o">(</span>DesignDoc<span class="o">)</span> of
+<span class="ln"> 9</span>            nil -&gt; <span class="o">[]</span><span class="p">;</span>
+<span class="ln">10</span>            Fun -&gt; <span class="o">[</span>Fun<span class="o">]</span>
+<span class="ln">11</span>            end
+<span class="ln">12</span>        end, DesignDocs<span class="o">)</span>,
+<span class="ln">13</span>    Db0#db<span class="o">{</span><span class="nv">validate_doc_funs</span><span class="o">=</span>ProcessDocFuns<span class="o">}</span>.</code></pre></div></p>
+
+<p>1行目でadminロールの設定をしていますが意図は分からず。<code>couch_db_updater:init/1</code>から呼び出されているので、adminロールということで問題ないんですかね。2行目で<code>DesignDocs</code>を取得しています。このDesignDocsが良く分からないので、見ていきます。</p>
+
+<p>couch_db.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>get_design_docs<span class="o">(</span>Db<span class="o">)</span> -&gt;
+<span class="ln"> 2</span>    <span class="nv">FoldFun</span> <span class="o">=</span> skip_deleted<span class="o">(</span>fun
+<span class="ln"> 3</span>        <span class="o">(</span><span class="c1">#full_doc_info{deleted = true}, _Reds, Acc) -&gt;
+</span><span class="ln"> 4</span><span class="c1"></span>            <span class="o">{</span>ok, Acc<span class="o">}</span><span class="p">;</span>
+<span class="ln"> 5</span>        <span class="o">(</span><span class="c1">#full_doc_info{id= &lt;&lt;&#34;_design/&#34;,_/binary&gt;&gt;}=FullDocInfo, _Reds, Acc) -&gt;
+</span><span class="ln"> 6</span><span class="c1"></span>            <span class="o">{</span>ok, <span class="o">[</span>FullDocInfo <span class="p">|</span> Acc<span class="o">]}</span><span class="p">;</span>k
+<span class="ln"> 7</span>        <span class="o">(</span>_, _Reds, Acc<span class="o">)</span> -&gt;
+<span class="ln"> 8</span>            <span class="o">{</span>stop, Acc<span class="o">}</span>
+<span class="ln"> 9</span>    end<span class="o">)</span>,
+<span class="ln">10</span>    <span class="nv">KeyOpts</span> <span class="o">=</span> <span class="o">[{</span>start_key, &lt;&lt;<span class="s2">&#34;_design/&#34;</span>&gt;&gt;<span class="o">}</span>, <span class="o">{</span>end_key_gt, &lt;&lt;<span class="s2">&#34;_design0&#34;</span>&gt;&gt;<span class="o">}]</span>,
+<span class="ln">11</span>    <span class="o">{</span>ok, _, Docs<span class="o">}</span> <span class="o">=</span> couch_btree:fold<span class="o">(</span>by_id_btree<span class="o">(</span>Db<span class="o">)</span>, FoldFun, <span class="o">[]</span>, KeyOpts<span class="o">)</span>,
+<span class="ln">12</span>    Docs.</code></pre></div></p>
+
+<p><code>skip_deleted/1</code>が呼び出されているので、そのまま追っていきます。</p>
+
+<p>couch_db.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>skip_deleted<span class="o">(</span>FoldFun<span class="o">)</span> -&gt;
+<span class="ln">2</span>    fun
+<span class="ln">3</span>        <span class="o">(</span>visit, KV, Reds, Acc<span class="o">)</span> -&gt;
+<span class="ln">4</span>            FoldFun<span class="o">(</span>KV, Reds, Acc<span class="o">)</span><span class="p">;</span>
+<span class="ln">5</span>        <span class="o">(</span>traverse, _LK, <span class="o">{</span>Undeleted, _Del, _Size<span class="o">}</span>, Acc<span class="o">)</span> when <span class="nv">Undeleted</span> <span class="o">==</span> <span class="m">0</span> -&gt;
+<span class="ln">6</span>            <span class="o">{</span>skip, Acc<span class="o">}</span><span class="p">;</span>
+<span class="ln">7</span>        <span class="o">(</span>traverse, _, _, Acc<span class="o">)</span> -&gt;
+<span class="ln">8</span>            <span class="o">{</span>ok, Acc<span class="o">}</span>
+<span class="ln">9</span>    end.</code></pre></div></p>
+
+<p>第一引数が<code>visit</code>の時は<code>FoldFun</code>を実行する関数を返します。<code>KV</code>は<code>#full_doc_info</code>です。<code>traverse</code>は2つあり、一方は<code>when Undeleted == 0</code>とあるので、削除されてたら<code>{skip, Acc}</code>、そうでない場合は<code>{ok, Acc}</code>を返すことになります。削除されてたらskipなので<code>skip_deleted/1</code>といったところでしょうか。<code>Undeleted == 0</code>は2重否定のようになっており、ちょっと分かりづらいかな。</p>
+
+<p><code>get_design_docs/1</code>の方に戻ると、<code>#full_doc_info.id</code>が<code>&lt;&lt;&quot;_design/&quot;,_/binary&gt;&gt;</code>の場合のみアキュムレータに<code>FullDocInfo</code>を入れる関数<code>FoldFun</code>を定義しています。この関数が<code>visit</code>の時に呼び出されることになります。<code>&lt;&lt;&quot;_design/&quot;,_/binary&gt;&gt;</code>の後ろの方の意味が分からなかったのですが、バイナリ型の値で先頭が&rdquo;_design/&ldquo;にマッチする、という意味でした。</p>
+
+<h2 id="couch-btree-fold-4">couch_btree:fold/4</h2>
+
+<p>残りは、<code>start_key</code>と<code>end_key_gt</code>を定義して<code>couch_btree:fold/4</code>を呼び出す部分。ここまでのところは、Btreeをトラバースする際のフィルタ条件の設定を行ってきたように見えます。</p>
+
+<p>couch_btree.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>fold<span class="o">(</span><span class="c1">#btree{root=nil}, _Fun, Acc, _Options) -&gt;
+</span><span class="ln"> 2</span><span class="c1"></span>    <span class="o">{</span>ok, <span class="o">{[]</span>, <span class="o">[]}</span>, Acc<span class="o">}</span><span class="p">;</span>
+<span class="ln"> 3</span>fold<span class="o">(</span><span class="c1">#btree{root=Root}=Bt, Fun, Acc, Options) -&gt;
+</span><span class="ln"> 4</span><span class="c1"></span>    <span class="nv">Dir</span> <span class="o">=</span> couch_util:get_value<span class="o">(</span>dir, Options, fwd<span class="o">)</span>,
+<span class="ln"> 5</span>    <span class="nv">InRange</span> <span class="o">=</span> make_key_in_end_range_function<span class="o">(</span>Bt, Dir, Options<span class="o">)</span>,
+<span class="ln"> 6</span>    <span class="nv">Result</span> <span class="o">=</span>
+<span class="ln"> 7</span>    <span class="k">case</span> couch_util:get_value<span class="o">(</span>start_key, Options<span class="o">)</span> of
+<span class="ln"> 8</span>    undefined -&gt;
+<span class="ln"> 9</span>        stream_node<span class="o">(</span>Bt, <span class="o">[]</span>, Bt#btree.root, InRange, Dir,
+<span class="ln">10</span>                convert_fun_arity<span class="o">(</span>Fun<span class="o">)</span>, Acc<span class="o">)</span><span class="p">;</span>
+<span class="ln">11</span>    StartKey -&gt;
+<span class="ln">12</span>        stream_node<span class="o">(</span>Bt, <span class="o">[]</span>, Bt#btree.root, StartKey, InRange, Dir,
+<span class="ln">13</span>                convert_fun_arity<span class="o">(</span>Fun<span class="o">)</span>, Acc<span class="o">)</span>
+<span class="ln">14</span>    end,
+<span class="ln">15</span>    <span class="k">case</span> Result of
+<span class="ln">16</span>    <span class="o">{</span>ok, Acc2<span class="o">}</span>-&gt;
+<span class="ln">17</span>        <span class="nv">FullReduction</span> <span class="o">=</span> element<span class="o">(</span><span class="m">2</span>, Root<span class="o">)</span>,
+<span class="ln">18</span>        <span class="o">{</span>ok, <span class="o">{[]</span>, <span class="o">[</span>FullReduction<span class="o">]}</span>, Acc2<span class="o">}</span><span class="p">;</span>
+<span class="ln">19</span>    <span class="o">{</span>stop, LastReduction, Acc2<span class="o">}</span> -&gt;
+<span class="ln">20</span>        <span class="o">{</span>ok, LastReduction, Acc2<span class="o">}</span>
+<span class="ln">21</span>    end.</code></pre></div></p>
+
+<p><code>couch_util:get_value(dir, Options, fwd)</code>は第二引数の{key, value}のリストの中に第一引数で指定したkeyがあればそのvalueを、なければ第三引数を返します。今回のコンテキストでは<code>fwd</code>が<code>Dir</code>に設定し、<code>make_key_in_end_range_function/3</code>を呼び出します。</p>
+
+<p>couch_btree.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>make_key_in_end_range_function<span class="o">(</span><span class="c1">#btree{less=Less}, fwd, Options) -&gt;
+</span><span class="ln"> 2</span><span class="c1"></span>    <span class="k">case</span> couch_util:get_value<span class="o">(</span>end_key_gt, Options<span class="o">)</span> of
+<span class="ln"> 3</span>    undefined -&gt;
+<span class="ln"> 4</span>        <span class="k">case</span> couch_util:get_value<span class="o">(</span>end_key, Options<span class="o">)</span> of
+<span class="ln"> 5</span>        undefined -&gt;
+<span class="ln"> 6</span>            fun<span class="o">(</span>_Key<span class="o">)</span> -&gt; <span class="nb">true</span> end<span class="p">;</span>
+<span class="ln"> 7</span>        LastKey -&gt;
+<span class="ln"> 8</span>            fun<span class="o">(</span>Key<span class="o">)</span> -&gt; not Less<span class="o">(</span>LastKey, Key<span class="o">)</span> end
+<span class="ln"> 9</span>        end<span class="p">;</span>
+<span class="ln">10</span>    EndKey -&gt;
+<span class="ln">11</span>        fun<span class="o">(</span>Key<span class="o">)</span> -&gt; Less<span class="o">(</span>Key, EndKey<span class="o">)</span> end
+<span class="ln">12</span>    end<span class="p">;</span></code></pre></div></p>
+
+<p>今回は呼び出しの流れから、第二引数に<code>fwd</code>が、第三引数の<code>Options</code>に<code>end_key_gt</code>が指定されているのでそこだけ読むと、<code>fun(Key) -&gt; Less(Key, &lt;&lt;&quot;_design0&quot;&gt;&gt;) end</code>という関数が返ることになります。前回、<code>couch_db_updater/init_db/6</code>の中で設定されなかった<code>less</code>の関数が、ここで使われています。</p>
+
+<p><code>fold</code>の方に戻ると、<code>InRange</code>は<code>fun(Key) -&gt; Less(Key, &lt;&lt;&quot;_design0&quot;&gt;&gt;) end</code>で、<code>StartKey</code>は<code>&lt;&lt;&quot;_design/&quot;&gt;&gt;</code>になり、<code>stream_node/8</code>の呼び出しは以下のようになります。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">stream_node<span class="o">(</span>IdBtree, <span class="o">[]</span>, Bt#btree.root, &lt;&lt;<span class="s2">&#34;_design/&#34;</span>&gt;&gt;, fun<span class="o">(</span>Key<span class="o">)</span> -&gt; Less<span class="o">(</span>Key, &lt;&lt;<span class="s2">&#34;_design0&#34;</span>&gt;&gt;<span class="o">)</span> end, fwd, Fun, <span class="o">[])</span>.</code></pre></div>
+
+<h2 id="couch-btree-stream-node-8">couch_btree:stream_node/8</h2>
+
+<p><code>stream_node/8</code>の中を見ていきます。</p>
+
+<p>couch_btree.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>stream_node<span class="o">(</span>Bt, Reds, Node, StartKey, InRange, Dir, Fun, Acc<span class="o">)</span> -&gt;
+<span class="ln">2</span>    <span class="nv">Pointer</span> <span class="o">=</span> element<span class="o">(</span><span class="m">1</span>, Node<span class="o">)</span>,
+<span class="ln">3</span>    <span class="o">{</span>NodeType, NodeList<span class="o">}</span> <span class="o">=</span> get_node<span class="o">(</span>Bt, Pointer<span class="o">)</span>,
+<span class="ln">4</span>    <span class="k">case</span> NodeType of
+<span class="ln">5</span>    kp_node -&gt;
+<span class="ln">6</span>        stream_kp_node<span class="o">(</span>Bt, Reds, adjust_dir<span class="o">(</span>Dir, NodeList<span class="o">)</span>, StartKey, InRange, Dir, Fun, Acc<span class="o">)</span><span class="p">;</span>
+<span class="ln">7</span>    kv_node -&gt;
+<span class="ln">8</span>        stream_kv_node<span class="o">(</span>Bt, Reds, adjust_dir<span class="o">(</span>Dir, NodeList<span class="o">)</span>, StartKey, InRange, Dir, Fun, Acc<span class="o">)</span>
+<span class="ln">9</span>    end.</code></pre></div></p>
+
+<p>1行目で<code>Node</code>の1つ目の要素を取り出しています。この<code>Node</code>は前記のように<code>#btree.root</code>にあたるので、<code>root</code>の第一要素を取得することになります。これまで<code>#btree.root</code>がどういう構成になっているのか見ていなかったので探してみたところ、以下のような箇所がありました。</p>
+
+<p>couch_btree.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>size<span class="o">(</span><span class="c1">#btree{root = nil}) -&gt;
+</span><span class="ln">2</span><span class="c1"></span>    <span class="m">0</span><span class="p">;</span>
+<span class="ln">3</span>size<span class="o">(</span><span class="c1">#btree{root = {_P, _Red}}) -&gt;
+</span><span class="ln">4</span><span class="c1"></span>    % pre <span class="m">1</span>.2 format
+<span class="ln">5</span>    nil<span class="p">;</span>
+<span class="ln">6</span>size<span class="o">(</span><span class="c1">#btree{root = {_P, _Red, Size}}) -&gt;
+</span><span class="ln">7</span><span class="c1"></span>    Size.</code></pre></div></p>
+
+<p>上記のコードだけでは分からないので想像ですが、<code>#btree.root</code>の第一要素<code>_P</code>は恐らくBtreeのファイルポインタなのではないかと思います。そう仮定して読み進めてみます。<code>stream_node/8</code>に戻ると、<code>#btree.root</code>からポインタを取り出し、<code>get_node/2</code>を呼び出します。</p>
+
+<p>couch_btree.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>get_node<span class="o">(</span><span class="c1">#btree{fd = Fd}, NodePos) -&gt;
+</span><span class="ln">2</span><span class="c1"></span>    <span class="o">{</span>ok, <span class="o">{</span>NodeType, NodeList<span class="o">}}</span> <span class="o">=</span> couch_file:pread_term<span class="o">(</span>Fd, NodePos<span class="o">)</span>,
+<span class="ln">3</span>    <span class="o">{</span>NodeType, NodeList<span class="o">}</span>.</code></pre></div></p>
+
+<p>続けて<code>couch_file:pread_term/2</code>を読んでみます。</p>
+
+<p>couch_file.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>pread_term<span class="o">(</span>Fd, Pos<span class="o">)</span> -&gt;
+<span class="ln"> 2</span>    <span class="o">{</span>ok, Bin<span class="o">}</span> <span class="o">=</span> pread_binary<span class="o">(</span>Fd, Pos<span class="o">)</span>,
+<span class="ln"> 3</span>    <span class="o">{</span>ok, couch_compress:decompress<span class="o">(</span>Bin<span class="o">)}</span>.
+<span class="ln"> 4</span>
+<span class="ln"> 5</span>
+<span class="ln"> 6</span>%%----------------------------------------------------------------------
+<span class="ln"> 7</span>%% Purpose: Reads a binrary from a file that was written with append_binary
+<span class="ln"> 8</span>%% Args:    Pos, the offset into the file where the term is serialized.
+<span class="ln"> 9</span>%% Returns: <span class="o">{</span>ok, Term<span class="o">}</span>
+<span class="ln">10</span>%%  or <span class="o">{</span>error, Reason<span class="o">}</span>.
+<span class="ln">11</span>%%----------------------------------------------------------------------
+<span class="ln">12</span>
+<span class="ln">13</span>pread_binary<span class="o">(</span>Fd, Pos<span class="o">)</span> -&gt;
+<span class="ln">14</span>    <span class="o">{</span>ok, L<span class="o">}</span> <span class="o">=</span> pread_iolist<span class="o">(</span>Fd, Pos<span class="o">)</span>,
+<span class="ln">15</span>    <span class="o">{</span>ok, iolist_to_binary<span class="o">(</span>L<span class="o">)}</span>.
+<span class="ln">16</span>
+<span class="ln">17</span>
+<span class="ln">18</span>pread_iolist<span class="o">(</span>Fd, Pos<span class="o">)</span> -&gt;
+<span class="ln">19</span>    <span class="k">case</span> gen_server:call<span class="o">(</span>Fd, <span class="o">{</span>pread_iolist, Pos<span class="o">}</span>, infinity<span class="o">)</span> of
+<span class="ln">20</span>    <span class="o">{</span>ok, IoList, &lt;&lt;&gt;&gt;<span class="o">}</span> -&gt;
+<span class="ln">21</span>        <span class="o">{</span>ok, IoList<span class="o">}</span><span class="p">;</span>
+<span class="ln">22</span>    <span class="o">{</span>ok, IoList, Md5<span class="o">}</span> -&gt;
+<span class="ln">23</span>        <span class="k">case</span> couch_util:md5<span class="o">(</span>IoList<span class="o">)</span> of
+<span class="ln">24</span>        Md5 -&gt;
+<span class="ln">25</span>            <span class="o">{</span>ok, IoList<span class="o">}</span><span class="p">;</span>
+<span class="ln">26</span>        _ -&gt;
+<span class="ln">27</span>            exit<span class="o">({</span>file_corruption, &lt;&lt;<span class="s2">&#34;file corruption&#34;</span>&gt;&gt;<span class="o">})</span>
+<span class="ln">28</span>        end<span class="p">;</span>
+<span class="ln">29</span>    Error -&gt;
+<span class="ln">30</span>        Error
+<span class="ln">31</span>    end.</code></pre></div></p>
+
+<p><code>pread_iolist/2</code>のコメントに、<code>Pos</code>は「termがシリアライズされているファイルのオフセット」とあるので、<code>#btree.root</code>の第一要素はファイルポインタで良さそうです。<code>pread_iolist/2</code>の1行目の<code>gen_server:call/3</code>で以下が呼び出されます。</p>
+
+<p>couch_file.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>handle_call<span class="o">({</span>pread_iolist, Pos<span class="o">}</span>, _From, File<span class="o">)</span> -&gt;
+<span class="ln"> 2</span>    <span class="o">{</span>RawData, NextPos<span class="o">}</span> <span class="o">=</span> try
+<span class="ln"> 3</span>        % up to 8Kbs of <span class="nb">read</span> ahead
+<span class="ln"> 4</span>        read_raw_iolist_int<span class="o">(</span>File, Pos, <span class="m">2</span> * ?SIZE_BLOCK - <span class="o">(</span>Pos rem ?SIZE_BLOCK<span class="o">))</span>
+<span class="ln"> 5</span>    catch
+<span class="ln"> 6</span>    _:_ -&gt;
+<span class="ln"> 7</span>        read_raw_iolist_int<span class="o">(</span>File, Pos, <span class="m">4</span><span class="o">)</span>
+<span class="ln"> 8</span>    end,
+<span class="ln"> 9</span>    <span class="s">&lt;&lt;Prefix:1/integer, Len:31/integer, RestRawData/binary&gt;&gt; =
+</span><span class="ln">10</span><span class="s">        iolist_to_binary(RawData),
+</span><span class="ln">11</span><span class="s">    case Prefix</span> of
+<span class="ln">12</span>    <span class="m">1</span> -&gt;
+<span class="ln">13</span>        <span class="o">{</span>Md5, IoList<span class="o">}</span> <span class="o">=</span> extract_md5<span class="o">(</span>
+<span class="ln">14</span>            maybe_read_more_iolist<span class="o">(</span>RestRawData, <span class="m">16</span> + Len, NextPos, File<span class="o">))</span>,
+<span class="ln">15</span>        <span class="o">{</span>reply, <span class="o">{</span>ok, IoList, Md5<span class="o">}</span>, File<span class="o">}</span><span class="p">;</span>
+<span class="ln">16</span>    <span class="m">0</span> -&gt;
+<span class="ln">17</span>        <span class="nv">IoList</span> <span class="o">=</span> maybe_read_more_iolist<span class="o">(</span>RestRawData, Len, NextPos, File<span class="o">)</span>,
+<span class="ln">18</span>        <span class="o">{</span>reply, <span class="o">{</span>ok, IoList, &lt;&lt;&gt;&gt;<span class="o">}</span>, File<span class="o">}</span>
+<span class="ln">19</span>    end<span class="p">;</span></code></pre></div></p>
+
+<p><code>?SIZE_BLOCK</code>はcouch_file.erlで以下のように定義されています。</p>
+
+<p>couch_file.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>deefine<span class="o">(</span>SIZE_BLOCK, <span class="m">4096</span><span class="o">)</span>.</code></pre></div></p>
+
+<p>コメントにもあるように、<code>read_raw_iolist_int/3</code>でおおよそ8KBほど読み出します。そこから1ビット取り出して<code>Prefix</code>に、31ビット取り出して<code>Len</code>に、残りを<code>RestRawData</code>に束縛します。<code>Prefix</code>が1の場合は<code>extract_md5/1</code>を呼び出しています。</p>
+
+<p>couch_file.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>-spec extract_md5<span class="o">(</span>iolist<span class="o">())</span> -&gt; <span class="o">{</span>binary<span class="o">()</span>, iolist<span class="o">()}</span>.
+<span class="ln">2</span>extract_md5<span class="o">(</span>FullIoList<span class="o">)</span> -&gt;
+<span class="ln">3</span>    <span class="o">{</span>Md5List, IoList<span class="o">}</span> <span class="o">=</span> split_iolist<span class="o">(</span>FullIoList, <span class="m">16</span>, <span class="o">[])</span>,
+<span class="ln">4</span>    <span class="o">{</span>iolist_to_binary<span class="o">(</span>Md5List<span class="o">)</span>, IoList<span class="o">}</span>.</code></pre></div></p>
+
+<p>先頭16バイトがMD5の値になっているようです。<code>maybe_read_more_iolist/4</code>の第二引数が<code>16 + Len</code>となっていることから、前期の<code>Len</code>にはこのMD5の値の長さは含まれていないことになります。そして<code>Prefix</code>が0の場合はMD5の値は格納されていないようです。MD5の値が設定されている場合は、<code>pread_iolist/2</code>でMD5の値のチェックを行っています。ファイルから読み込んだiolistをbinaryに変換し、<code>pread_term/2</code>まで戻ります。<code>pread_term/2</code>の中で、<code>couch_compress:decompress/2</code>にそのbinaryを渡します。</p>
+
+<p>couch_compress.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>decompress<span class="o">(</span>&lt;&lt;?SNAPPY_PREFIX, Rest/binary&gt;&gt;<span class="o">)</span> -&gt;
+<span class="ln">2</span>    <span class="o">{</span>ok, TermBin<span class="o">}</span> <span class="o">=</span> snappy:decompress<span class="o">(</span>Rest<span class="o">)</span>,
+<span class="ln">3</span>    binary_to_term<span class="o">(</span>TermBin<span class="o">)</span><span class="p">;</span>
+<span class="ln">4</span>decompress<span class="o">(</span>&lt;&lt;?TERM_PREFIX, _/binary&gt;&gt; <span class="o">=</span> Bin<span class="o">)</span> -&gt;
+<span class="ln">5</span>    binary_to_term<span class="o">(</span>Bin<span class="o">)</span>.</code></pre></div></p>
+
+<p>binaryの先頭が<code>?SNAPPY_PREFIX</code>にマッチする場合は<code>snappy:decompress/1</code>で戻してから<code>binary_to_term/1</code>でtermに戻します。<code>?TERM_PREFIX</code>にマッチする場合はそのまま<code>binary_to_term/1</code>を呼び出してtermに戻します。</p>
+
+<p>ここまででようやく<code>get_node/2</code>が終わり、{NodeTyp, NodeList}をファイルから読み出しました。<code>get_node/2</code>の呼び出しによって、<code>IdBtree</code>内のデータをファイルから一度に全部読み込んだ気がするのですが、大丈夫なのかな…。</p>
+
+<p><code>stream_node/8</code>に戻ります。Btreeは<code>IdBtree</code>なので、<code>NodeType</code>は<code>kv_node</code>になるはずです。ですので、<code>stream_kv_node/8</code>を読んでいきます。その前に<code>adjust_dir(Dir, NodeList)</code>の部分を読んでみたいと思います。</p>
+
+<p>couch_btree.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>adjust_dir<span class="o">(</span>fwd, List<span class="o">)</span> -&gt;
+<span class="ln">2</span>    List<span class="p">;</span>
+<span class="ln">3</span>adjust_dir<span class="o">(</span>rev, List<span class="o">)</span> -&gt;
+<span class="ln">4</span>    lists:reverse<span class="o">(</span>List<span class="o">)</span>.</code></pre></div></p>
+
+<p>今回は<code>fwd</code>なので<code>NodeList</code>はそのまま<code>stream_kv_node/8</code>に引き渡されます。</p>
+
+<h2 id="couch-btree-stream-kv-node-8">couch_btree:stream_kv_node/8</h2>
+
+<p><code>stream_node/8</code>のコードが大分上部の方にあるので、ここまでの流れで<code>stream_kv_node/8</code>がどういう値で呼び出されるか書いておきます。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">stream_kv_node<span class="o">(</span>IdBtree, <span class="o">[]</span>, NodeList, &lt;&lt;<span class="s2">&#34;_design/&#34;</span>&gt;&gt;, fun<span class="o">(</span>Key<span class="o">)</span> -&gt; Less<span class="o">(</span>Key, &lt;&lt;<span class="s2">&#34;_design0&#34;</span>&gt;&gt;<span class="o">)</span> end, fwd, Fun, <span class="o">[])</span>.</code></pre></div>
+
+<p>この流れで<code>stream_kv_node/8</code>がどのような処理になるか見ていきます。</p>
+
+<p>couch_btree.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>stream_kv_node<span class="o">(</span>Bt, Reds, KVs, StartKey, InRange, Dir, Fun, Acc<span class="o">)</span> -&gt;
+<span class="ln"> 2</span>    <span class="nv">DropFun</span> <span class="o">=</span>
+<span class="ln"> 3</span>    <span class="k">case</span> Dir of
+<span class="ln"> 4</span>    fwd -&gt;
+<span class="ln"> 5</span>        fun<span class="o">({</span>Key, _<span class="o">})</span> -&gt; less<span class="o">(</span>Bt, Key, StartKey<span class="o">)</span> end<span class="p">;</span>
+<span class="ln"> 6</span>    rev -&gt;
+<span class="ln"> 7</span>        fun<span class="o">({</span>Key, _<span class="o">})</span> -&gt; less<span class="o">(</span>Bt, StartKey, Key<span class="o">)</span> end
+<span class="ln"> 8</span>    end,
+<span class="ln"> 9</span>    <span class="o">{</span>LTKVs, GTEKVs<span class="o">}</span> <span class="o">=</span> lists:splitwith<span class="o">(</span>DropFun, KVs<span class="o">)</span>,
+<span class="ln">10</span>    <span class="nv">AssembleLTKVs</span> <span class="o">=</span> <span class="o">[</span>assemble<span class="o">(</span>Bt,K,V<span class="o">)</span> <span class="o">||</span> <span class="o">{</span>K,V<span class="o">}</span> &lt;- LTKVs<span class="o">]</span>,
+<span class="ln">11</span>    stream_kv_node2<span class="o">(</span>Bt, Reds, AssembleLTKVs, GTEKVs, InRange, Dir, Fun, Acc<span class="o">)</span>.</code></pre></div></p>
+
+<p><code>less/3</code>が呼び出されてます。<code>#btree.less</code>に設定される関数をまだ読んでないのでこの時点では何とも。</p>
+
+<p>couch_btree.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>less<span class="o">(</span><span class="c1">#btree{less=Less}, A, B) -&gt;
+</span><span class="ln">2</span><span class="c1"></span>    Less<span class="o">(</span>A, B<span class="o">)</span>.</code></pre></div></p>
+
+<p>ですよね。<code>DropFun</code>は<code>IdBtree</code>の<code>less</code>に設定された関数を呼び出す関数です。次の<code>lists:splitwith/2</code>で<code>DropFun</code>を指定していることから、<code>NodeList</code>は</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="o">[{</span>Key, ...<span class="o">}</span>,...<span class="o">]</span></code></pre></div>
+
+<p>ですかね。</p>
+
+<p>次に<code>splitwith/2</code>で恐らく<code>StartKey</code>よりも前のデータである<code>LTKVs</code>の各要素に対して<code>assemble/3</code>を呼び出してリストを作成しています。これは見るまでもなく、<code>join</code>に設定していた関数が呼ばれることになるので、<code>AssembleLTKVs</code>は<code>#full_doc_info</code>のリストになります。それを指定して<code>stream_kv_node2/8</code>を呼び出しています。</p>
+
+<p>couch_btree.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>stream_kv_node2<span class="o">(</span>_Bt, _Reds, _PrevKVs, <span class="o">[]</span>, _InRange, _Dir, _Fun, Acc<span class="o">)</span> -&gt;
+<span class="ln"> 2</span>    <span class="o">{</span>ok, Acc<span class="o">}</span><span class="p">;</span>
+<span class="ln"> 3</span>stream_kv_node2<span class="o">(</span>Bt, Reds, PrevKVs, <span class="o">[{</span>K,V<span class="o">}</span> <span class="p">|</span> RestKVs<span class="o">]</span>, InRange, Dir, Fun, Acc<span class="o">)</span> -&gt;
+<span class="ln"> 4</span>    <span class="k">case</span> InRange<span class="o">(</span>K<span class="o">)</span> of
+<span class="ln"> 5</span>    <span class="nb">false</span> -&gt;
+<span class="ln"> 6</span>        <span class="o">{</span>stop, <span class="o">{</span>PrevKVs, Reds<span class="o">}</span>, Acc<span class="o">}</span><span class="p">;</span>
+<span class="ln"> 7</span>    <span class="nb">true</span> -&gt;
+<span class="ln"> 8</span>        <span class="nv">AssembledKV</span> <span class="o">=</span> assemble<span class="o">(</span>Bt, K, V<span class="o">)</span>,
+<span class="ln"> 9</span>        <span class="k">case</span> Fun<span class="o">(</span>visit, AssembledKV, <span class="o">{</span>PrevKVs, Reds<span class="o">}</span>, Acc<span class="o">)</span> of
+<span class="ln">10</span>        <span class="o">{</span>ok, Acc2<span class="o">}</span> -&gt;
+<span class="ln">11</span>            stream_kv_node2<span class="o">(</span>Bt, Reds, <span class="o">[</span>AssembledKV <span class="p">|</span> PrevKVs<span class="o">]</span>, RestKVs, InRange, Dir, Fun, Acc2<span class="o">)</span><span class="p">;</span>
+<span class="ln">12</span>        <span class="o">{</span>stop, Acc2<span class="o">}</span> -&gt;
+<span class="ln">13</span>            <span class="o">{</span>stop, <span class="o">{</span>PrevKVs, Reds<span class="o">}</span>, Acc2<span class="o">}</span>
+<span class="ln">14</span>        end
+<span class="ln">15</span>    end.</code></pre></div></p>
+
+<p>ようやく<code>InRange</code>の関数が呼び出されるところまで来ました。<code>Key</code>が<code>&lt;&lt;&quot;_design0&quot;&gt;&gt;</code>よりも前であれば<code>true</code>となります。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="o">[{</span>K,V<span class="o">}</span> <span class="p">|</span> RestKVs<span class="o">]</span></code></pre></div>
+
+<p>は<code>StartKey(&lt;&lt;&quot;_design/&quot;&gt;&gt;)</code>以上のKeyを持つドキュメントのリストが指定されているので、</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">&lt;&lt;<span class="s2">&#34;_design/&#34;</span>&gt;&gt;  ≦  Key  ＜ &lt;&lt;<span class="s2">&#34;_design0&#34;</span>&gt;&gt;</code></pre></div>
+
+<p>であればアキュムレータに追加されます。これがDesignDocになります。</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>DesignDocとは何かをポイントにコードを読んでいきました。DesignDocはKeyが&lt;&lt;&rdquo;_design/&ldquo;&gt;&gt; ≦  Key ＜ &lt;&lt;&rdquo;_design0&rdquo;&gt;のドキュメントであることが分かりましたが、どんな役割なのかはまだ分かりません。</p>
+
+<p>また、今回のコードリーディングの過程で、データベースファイルからドキュメントを読み出す部分を見ていきました。ドキュメントはErlangのtermがbinaryに変換されてディスクに書き込まれることが分かりました。</p>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        This post was published <strong>1316</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2018 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="https://masayuki038.github.io/blog/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>

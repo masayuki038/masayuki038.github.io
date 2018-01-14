@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Hive on act-act</title>
+    <link>https://masayuki038.github.io/blog/categories/hive/</link>
+    <description>Recent content in Hive on act-act</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja</language>
+    <lastBuildDate>Sun, 13 Oct 2013 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://masayuki038.github.io/blog/categories/hive/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>How to create Mock Hive Server</title>
+      <link>https://masayuki038.github.io/blog/2013/10/13/mock-hive-server/</link>
+      <pubDate>Sun, 13 Oct 2013 00:00:00 +0000</pubDate>
+      
+      <guid>https://masayuki038.github.io/blog/2013/10/13/mock-hive-server/</guid>
+      <description>We need a Mock Hive Server for tests 以前、thrift_erlを使ってHiveクライアントを作成しました。このHiveクライアントのテストを書こうとすると、Hi</description>
+    </item>
+    
+    <item>
+      <title>Connecting to Hive from Erlang using Thrift part2</title>
+      <link>https://masayuki038.github.io/blog/2013/06/09/thrift-hive-part2/</link>
+      <pubDate>Sun, 09 Jun 2013 00:00:00 +0000</pubDate>
+      
+      <guid>https://masayuki038.github.io/blog/2013/06/09/thrift-hive-part2/</guid>
+      <description>Failed to connect Hive Server 前回「thrift_client_util:new/4」で失敗していた件について調べてみたところ、thrift_erlangという</description>
+    </item>
+    
+    <item>
+      <title>Connecting to Hive from Erlang using Thrift part1</title>
+      <link>https://masayuki038.github.io/blog/2013/06/05/thrift-hive-part1/</link>
+      <pubDate>Wed, 05 Jun 2013 00:00:00 +0000</pubDate>
+      
+      <guid>https://masayuki038.github.io/blog/2013/06/05/thrift-hive-part1/</guid>
+      <description>Connecting to Hive from Erlang ErlangでHiveに接続し、クエリを実行させてその結果を取得する、ということができないか試してみました。HiveはThrift</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>How to assign a port mapping to a running docker container</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="Docker ちょっと前にVPSサービスの乗り換えをしました。それまで、1つのVPS仮想ノードに複数のサービスを置いていたのですが、この乗り換えを機にD" />
+
+  
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@masayuki" />
+    <meta name="twitter:title" content="How to assign a port mapping to a running docker container" />
+    <meta name="twitter:description" content="Docker ちょっと前にVPSサービスの乗り換えをしました。それまで、1つのVPS仮想ノードに複数のサービスを置いていたのですが、この乗り換えを機にD" />
+    <meta name="twitter:image" content="https://masayuki038.github.io/img/avatar.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="How to assign a port mapping to a running docker container" />
+  <meta property="og:description" content="Docker ちょっと前にVPSサービスの乗り換えをしました。それまで、1つのVPS仮想ノードに複数のサービスを置いていたのですが、この乗り換えを機にD" />
+  <meta property="og:url" content="https://masayuki038.github.io/blog/2013/12/30/how-to-assign-a-port-mapping-to-an-running-docker-container/" />
+  <meta property="og:image" content="https://masayuki038.github.io/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.32" />
+
+
+<link rel="canonical" href="https://masayuki038.github.io/blog/2013/12/30/how-to-assign-a-port-mapping-to-an-running-docker-container/" />
+<link rel="alternative" href="https://masayuki038.github.io/blog/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="https://masayuki038.github.io/blog/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="https://masayuki038.github.io/blog/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="https://masayuki038.github.io/blog/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="https://masayuki038.github.io/blog/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="https://masayuki038.github.io/blog/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="https://masayuki038.github.io/blog/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="https://masayuki038.github.io/blog/css/bundle.css" />
+<link rel="stylesheet" href="https://masayuki038.github.io/blog/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://s.gravatar.com/avatar/4b97fb839e6040cfb353bd667ac93e54?s=80" alt="Avatar">
+  
+  <h2 class="title">act-act</h2>
+  
+  <p class="subtitle"></p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="https://masayuki038.github.io/blog/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="https://masayuki038.github.io/blog/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">How to assign a port mapping to a running docker container</h1>
+      <p class="post-meta">@Masayuki Takahashi · Dec 30, 2013 · 2 min read</p>
+    </header>
+    <article class="post-content">
+
+<h1 id="docker">Docker</h1>
+
+<p>ちょっと前にVPSサービスの乗り換えをしました。それまで、1つのVPS仮想ノードに複数のサービスを置いていたのですが、この乗り換えを機にDockerを使ってサービス毎にコンテナを用意し、各々の環境を切り離すようにしました。</p>
+
+<p>その中で個人用の開発環境用のコンテナも作り、仕事以外の開発はそのDockerコンテナ上で行っているのですが、1つ問題がでてきました。それは、コンテナが公開したいポートが開発中に変わってきてしまうことです。</p>
+
+<h1 id="dockr-port-mapping">Dockr port mapping</h1>
+
+<p>Dockerは0.6.5からコンテナ起動時(docker run)に-pでホストとコンテナのポートのマッピングを指定するようになっています。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>$ sudo docker run -d -p <span class="m">127</span>.0.0.1:4022:22 base/sshd /usr/sbin/sshd -D</code></pre></div>
+
+<p>上記例だと、ホストのポート4022を起動するコンテナのポート22にマッピングします。このように指定してコンテナを起動した後、コンテナ側にsshしたい場合は、</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>$ ssh localhost -p <span class="m">4022</span></code></pre></div>
+
+<p>でできます。</p>
+
+<p>上記はコンテナ起動時にポートマッピングを指定する方法です。しかし開発中は公開したいポートが変わることがあります。そうなるとコンテナ起動後にマッピングを追加したいのですが、良いやり方が見つからず。Stack Overflowに以下のようなエントリがあり、そこでは<a href="https://github.com/jpetazzo/pipework">Pipework</a>を使えばできるよ、となっていますが、ちょっと大仰かな、と。</p>
+
+<ul>
+<li><a href="http://stackoverflow.com/questions/19335444/how-to-assign-a-port-mapping-to-an-existing-docker-container">How to assign a port mapping to an existing docker container? - Stack Overflow</a></li>
+</ul>
+
+<h1 id="stone">Stone</h1>
+
+<p>ホストからコンテナへポートマッピングする目的で、Stoneを使ってみました。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>$ sudo apt-get install -y stone</code></pre></div>
+
+<p>まず、コンテナのIPアドレスを確認します。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>$ sudo docker inspect <span class="o">(</span>コンテナID<span class="o">)</span> <span class="p">|</span> grep IPAddress
+<span class="ln">2</span>        <span class="s2">&#34;IPAddress&#34;</span>: <span class="s2">&#34;172.17.0.61&#34;</span>,</code></pre></div>
+
+<p>あとは、ホスト側でポートマッピングの定義を付けてStoneを起動します。今回はホストの8080をコンテナ(172.17.0.61)の8080にマッピングします。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>$ sudo stone -d -p <span class="m">172</span>.17.0.61:8080 <span class="m">8080</span>
+<span class="ln">2</span>Dec <span class="m">30</span> <span class="m">11</span>:04:53.613670 <span class="m">139907443791616</span> start <span class="o">(</span><span class="m">2</span>.3e<span class="o">)</span> <span class="o">[</span><span class="m">10686</span><span class="o">]</span>
+<span class="ln">3</span>Dec <span class="m">30</span> <span class="m">11</span>:04:53.613776 <span class="m">139907443791616</span> Debug level: <span class="m">1</span>
+<span class="ln">4</span>Dec <span class="m">30</span> <span class="m">11</span>:04:53.615183 <span class="m">139907443791616</span> stone <span class="m">3</span>: <span class="m">172</span>.17.0.61:http-alt &lt;- <span class="m">0</span>.0.0.0:http-alt</code></pre></div>
+
+<p>このように設定することで、ホストのポート8080→コンテナのポート8080へ転送されます。-pを付けて起動すると、パケットをダンプしてくれるので開発時は便利です。Ctrl+Cで中断すると、ポートマッピングは解除されます。</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Dockerでホストからコンテナへのポートマッピングを追加する方法を紹介しました。Dockerは開発環境をクリーンに保つ用途にも使えて便利です。</p>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        This post was published <strong>1476</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2018 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="https://masayuki038.github.io/blog/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>

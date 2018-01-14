@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Connecting to Hive from Erlang using Thrift part1</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="Connecting to Hive from Erlang ErlangでHiveに接続し、クエリを実行させてその結果を取得する、ということができないか試してみました。HiveはThrift" />
+
+  
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@masayuki" />
+    <meta name="twitter:title" content="Connecting to Hive from Erlang using Thrift part1" />
+    <meta name="twitter:description" content="Connecting to Hive from Erlang ErlangでHiveに接続し、クエリを実行させてその結果を取得する、ということができないか試してみました。HiveはThrift" />
+    <meta name="twitter:image" content="https://masayuki038.github.io/img/avatar.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Connecting to Hive from Erlang using Thrift part1" />
+  <meta property="og:description" content="Connecting to Hive from Erlang ErlangでHiveに接続し、クエリを実行させてその結果を取得する、ということができないか試してみました。HiveはThrift" />
+  <meta property="og:url" content="https://masayuki038.github.io/blog/2013/06/05/thrift-hive-part1/" />
+  <meta property="og:image" content="https://masayuki038.github.io/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.32" />
+
+
+<link rel="canonical" href="https://masayuki038.github.io/blog/2013/06/05/thrift-hive-part1/" />
+<link rel="alternative" href="https://masayuki038.github.io/blog/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="https://masayuki038.github.io/blog/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="https://masayuki038.github.io/blog/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="https://masayuki038.github.io/blog/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="https://masayuki038.github.io/blog/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="https://masayuki038.github.io/blog/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="https://masayuki038.github.io/blog/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="https://masayuki038.github.io/blog/css/bundle.css" />
+<link rel="stylesheet" href="https://masayuki038.github.io/blog/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://s.gravatar.com/avatar/4b97fb839e6040cfb353bd667ac93e54?s=80" alt="Avatar">
+  
+  <h2 class="title">act-act</h2>
+  
+  <p class="subtitle"></p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="https://masayuki038.github.io/blog/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="https://masayuki038.github.io/blog/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Connecting to Hive from Erlang using Thrift part1</h1>
+      <p class="post-meta">@Masayuki Takahashi · Jun 5, 2013 · 4 min read</p>
+    </header>
+    <article class="post-content">
+
+<h1 id="connecting-to-hive-from-erlang">Connecting to Hive from Erlang</h1>
+
+<p>ErlangでHiveに接続し、クエリを実行させてその結果を取得する、ということができないか試してみました。HiveはThriftのインターフェースを提供しているので、Thrift経由で接続してみたいと思います。</p>
+
+<h1 id="install-hive-server">Install Hive Server</h1>
+
+<p>疑似分散モードのHadoopをインストールし、Hadoopを起動後、Hiveをインストールします。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">$ sudo apt-get install hadoop-0.20-conf-pseudo
+$ vi /etc/hadoop-0.20/conf/hadoop-env.sh <span class="o">(</span>JAVA_HOMEを設定<span class="o">)</span>
+$ hadoop namenode -format
+$ <span class="k">for</span> service in /etc/init.d/hadoop-0.20-*<span class="p">;</span> <span class="k">do</span> <span class="nv">$service</span> start<span class="p">;</span> <span class="k">done</span>
+$ apt-get install hadoop-hive-server</code></pre></div>
+
+<p>参考:
+<a href="http://d.hatena.ne.jp/kaorumori/20120428/1335576357">Ubuntu 12.04 LTSにHadoopの実験環境 (疑似分散モード)を構築 - 森薫の日記</a></p>
+
+<h1 id="install-thrift">Install Thrift</h1>
+
+<p>thriftをインストールします。cpp版が動けば良いのでconfigure時に細かい設定をしていません。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">$ <span class="nb">cd</span> /usr/local/src
+$ wget http://ftp.meisei-u.ac.jp/mirror/apache/dist/thrift/0.9.0/thrift-0.9.0.tar.gz
+$ tar xvfz thrift-0.9.0.tar.gz
+$ <span class="nb">cd</span> thrift-0.9.0/
+$ ./configure --prefix<span class="o">=</span>/opt/thrift-0.9.0
+$ make
+$ make install</code></pre></div>
+
+<p>Hiveの.thriftファイルは「share/fb303/if/fb303.thrift」をincludeしていますが、このファイルはHiveのソースコード下には無く、thriftのcontribの下に存在しています。さらに「share」というパスが無いので、このままだとうまくincludeできません。contribをshareに変えるsymlinkを作成して調整しておきます。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">$ ln -s /usr/local/src/thrift-0.9.0/contrib /usr/local/src/thrift-0.9.0/share</code></pre></div>
+
+<h1 id="generate-erlang-code">Generate Erlang Code</h1>
+
+<p>Hiveの.thriftファイルを指定し、Erlangのコードを生成します。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">$ /opt/thrift-0.9.0/bin/thrift -gen erl -I /usr/local/src/hive-0.7.1-cdh3u6/src -I /usr/local/src/thrift-0.9.0 /usr/local/src/hive-0.7.1-cdh3u6/src/service/if/hive_service.thrift
+$ /opt/thrift-0.9.0/bin/thrift -gen erl -I /usr/local/src/hive-0.7.1-cdh3u6/src -I /usr/local/src/thrift-0.9.0 /usr/local/src/hive-0.7.1-cdh3u6/src/metastore/if/hive_metastore.thrift
+$ /opt/thrift-0.9.0/bin/thrift -gen erl -I /usr/local/src/hive-0.7.1-cdh3u6/src -I /usr/local/src/thrift-0.9.0 /usr/local/src/hive-0.7.1-cdh3u6/src/ql/if/queryplan.thrift
+$ /opt/thrift-0.9.0/bin/thrift -gen erl -I /usr/local/src/hive-0.7.1-cdh3u6/src -I /usr/local/src/thrift-0.9.0 /usr/local/src/thrift-0.9.0/share/fb303/if/fb303.thrift</code></pre></div>
+
+<p>Erlangのコードがgen-erlフォルダの下に生成されます。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">$ ls -l gen-erl/
+total <span class="m">144</span>
+-rw-rw-r-- <span class="m">1</span> masayuki masayuki  <span class="m">1488</span> Jun  <span class="m">3</span> <span class="m">08</span>:26 facebookService_thrift.beam
+-rw-rw-r-- <span class="m">1</span> masayuki masayuki  <span class="m">3045</span> Jun  <span class="m">3</span> <span class="m">08</span>:25 facebookService_thrift.erl
+-rw-rw-r-- <span class="m">1</span> masayuki masayuki   <span class="m">116</span> Jun  <span class="m">3</span> <span class="m">08</span>:25 facebookService_thrift.hrl
+-rw-rw-r-- <span class="m">1</span> masayuki masayuki   <span class="m">153</span> Jun  <span class="m">3</span> <span class="m">08</span>:25 fb303_constants.hrl
+-rw-rw-r-- <span class="m">1</span> masayuki masayuki   <span class="m">656</span> Jun  <span class="m">3</span> <span class="m">08</span>:26 fb303_types.beam
+-rw-rw-r-- <span class="m">1</span> masayuki masayuki   <span class="m">325</span> Jun  <span class="m">3</span> <span class="m">08</span>:25 fb303_types.erl
+-rw-rw-r-- <span class="m">1</span> masayuki masayuki   <span class="m">299</span> Jun  <span class="m">3</span> <span class="m">08</span>:25 fb303_types.hrl
+-rw-rw-r-- <span class="m">1</span> masayuki masayuki  <span class="m">1126</span> Jun  <span class="m">3</span> <span class="m">08</span>:24 hive_metastore_constants.hrl
+-rw-rw-r-- <span class="m">1</span> masayuki masayuki  <span class="m">3572</span> Jun  <span class="m">3</span> <span class="m">08</span>:26 hive_metastore_types.beam
+-rw-rw-r-- <span class="m">1</span> masayuki masayuki <span class="m">12096</span> Jun  <span class="m">3</span> <span class="m">08</span>:24 hive_metastore_types.erl
+-rw-rw-r-- <span class="m">1</span> masayuki masayuki  <span class="m">6046</span> Jun  <span class="m">3</span> <span class="m">08</span>:24 hive_metastore_types.hrl
+-rw-rw-r-- <span class="m">1</span> masayuki masayuki   <span class="m">160</span> Jun  <span class="m">2</span> <span class="m">04</span>:15 hive_service_constants.hrl
+-rw-rw-r-- <span class="m">1</span> masayuki masayuki   <span class="m">980</span> Jun  <span class="m">3</span> <span class="m">08</span>:26 hive_service_types.beam
+-rw-rw-r-- <span class="m">1</span> masayuki masayuki  <span class="m">1210</span> Jun  <span class="m">2</span> <span class="m">04</span>:15 hive_service_types.erl
+-rw-rw-r-- <span class="m">1</span> masayuki masayuki   <span class="m">864</span> Jun  <span class="m">2</span> <span class="m">04</span>:15 hive_service_types.hrl
+-rw-rw-r-- <span class="m">1</span> masayuki masayuki   <span class="m">157</span> Jun  <span class="m">3</span> <span class="m">08</span>:24 queryplan_constants.hrl
+-rw-rw-r-- <span class="m">1</span> masayuki masayuki  <span class="m">1928</span> Jun  <span class="m">3</span> <span class="m">08</span>:26 queryplan_types.beam
+-rw-rw-r-- <span class="m">1</span> masayuki masayuki  <span class="m">4559</span> Jun  <span class="m">3</span> <span class="m">08</span>:24 queryplan_types.erl
+-rw-rw-r-- <span class="m">1</span> masayuki masayuki  <span class="m">3331</span> Jun  <span class="m">3</span> <span class="m">08</span>:24 queryplan_types.hrl
+-rw-rw-r-- <span class="m">1</span> masayuki masayuki  <span class="m">4616</span> Jun  <span class="m">3</span> <span class="m">08</span>:26 thriftHiveMetastore_thrift.beam
+-rw-rw-r-- <span class="m">1</span> masayuki masayuki <span class="m">24794</span> Jun  <span class="m">3</span> <span class="m">08</span>:24 thriftHiveMetastore_thrift.erl
+-rw-rw-r-- <span class="m">1</span> masayuki masayuki   <span class="m">184</span> Jun  <span class="m">3</span> <span class="m">08</span>:24 thriftHiveMetastore_thrift.hrl
+-rw-rw-r-- <span class="m">1</span> masayuki masayuki  <span class="m">1396</span> Jun  <span class="m">3</span> <span class="m">08</span>:26 thriftHive_thrift.beam
+-rw-rw-r-- <span class="m">1</span> masayuki masayuki  <span class="m">2848</span> Jun  <span class="m">2</span> <span class="m">04</span>:15 thriftHive_thrift.erl
+-rw-rw-r-- <span class="m">1</span> masayuki masayuki   <span class="m">168</span> Jun  <span class="m">2</span> <span class="m">04</span>:15 thriftHive_thrift.hrl</code></pre></div>
+
+<h1 id="setup-project">Setup Project</h1>
+
+<p>生成したコードを使ってHiveに接続するモジュールを作成します。まだほとんどErlangでコードを書いたことがない上、rebarを使ってアプリケーションの下地を作るのは初めてなので、見よう見まねです。</p>
+
+<p><div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">$ rebar create-app <span class="nv">appid</span><span class="o">=</span>thrift-hive
+<span class="o">==</span>&gt; thrift-hive <span class="o">(</span>create-app<span class="o">)</span>
+Writing src/thrift-hive.app.src
+Writing src/thrift-hive_app.erl
+Writing src/thrift-hive_sup.erl
+
+$ mkdir deps
+$ mkdir rel
+$ mkdir include</code></pre></div></p>
+
+<p>Thriftのライブラリは<a href="https://github.com/xslogic/thrift_erl">thrift-erl</a>を使います。rebar.configは以下のとおりです。</p>
+
+<p>rebar.config:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>sub_dirs, <span class="o">[</span><span class="s2">&#34;rel&#34;</span><span class="o">]}</span>.
+<span class="ln">2</span>
+<span class="ln">3</span><span class="o">{</span>deps_dir, <span class="o">[</span><span class="s2">&#34;deps&#34;</span><span class="o">]}</span>.
+<span class="ln">4</span><span class="o">{</span>erl_opts, <span class="o">[</span>debug_info<span class="o">]}</span>.
+<span class="ln">5</span>
+<span class="ln">6</span><span class="o">{</span>deps, <span class="o">[</span>
+<span class="ln">7</span> <span class="o">{</span>thrift_erl, <span class="s2">&#34;0.5.0&#34;</span>, <span class="o">{</span>git, <span class="s2">&#34;git://github.com/xslogic/thrift_erl&#34;</span>, <span class="s2">&#34;HEAD&#34;</span><span class="o">}}</span>
+<span class="ln">8</span><span class="o">]}</span>.</code></pre></div></p>
+
+<p>thrift-erlをrebar get-depsで取得します。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">$ rebar get-deps
+<span class="o">==</span>&gt; thrift-hive <span class="o">(</span>get-deps<span class="o">)</span>
+Pulling thrift_erl from <span class="o">{</span>git,<span class="s2">&#34;git://github.com/xslogic/thrift_erl&#34;</span>,<span class="s2">&#34;HEAD&#34;</span><span class="o">}</span>
+Cloning into <span class="s1">&#39;thrift_erl&#39;</span>...
+<span class="o">==</span>&gt; rel <span class="o">(</span>get-deps<span class="o">)</span>
+<span class="o">==</span>&gt; thrift_erl <span class="o">(</span>get-deps<span class="o">)</span></code></pre></div>
+
+<p>生成したコードのうち、.erlをsrcフォルダへ、.hrlをincludeフォルダへコピーします。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">$ mv gen-erl/*.hrl include/
+$ mv gen-erl/*.erl src/</code></pre></div>
+
+<p>生成したコードを呼び出すモジュールを作成します。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">$ rebar create <span class="nv">template</span><span class="o">=</span>simplemod <span class="nv">modid</span><span class="o">=</span><span class="nv">thrift_hive</span>
+<span class="o">==</span>&gt; rel <span class="o">(</span>create<span class="o">)</span>
+Writing src/thrift_hive.erl
+Writing test/thrift_hive_tests.erl
+<span class="o">==</span>&gt; thrift_erl <span class="o">(</span>create<span class="o">)</span>
+Writing src/thrift_hive.erl
+Writing test/thrift_hive_tests.erl
+<span class="o">==</span>&gt; thrift-hive <span class="o">(</span>create<span class="o">)</span>
+Writing src/thrift_hive.erl
+Writing test/thrift_hive_tests.erl</code></pre></div>
+
+<p>なぜかrelとthrift-erlの下にも生成されてしまいました…。このままコンパイルしてみると、失敗します。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">$ rebar create <span class="nv">template</span><span class="o">=</span>simplemod <span class="nv">modid</span><span class="o">=</span><span class="nv">thrift_hive</span>
+<span class="o">==</span>&gt; rel <span class="o">(</span>create<span class="o">)</span>
+Writing src/thrift_hive.erl
+Writing test/thrift_hive_tests.erl
+<span class="o">==</span>&gt; thrift_erl <span class="o">(</span>create<span class="o">)</span>
+Writing src/thrift_hive.erl
+Writing test/thrift_hive_tests.erl
+<span class="o">==</span>&gt; thrift-hive <span class="o">(</span>create<span class="o">)</span>
+Writing src/thrift_hive.erl
+Writing test/thrift_hive_tests.erl
+
+$ rebar compile
+ERROR: One or more .beam files exist that are not listed in thrift_erl.app:
+        * thrift_hive
+ERROR: compile failed <span class="k">while</span> processing /home/masayuki/work/erlang/thrift-hive/deps/thrift_erl: rebar_abort</code></pre></div>
+
+<p>rel/thrift_erlの下に作成されたファイルを削除したところ、コンパイルが完了しました。
+Hiveに接続するコードは以下のとおりです。</p>
+
+<p>thrift_hive.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">-module<span class="o">(</span>thrift_hive<span class="o">)</span>.
+
+-include<span class="o">(</span><span class="s2">&#34;hive_service_types.hrl&#34;</span><span class="o">)</span>.
+-include<span class="o">(</span><span class="s2">&#34;thriftHive_thrift.hrl&#34;</span><span class="o">)</span>.
+
+-export<span class="o">([</span>my_func/0<span class="o">])</span>.
+
+my_func<span class="o">()</span> -&gt;
+    <span class="o">{</span>ok, C0<span class="o">}</span> <span class="o">=</span> thrift_client_util:new<span class="o">(</span><span class="s2">&#34;localhost&#34;</span>, <span class="m">10000</span>, thrift_hive, <span class="o">[])</span>,
+    thrift_client:call<span class="o">(</span>C0, execute, <span class="o">[</span><span class="s2">&#34;select c1, count(*) from test group by c1&#34;</span><span class="o">])</span>,
+    ok.</code></pre></div></p>
+
+<p>Hiveに接続するコードをeunitのテストケースから実行します。</p>
+
+<p>thrift_hive_tests.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>-module<span class="o">(</span>thrift_hive_tests<span class="o">)</span>.
+<span class="ln">2</span>-include_lib<span class="o">(</span><span class="s2">&#34;eunit/include/eunit.hrl&#34;</span><span class="o">)</span>.
+<span class="ln">3</span>
+<span class="ln">4</span>connect_test<span class="o">()</span> -&gt;
+<span class="ln">5</span>    thrift_hive:my_func<span class="o">()</span>.</code></pre></div></p>
+
+<p>テストを実行します。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">$ rebar eunit <span class="nv">suites</span><span class="o">=</span><span class="nv">thrift_hive</span>
+<span class="o">==</span>&gt; rel <span class="o">(</span>eunit<span class="o">)</span>
+<span class="o">==</span>&gt; thrift_erl <span class="o">(</span>eunit<span class="o">)</span>
+  There were no tests to run.
+<span class="o">==</span>&gt; thrift-hive <span class="o">(</span>eunit<span class="o">)</span>
+Compiled src/thrift_hive.erl
+thrift_hive_tests: connect_test <span class="o">(</span>module <span class="s1">&#39;thrift_hive_tests&#39;</span><span class="o">)</span>...*failed*
+in <span class="k">function</span> thrift_client_util:new/4
+  called as new<span class="o">(</span><span class="s2">&#34;localhost&#34;</span>,10000,thrift_hive,<span class="o">[])</span>
+in call from thrift_hive:my_func/0 <span class="o">(</span>src/thrift_hive.erl, line <span class="m">9</span><span class="o">)</span>
+in call from thrift_hive_tests:connect_test/0
+**error:undef
+
+
+<span class="o">=======================================================</span>
+  Failed: <span class="m">1</span>.  Skipped: <span class="m">0</span>.  Passed: <span class="m">0</span>.
+ERROR: One or more eunit tests failed.
+ERROR: eunit failed <span class="k">while</span> processing /home/masayuki/work/erlang/thrift-hive: rebar_abort</code></pre></div>
+
+<p>エラーになりました。どうもconnectionを取得するところがうまくいってないようです。</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>.thriftからのコード生成は簡単にできたのですが、Erlangで動かすところで躓いてしまっています。まだ生成したコードとthrift_erlのAPI呼び出しがどう連携するのかも分かっていません。Erlangのコードをちょっとずつ見ていきながら、原因を確認していきます。</p>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        This post was published <strong>1684</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2018 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="https://masayuki038.github.io/blog/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>

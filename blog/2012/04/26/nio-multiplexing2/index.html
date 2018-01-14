@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Java NIO I/O Multiplexing2(solved)</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="Stack Overflow 前回のnioのsocket readがbusy loopになってしまう問題について、Stack Overflowでも同じような事象が出ていまし" />
+
+  
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@masayuki" />
+    <meta name="twitter:title" content="Java NIO I/O Multiplexing2(solved)" />
+    <meta name="twitter:description" content="Stack Overflow 前回のnioのsocket readがbusy loopになってしまう問題について、Stack Overflowでも同じような事象が出ていまし" />
+    <meta name="twitter:image" content="https://masayuki038.github.io/img/avatar.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Java NIO I/O Multiplexing2(solved)" />
+  <meta property="og:description" content="Stack Overflow 前回のnioのsocket readがbusy loopになってしまう問題について、Stack Overflowでも同じような事象が出ていまし" />
+  <meta property="og:url" content="https://masayuki038.github.io/blog/2012/04/26/nio-multiplexing2/" />
+  <meta property="og:image" content="https://masayuki038.github.io/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.32" />
+
+
+<link rel="canonical" href="https://masayuki038.github.io/blog/2012/04/26/nio-multiplexing2/" />
+<link rel="alternative" href="https://masayuki038.github.io/blog/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="https://masayuki038.github.io/blog/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="https://masayuki038.github.io/blog/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="https://masayuki038.github.io/blog/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="https://masayuki038.github.io/blog/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="https://masayuki038.github.io/blog/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="https://masayuki038.github.io/blog/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="https://masayuki038.github.io/blog/css/bundle.css" />
+<link rel="stylesheet" href="https://masayuki038.github.io/blog/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://s.gravatar.com/avatar/4b97fb839e6040cfb353bd667ac93e54?s=80" alt="Avatar">
+  
+  <h2 class="title">act-act</h2>
+  
+  <p class="subtitle"></p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="https://masayuki038.github.io/blog/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="https://masayuki038.github.io/blog/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Java NIO I/O Multiplexing2(solved)</h1>
+      <p class="post-meta">@Masayuki Takahashi · Apr 26, 2012 · 3 min read</p>
+    </header>
+    <article class="post-content">
+
+<h1 id="stack-overflow">Stack Overflow</h1>
+
+<p>前回のnioのsocket readがbusy loopになってしまう問題について、Stack Overflowでも同じような事象が出ていました。</p>
+
+<p><a href="http://stackoverflow.com/questions/7937908/java-selector-returns-selectionkey-with-op-read-without-data-in-infinity-loop-af">Java Selector returns SelectionKey with OP_READ without data in infinity loop after writing to channel</a></p>
+
+<blockquote>
+<p>And, as I said selector returns SelectionKey for reading without any data in SocketChannel and read() returns -1. That is a problem, becasue select() not block and load CPU. This happens only when I write() to channel, before it&rsquo;s working as needed. ? befire Oct 29 &lsquo;11 at 11:33</p>
+</blockquote>
+
+<p>また、Nettyの実装に置き換えたところうまくいった、という記述もありました。</p>
+
+<blockquote>
+<p>I&rsquo;ve replaced implementation of unblocking sokcets with Netty framework (all works good). But still interested in solution for this problem.</p>
+</blockquote>
+
+<h1 id="netty">Netty</h1>
+
+<p>ということで、githubのNetty(4.0.0.Alpha1-SNAPSHOT)を使って問題が解消されるか確認することにしました。</p>
+
+<p><a href="https://github.com/netty/netty">netty/netty - github</a></p>
+
+<p>まず、git cloneして全てのモジュールを作成し、ローカルリポジトリにインストールした後、mvn eclipse:eclipseでEclipseに取り込みました。</p>
+
+<p>その後、netty-sampleにあるEchoServerの実装を動かしてみたところ、busy loopは起こりませんでした。確かにNettyの実装を使うことで回避できることが確認できました。</p>
+
+<p>前回の実装でbusy loopの原因を確認するべく、Nettyの実装を少し見てみました。すると、netty-transportのio.netty.channel.socket.nio.NioWorkerのreadメソッドの中に、以下のような記述がありました。
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln">1</span><span class="k">if</span> <span class="o">(</span><span class="n">ret</span> <span class="o">&lt;</span> <span class="n">0</span> <span class="o">||</span> <span class="n">failure</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">2</span>    <span class="n">k</span><span class="o">.</span><span class="na">cancel</span><span class="o">();</span> <span class="c1">// Some JDK implementations run into an infinite loop without this.
+</span><span class="ln">3</span><span class="c1"></span>    <span class="n">close</span><span class="o">(</span><span class="n">channel</span><span class="o">,</span> <span class="n">succeededFuture</span><span class="o">(</span><span class="n">channel</span><span class="o">));</span>
+<span class="ln">4</span>    <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+<span class="ln">5</span><span class="o">}</span></code></pre></div></p>
+
+<p>retはSocketChannel#readの戻り値で読み込んだバイト数です。この値がEOS(-1)の場合はSelectionKey#cancel()を呼び出し、channelをcloseしており、コメントにはinfinite loop対応という文字が。</p>
+
+<h1 id="canceled-selectionkey-on-eos">Canceled SelectionKey on EOS</h1>
+
+<p>ということで、早速前回のコードに適用して動かしてみました。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln"> 1</span><span class="kn">package</span> <span class="nn">net.wrap_trap.example.nio</span><span class="o">;</span>
+<span class="ln"> 2</span>
+<span class="ln"> 3</span><span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+<span class="ln"> 4</span><span class="kn">import</span> <span class="nn">java.net.InetSocketAddress</span><span class="o">;</span>
+<span class="ln"> 5</span><span class="kn">import</span> <span class="nn">java.nio.ByteBuffer</span><span class="o">;</span>
+<span class="ln"> 6</span><span class="kn">import</span> <span class="nn">java.nio.channels.SelectionKey</span><span class="o">;</span>
+<span class="ln"> 7</span><span class="kn">import</span> <span class="nn">java.nio.channels.Selector</span><span class="o">;</span>
+<span class="ln"> 8</span><span class="kn">import</span> <span class="nn">java.nio.channels.ServerSocketChannel</span><span class="o">;</span>
+<span class="ln"> 9</span><span class="kn">import</span> <span class="nn">java.nio.channels.SocketChannel</span><span class="o">;</span>
+<span class="ln">10</span><span class="kn">import</span> <span class="nn">java.util.Iterator</span><span class="o">;</span>
+<span class="ln">11</span><span class="kn">import</span> <span class="nn">java.util.Set</span><span class="o">;</span>
+<span class="ln">12</span>
+<span class="ln">13</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">EchoServer</span> <span class="o">{</span>
+<span class="ln">14</span>
+<span class="ln">15</span>    <span class="kd">private</span> <span class="n">ServerSocketChannel</span> <span class="n">serverChannel</span><span class="o">;</span>
+<span class="ln">16</span>    <span class="kd">private</span> <span class="n">Selector</span> <span class="n">selector</span><span class="o">;</span>
+<span class="ln">17</span>
+<span class="ln">18</span>    <span class="kd">public</span> <span class="nf">EchoServer</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+<span class="ln">19</span>        <span class="n">serverChannel</span> <span class="o">=</span> <span class="n">ServerSocketChannel</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
+<span class="ln">20</span>        <span class="n">serverChannel</span><span class="o">.</span><span class="na">socket</span><span class="o">().</span><span class="na">setReuseAddress</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+<span class="ln">21</span>        <span class="n">serverChannel</span><span class="o">.</span><span class="na">socket</span><span class="o">().</span><span class="na">bind</span><span class="o">(</span><span class="k">new</span> <span class="n">InetSocketAddress</span><span class="o">(</span><span class="n">8000</span><span class="o">));</span>
+<span class="ln">22</span>
+<span class="ln">23</span>        <span class="n">serverChannel</span><span class="o">.</span><span class="na">configureBlocking</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+<span class="ln">24</span>        <span class="n">selector</span> <span class="o">=</span> <span class="n">Selector</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
+<span class="ln">25</span>        <span class="n">serverChannel</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">selector</span><span class="o">,</span> <span class="n">SelectionKey</span><span class="o">.</span><span class="na">OP_ACCEPT</span><span class="o">);</span>
+<span class="ln">26</span>    <span class="o">}</span>
+<span class="ln">27</span>
+<span class="ln">28</span>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">start</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+<span class="ln">29</span>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;start&#34;</span><span class="o">);</span>
+<span class="ln">30</span>        <span class="k">try</span> <span class="o">{</span>
+<span class="ln">31</span>            <span class="k">while</span> <span class="o">(</span><span class="n">selector</span><span class="o">.</span><span class="na">select</span><span class="o">()</span> <span class="o">&gt;</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">32</span>                <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;select loop&#34;</span><span class="o">);</span>
+<span class="ln">33</span>                <span class="n">Set</span><span class="o">&lt;</span><span class="n">SelectionKey</span><span class="o">&gt;</span> <span class="n">keys</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="na">selectedKeys</span><span class="o">();</span>
+<span class="ln">34</span>                <span class="k">for</span> <span class="o">(</span><span class="n">Iterator</span><span class="o">&lt;</span><span class="n">SelectionKey</span><span class="o">&gt;</span> <span class="n">it</span> <span class="o">=</span> <span class="n">keys</span><span class="o">.</span><span class="na">iterator</span><span class="o">();</span> <span class="n">it</span><span class="o">.</span><span class="na">hasNext</span><span class="o">();)</span> <span class="o">{</span>
+<span class="ln">35</span>                    <span class="n">SelectionKey</span> <span class="n">key</span> <span class="o">=</span> <span class="n">it</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+<span class="ln">36</span>                    <span class="n">it</span><span class="o">.</span><span class="na">remove</span><span class="o">();</span>
+<span class="ln">37</span>
+<span class="ln">38</span>                    <span class="k">if</span> <span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">isAcceptable</span><span class="o">())</span> <span class="o">{</span>
+<span class="ln">39</span>                        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;accept&#34;</span><span class="o">);</span>
+<span class="ln">40</span>                        <span class="n">SocketChannel</span> <span class="n">channel</span> <span class="o">=</span> <span class="n">serverChannel</span><span class="o">.</span><span class="na">accept</span><span class="o">();</span>
+<span class="ln">41</span>                        <span class="n">channel</span><span class="o">.</span><span class="na">configureBlocking</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+<span class="ln">42</span>                        <span class="n">channel</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">selector</span><span class="o">(),</span> <span class="n">SelectionKey</span><span class="o">.</span><span class="na">OP_READ</span><span class="o">);</span>
+<span class="ln">43</span>                    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+<span class="ln">44</span>                        <span class="n">SocketChannel</span> <span class="n">channel</span> <span class="o">=</span> <span class="o">(</span><span class="n">SocketChannel</span><span class="o">)</span> <span class="n">key</span><span class="o">.</span><span class="na">channel</span><span class="o">();</span>
+<span class="ln">45</span>                        <span class="k">if</span> <span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">isReadable</span><span class="o">())</span> <span class="o">{</span>
+<span class="ln">46</span>                            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;read&#34;</span><span class="o">);</span>
+<span class="ln">47</span>                            <span class="n">ByteBuffer</span> <span class="n">buffer</span> <span class="o">=</span> <span class="n">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="n">4096</span><span class="o">);</span>
+<span class="ln">48</span>                            <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">buffer</span><span class="o">);</span>
+<span class="ln">49</span>                            <span class="k">if</span> <span class="o">(</span><span class="n">len</span> <span class="o">&gt;</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">50</span>                                <span class="n">buffer</span><span class="o">.</span><span class="na">flip</span><span class="o">();</span>
+<span class="ln">51</span>                                <span class="n">channel</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">buffer</span><span class="o">);</span>
+<span class="ln">52</span>                            <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">len</span> <span class="o">==</span> <span class="o">-</span><span class="n">1</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">53</span>                                <span class="n">key</span><span class="o">.</span><span class="na">cancel</span><span class="o">();</span>
+<span class="ln">54</span>                                <span class="n">channel</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+<span class="ln">55</span>                            <span class="o">}</span>
+<span class="ln">56</span>                        <span class="o">}</span>
+<span class="ln">57</span>                    <span class="o">}</span>
+<span class="ln">58</span>                <span class="o">}</span>
+<span class="ln">59</span>            <span class="o">}</span>
+<span class="ln">60</span>        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+<span class="ln">61</span>            <span class="k">for</span> <span class="o">(</span><span class="n">SelectionKey</span> <span class="n">key</span> <span class="o">:</span> <span class="n">selector</span><span class="o">.</span><span class="na">keys</span><span class="o">())</span> <span class="o">{</span>
+<span class="ln">62</span>                <span class="k">try</span> <span class="o">{</span>
+<span class="ln">63</span>                    <span class="n">key</span><span class="o">.</span><span class="na">channel</span><span class="o">().</span><span class="na">close</span><span class="o">();</span>
+<span class="ln">64</span>                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">ignore</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">65</span>                    <span class="n">ignore</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+<span class="ln">66</span>                <span class="o">}</span>
+<span class="ln">67</span>            <span class="o">}</span>
+<span class="ln">68</span>        <span class="o">}</span>
+<span class="ln">69</span>    <span class="o">}</span>
+<span class="ln">70</span>
+<span class="ln">71</span>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+<span class="ln">72</span>        <span class="n">EchoServer</span> <span class="n">echoServer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">EchoServer</span><span class="o">();</span>
+<span class="ln">73</span>        <span class="n">echoServer</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+<span class="ln">74</span>    <span class="o">}</span>
+<span class="ln">75</span><span class="o">}</span></code></pre></div>
+
+<p>上記コードを動かしてみたところ、busy loopを回避することができました。また、1本のsocketで複数回やり取りすることもできています。</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>この結果より、read時にEOSを検知したらSelectionKey#cancel()を呼び出すことで、busy loopを回避できることが分かりました。</p>
+
+<p>まだ気になっている点は、read時にOP_WRITEを指定することなくSocketChannel#write()を呼び出しても問題なくクライアントに応答を返せていることです。一旦nioの本をちゃんと読んでみようかな。</p>
+
+<p>そしてNetty。コードを少し読んでみた限りですが、nioの嵌りどころをうまく回避するような実装が入っており、間違いなくnioを直接扱うよりも楽です。nioで嵌るようなことがあればNettyを使ってみましょう。</p>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        This post was published <strong>2089</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2018 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="https://masayuki038.github.io/blog/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>
