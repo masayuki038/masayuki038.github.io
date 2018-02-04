@@ -2,138 +2,138 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Erlang on act-act</title>
-    <link>/categories/erlang/</link>
+    <link>https://masayuki038.github.io/blog/categories/erlang/</link>
     <description>Recent content in Erlang on act-act</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja</language>
     <lastBuildDate>Sun, 17 Aug 2014 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="/categories/erlang/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://masayuki038.github.io/blog/categories/erlang/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>CouchDB Source Code Reading part11</title>
-      <link>/2014/08/17/couchdb-code-reading11/</link>
+      <link>https://masayuki038.github.io/blog/2014/08/17/couchdb-code-reading11/</link>
       <pubDate>Sun, 17 Aug 2014 00:00:00 +0000</pubDate>
       
-      <guid>/2014/08/17/couchdb-code-reading11/</guid>
+      <guid>https://masayuki038.github.io/blog/2014/08/17/couchdb-code-reading11/</guid>
       <description>remainging code of couch_db:update_docs/4 前回まででcouch_db:doc_flush_atts/2の一連の処理を読み終えました。久々にcouch_db:update_do</description>
     </item>
     
     <item>
       <title>CouchDB Source Code Reading part8</title>
-      <link>/2014/07/19/couchdb-code-reading8/</link>
+      <link>https://masayuki038.github.io/blog/2014/07/19/couchdb-code-reading8/</link>
       <pubDate>Sat, 19 Jul 2014 00:00:00 +0000</pubDate>
       
-      <guid>/2014/07/19/couchdb-code-reading8/</guid>
+      <guid>https://masayuki038.github.io/blog/2014/07/19/couchdb-code-reading8/</guid>
       <description>couch_db:update_doc/4 前回からの続きで、couch_db:update_docs/4の続きを。 couch_db.erl: 1 case (Db#db.validate_doc_funs /= []) orelse 2 lists:any( 3 fun({#doc{id= &amp;lt;&amp;lt;?DESIGN_DOC_PREFIX, _/binary&amp;gt;&amp;gt;}, _Ref}) -&amp;gt; 4 true; 5 ({#doc{atts=Atts}, _Ref}) -&amp;gt; 6 Atts /= [] 7 end, Docs3) of 8 true -&amp;gt; 9</description>
     </item>
     
     <item>
       <title>CouchDB Source Code Reading part7</title>
-      <link>/2014/07/12/couchdb-code-reading7/</link>
+      <link>https://masayuki038.github.io/blog/2014/07/12/couchdb-code-reading7/</link>
       <pubDate>Sat, 12 Jul 2014 00:00:00 +0000</pubDate>
       
-      <guid>/2014/07/12/couchdb-code-reading7/</guid>
+      <guid>https://masayuki038.github.io/blog/2014/07/12/couchdb-code-reading7/</guid>
       <description>couch_db:update_doc/4 前回はHTTP経由でドキュメントを更新する流れを見てきました。今回は更新まわりのより深いところを見ていこうと思います。前回の流れからcou</description>
     </item>
     
     <item>
       <title>CouchDB Source Code Reading part6</title>
-      <link>/2014/07/05/couchdb-code-reading6/</link>
+      <link>https://masayuki038.github.io/blog/2014/07/05/couchdb-code-reading6/</link>
       <pubDate>Sat, 05 Jul 2014 00:00:00 +0000</pubDate>
       
-      <guid>/2014/07/05/couchdb-code-reading6/</guid>
+      <guid>https://masayuki038.github.io/blog/2014/07/05/couchdb-code-reading6/</guid>
       <description>couch_httpd_db:db_req/2 前回までドキュメントの取得の流れを見てきたので、次に更新まわりを見ていこうと思います。 couch_httpd_db.erl: 1db_req(#httpd{method=&amp;#39;POST&amp;#39;,path_parts=[_DbName]}=Req, Db) -&amp;gt; 2 couch_httpd:validate_ctype(Req, &amp;#34;application/json&amp;#34;), 3 Doc = couch_doc:from_json_obj(couch_httpd:json_body(Req)), 4 validate_attachment_names(Doc), 5 Doc2 = case Doc#doc.id of 6 &amp;lt;&amp;lt;&amp;#34;&amp;#34;&amp;gt;&amp;gt; -&amp;gt; 7 Doc#doc{id=couch_uuids:new(), revs={0, []}};</description>
     </item>
     
     <item>
       <title>CouchDB Source Code Reading part5</title>
-      <link>/2014/06/21/couchdb-code-reading5/</link>
+      <link>https://masayuki038.github.io/blog/2014/06/21/couchdb-code-reading5/</link>
       <pubDate>Sat, 21 Jun 2014 00:00:00 +0000</pubDate>
       
-      <guid>/2014/06/21/couchdb-code-reading5/</guid>
+      <guid>https://masayuki038.github.io/blog/2014/06/21/couchdb-code-reading5/</guid>
       <description>couch_db:open_doc_int/3 前回はcouch_db_updater:refresh_validate_doc_funs/1を読んでいく中でDesignDocsを取得す</description>
     </item>
     
     <item>
       <title>CouchDB Source Code Reading part4</title>
-      <link>/2014/06/08/couchdb-code-reading4/</link>
+      <link>https://masayuki038.github.io/blog/2014/06/08/couchdb-code-reading4/</link>
       <pubDate>Sun, 08 Jun 2014 00:00:00 +0000</pubDate>
       
-      <guid>/2014/06/08/couchdb-code-reading4/</guid>
+      <guid>https://masayuki038.github.io/blog/2014/06/08/couchdb-code-reading4/</guid>
       <description>couch_db_updater:refresh_validate_doc_funs/1 今回はcouch_db_updater:init/1から呼び出している関数の中でまだ見ていないrefresh_validate_doc_f</description>
     </item>
     
     <item>
       <title>CouchDB Source Code Reading part3</title>
-      <link>/2014/05/30/couchdb-code-reading3/</link>
+      <link>https://masayuki038.github.io/blog/2014/05/30/couchdb-code-reading3/</link>
       <pubDate>Fri, 30 May 2014 00:00:00 +0000</pubDate>
       
-      <guid>/2014/05/30/couchdb-code-reading3/</guid>
+      <guid>https://masayuki038.github.io/blog/2014/05/30/couchdb-code-reading3/</guid>
       <description>couch_db_updater:init_db/6の以下の部分を掘り下げてみたいと思います。 couch_db_updater.erl: 1 {ok, IdBtree} = couch_btree:open(Header#db_header.fulldocinfo_by_id_btree_state, Fd, 2 [{split, fun(X) -&amp;gt; btree_by_id_split(X) end}, 3 {join, fun(X,Y) -&amp;gt; btree_by_id_join(X,Y) end}, 4 {reduce, fun(X,Y) -&amp;gt;</description>
     </item>
     
     <item>
       <title>CouchDB Source Code Reading part2</title>
-      <link>/2014/05/25/couchdb-code-reading2/</link>
+      <link>https://masayuki038.github.io/blog/2014/05/25/couchdb-code-reading2/</link>
       <pubDate>Sun, 25 May 2014 00:00:00 +0000</pubDate>
       
-      <guid>/2014/05/25/couchdb-code-reading2/</guid>
+      <guid>https://masayuki038.github.io/blog/2014/05/25/couchdb-code-reading2/</guid>
       <description>couch_db_updater:init/1 前回はヘッダ部を読み込むコードを読んだので、今回はDBの読み込み準備？のところを読んでみます。couch_db_updater:init/</description>
     </item>
     
     <item>
       <title>CouchDB Source Code Reading part1</title>
-      <link>/2014/05/24/couchdb-code-reading1/</link>
+      <link>https://masayuki038.github.io/blog/2014/05/24/couchdb-code-reading1/</link>
       <pubDate>Sat, 24 May 2014 00:00:00 +0000</pubDate>
       
-      <guid>/2014/05/24/couchdb-code-reading1/</guid>
+      <guid>https://masayuki038.github.io/blog/2014/05/24/couchdb-code-reading1/</guid>
       <description>Why CouchDB? 数年前にCouchDBのデータフォーマットについて解説しているページを読みました。CouchDBの内部ではデータをB+treeで保持して</description>
     </item>
     
     <item>
       <title>How to create Mock Hive Server</title>
-      <link>/2013/10/13/mock-hive-server/</link>
+      <link>https://masayuki038.github.io/blog/2013/10/13/mock-hive-server/</link>
       <pubDate>Sun, 13 Oct 2013 00:00:00 +0000</pubDate>
       
-      <guid>/2013/10/13/mock-hive-server/</guid>
+      <guid>https://masayuki038.github.io/blog/2013/10/13/mock-hive-server/</guid>
       <description>We need a Mock Hive Server for tests 以前、thrift_erlを使ってHiveクライアントを作成しました。このHiveクライアントのテストを書こうとすると、Hi</description>
     </item>
     
     <item>
       <title>Little improvement in development environment for Erlang</title>
-      <link>/2013/09/16/devenv-for-erlang/</link>
+      <link>https://masayuki038.github.io/blog/2013/09/16/devenv-for-erlang/</link>
       <pubDate>Mon, 16 Sep 2013 00:00:00 +0000</pubDate>
       
-      <guid>/2013/09/16/devenv-for-erlang/</guid>
+      <guid>https://masayuki038.github.io/blog/2013/09/16/devenv-for-erlang/</guid>
       <description>erl-shib ここ最近は、Erlangの習作としてshibのクローンを作ってました。erl-shibと言います。HQLを実行して結果を取得するところまで</description>
     </item>
     
     <item>
       <title>Connecting to Hive from Erlang using Thrift part2</title>
-      <link>/2013/06/09/thrift-hive-part2/</link>
+      <link>https://masayuki038.github.io/blog/2013/06/09/thrift-hive-part2/</link>
       <pubDate>Sun, 09 Jun 2013 00:00:00 +0000</pubDate>
       
-      <guid>/2013/06/09/thrift-hive-part2/</guid>
+      <guid>https://masayuki038.github.io/blog/2013/06/09/thrift-hive-part2/</guid>
       <description>Failed to connect Hive Server 前回「thrift_client_util:new/4」で失敗していた件について調べてみたところ、thrift_erlangという</description>
     </item>
     
     <item>
       <title>Connecting to Hive from Erlang using Thrift part1</title>
-      <link>/2013/06/05/thrift-hive-part1/</link>
+      <link>https://masayuki038.github.io/blog/2013/06/05/thrift-hive-part1/</link>
       <pubDate>Wed, 05 Jun 2013 00:00:00 +0000</pubDate>
       
-      <guid>/2013/06/05/thrift-hive-part1/</guid>
+      <guid>https://masayuki038.github.io/blog/2013/06/05/thrift-hive-part1/</guid>
       <description>Connecting to Hive from Erlang ErlangでHiveに接続し、クエリを実行させてその結果を取得する、ということができないか試してみました。HiveはThrift</description>
     </item>
     
     <item>
       <title>Erlang mode and Distel</title>
-      <link>/2013/04/18/erlang-mode-and-distel/</link>
+      <link>https://masayuki038.github.io/blog/2013/04/18/erlang-mode-and-distel/</link>
       <pubDate>Thu, 18 Apr 2013 00:00:00 +0000</pubDate>
       
-      <guid>/2013/04/18/erlang-mode-and-distel/</guid>
+      <guid>https://masayuki038.github.io/blog/2013/04/18/erlang-mode-and-distel/</guid>
       <description>Erlang IDE 前回のポストからかなり時間が経ちましたが、少し時間ができたので、暫くErlangで遊んでみようと思います。 Erlangの開発環境ですが、</description>
     </item>
     
