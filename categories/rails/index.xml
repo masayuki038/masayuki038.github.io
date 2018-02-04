@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Rails on act-act</title>
+    <link>/categories/rails/</link>
+    <description>Recent content in Rails on act-act</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja</language>
+    <lastBuildDate>Sat, 22 Feb 2014 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/rails/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Development Environment For Rails4 With Docker And Ansible</title>
+      <link>/2014/02/22/devenv-rails4-with-docker-ansible/</link>
+      <pubDate>Sat, 22 Feb 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/2014/02/22/devenv-rails4-with-docker-ansible/</guid>
+      <description>DockerとAnsibleを使ってRails4の開発環境を作ってみました。 Environment ruby2.1.0 rails4 emacs24 ruby-mode rinari rhtml Docker Dockerfileにはsshdでログインできる</description>
+    </item>
+    
+  </channel>
+</rss>
