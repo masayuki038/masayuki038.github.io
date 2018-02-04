@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>CouchDB Source Code Reading part10</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="前回、アタッチメントをファイルに書き込む箇所を読んだのですが、書き込んだデータがアタッチメントかどうかをどのように判別できるようにしているの" />
+
+  
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@masayuki" />
+    <meta name="twitter:title" content="CouchDB Source Code Reading part10" />
+    <meta name="twitter:description" content="前回、アタッチメントをファイルに書き込む箇所を読んだのですが、書き込んだデータがアタッチメントかどうかをどのように判別できるようにしているの" />
+    <meta name="twitter:image" content="/img/avatar.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="CouchDB Source Code Reading part10" />
+  <meta property="og:description" content="前回、アタッチメントをファイルに書き込む箇所を読んだのですが、書き込んだデータがアタッチメントかどうかをどのように判別できるようにしているの" />
+  <meta property="og:url" content="/2014/08/03/couchdb-code-reading10/" />
+  <meta property="og:image" content="/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.32" />
+
+
+<link rel="canonical" href="/2014/08/03/couchdb-code-reading10/" />
+<link rel="alternative" href="/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="/css/bundle.css" />
+<link rel="stylesheet" href="/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://s.gravatar.com/avatar/4b97fb839e6040cfb353bd667ac93e54?s=80" alt="Avatar">
+  
+  <h2 class="title">act-act</h2>
+  
+  <p class="subtitle"></p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">CouchDB Source Code Reading part10</h1>
+      <p class="post-meta">@Masayuki Takahashi · Aug 3, 2014 · 8 min read</p>
+    </header>
+    <article class="post-content">
+
+<p>前回、アタッチメントをファイルに書き込む箇所を読んだのですが、書き込んだデータがアタッチメントかどうかをどのように判別できるようにしているのか分からなかったので、アタッチメントをファイルから読み出す部分を見てみたいと思います。</p>
+
+<h2 id="read-attachement-data-from-file">Read attachement data from file</h2>
+
+<p>まずHTTPレイヤをエントリとし、GETメソッドを扱う関数を探してみたところ、<code>couch_httpd_db:db_doc_req/3</code>を見つけたので、ここから追っていきます。</p>
+
+<p>couch_httpd_db.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>db_doc_req<span class="o">(</span><span class="c1">#httpd{method = &#39;GET&#39;, mochi_req = MochiReq} = Req, Db, DocId) -&gt;
+</span><span class="ln"> 2</span><span class="c1"></span>    <span class="c1">#doc_query_args{
+</span><span class="ln"> 3</span><span class="c1"></span>        <span class="nv">rev</span> <span class="o">=</span> Rev,
+<span class="ln"> 4</span>        <span class="nv">open_revs</span> <span class="o">=</span> Revs,
+<span class="ln"> 5</span>        <span class="nv">options</span> <span class="o">=</span> Options1,
+<span class="ln"> 6</span>        <span class="nv">atts_since</span> <span class="o">=</span> AttsSince
+<span class="ln"> 7</span>    <span class="o">}</span> <span class="o">=</span> parse_doc_query<span class="o">(</span>Req<span class="o">)</span>,
+<span class="ln"> 8</span>    <span class="nv">Options</span> <span class="o">=</span> <span class="k">case</span> AttsSince of
+<span class="ln"> 9</span>    nil -&gt;
+<span class="ln">10</span>        Options1<span class="p">;</span>
+<span class="ln">11</span>    RevList when is_list<span class="o">(</span>RevList<span class="o">)</span> -&gt;
+<span class="ln">12</span>        <span class="o">[{</span>atts_since, RevList<span class="o">}</span>, attachments <span class="p">|</span> Options1<span class="o">]</span>
+<span class="ln">13</span>    end,
+<span class="ln">14</span>    <span class="k">case</span> Revs of
+<span class="ln">15</span>    <span class="o">[]</span> -&gt;
+<span class="ln">16</span>        <span class="nv">Doc</span> <span class="o">=</span> couch_doc_open<span class="o">(</span>Db, DocId, Rev, Options<span class="o">)</span>,
+<span class="ln">17</span>        send_doc<span class="o">(</span>Req, Doc, Options<span class="o">)</span><span class="p">;</span>
+<span class="ln">18</span>...</code></pre></div></p>
+
+<p><code>rev</code>や<code>open_revs</code>は指定しないケースで読み進めてみます。<code>Revs</code>が<code>\[\]</code>の場合は<code>couch_doc_open/4</code>を呼び出してドキュメントを取得しています。この関数を見ていきます。</p>
+
+<p>couch_httpd_db.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>couch_doc_open<span class="o">(</span>Db, DocId, Rev, Options<span class="o">)</span> -&gt;
+<span class="ln"> 2</span>    <span class="k">case</span> Rev of
+<span class="ln"> 3</span>    nil -&gt; % open most recent rev
+<span class="ln"> 4</span>        <span class="k">case</span> couch_db:open_doc<span class="o">(</span>Db, DocId, Options<span class="o">)</span> of
+<span class="ln"> 5</span>        <span class="o">{</span>ok, Doc<span class="o">}</span> -&gt;
+<span class="ln"> 6</span>            Doc<span class="p">;</span>
+<span class="ln"> 7</span>         Error -&gt;
+<span class="ln"> 8</span>             throw<span class="o">(</span>Error<span class="o">)</span>
+<span class="ln"> 9</span>         end<span class="p">;</span>
+<span class="ln">10</span>  _ -&gt; % open a specific rev <span class="o">(</span>deletions come back as stubs<span class="o">)</span>
+<span class="ln">11</span>      <span class="k">case</span> couch_db:open_doc_revs<span class="o">(</span>Db, DocId, <span class="o">[</span>Rev<span class="o">]</span>, Options<span class="o">)</span> of
+<span class="ln">12</span>          <span class="o">{</span>ok, <span class="o">[{</span>ok, Doc<span class="o">}]}</span> -&gt;
+<span class="ln">13</span>              Doc<span class="p">;</span>
+<span class="ln">14</span>          <span class="o">{</span>ok, <span class="o">[{{</span>not_found, missing<span class="o">}</span>, Rev<span class="o">}]}</span> -&gt;
+<span class="ln">15</span>              throw<span class="o">(</span>not_found<span class="o">)</span><span class="p">;</span>
+<span class="ln">16</span>          <span class="o">{</span>ok, <span class="o">[</span>Else<span class="o">]}</span> -&gt;
+<span class="ln">17</span>              throw<span class="o">(</span>Else<span class="o">)</span>
+<span class="ln">18</span>      end
+<span class="ln">19</span>  end.</code></pre></div></p>
+
+<p><code>Rev</code>の指定がない(<code>nil</code>)場合は<code>couch_db:open_doc/3</code>を呼び出しています。</p>
+
+<p>couch_db.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>open_doc<span class="o">(</span>Db, Id, Options<span class="o">)</span> -&gt;
+<span class="ln"> 2</span>    increment_stat<span class="o">(</span>Db, <span class="o">{</span>couchdb, database_reads<span class="o">})</span>,
+<span class="ln"> 3</span>    <span class="k">case</span> open_doc_int<span class="o">(</span>Db, Id, Options<span class="o">)</span> of
+<span class="ln"> 4</span>    <span class="o">{</span>ok, <span class="c1">#doc{deleted=true}=Doc} -&gt;
+</span><span class="ln"> 5</span><span class="c1"></span>        <span class="k">case</span> lists:member<span class="o">(</span>deleted, Options<span class="o">)</span> of
+<span class="ln"> 6</span>        <span class="nb">true</span> -&gt;
+<span class="ln"> 7</span>            apply_open_options<span class="o">({</span>ok, Doc<span class="o">}</span>,Options<span class="o">)</span><span class="p">;</span>
+<span class="ln"> 8</span>        <span class="nb">false</span> -&gt;
+<span class="ln"> 9</span>            <span class="o">{</span>not_found, deleted<span class="o">}</span>
+<span class="ln">10</span>        end<span class="p">;</span>
+<span class="ln">11</span>    Else -&gt;
+<span class="ln">12</span>        apply_open_options<span class="o">(</span>Else,Options<span class="o">)</span>
+<span class="ln">13</span>    end.</code></pre></div></p>
+
+<p><code>couch_db:increment_stat/2</code>は<a href="http://masayuki038.github.io/blog/2014/07/12/couchdb-code-reading7/">以前読んでいる</a>ので簡単に書くと、<code>{couchdb, database_reads}</code>というkeyでETSにカウンタが登録されているので、それを更新しています。<code>couch_db:open_doc_int/3</code>も<a href="http://masayuki038.github.io/blog/2014/06/21/couchdb-code-reading5/#couchdbopendocint3-1">以前読んで</a>います。</p>
+
+<p><a href="http://masayuki038.github.io/blog/2014/06/21/couchdb-code-reading5/#couchdbmakedoc5">couch_db:make_doc/5</a>の内容から、<code>couch_db:read_doc/5</code>→<code>couch_d:read_doc/2</code>→<code>couch_file:pread_term/2</code>という流れでファイルからデータを読み出し、<code>couch_db:read_doc/2</code>が<code>{ok, {BodyData0, Atts00}}</code>という戻り値を返すことから、ドキュメント自体のデータとアタッチメントは<code>{BodyData0, Atts00}</code>としてシリアライズして保存されていることになります。</p>
+
+<p>また、<code>make_doc/5</code>で取得したアタッチメントのリストをドキュメントの形式に直す際、<code>#att.data</code>には<code>{Fd, Sp}</code>が設定されていることから<code>couch_db:make_doc/5</code>でファイルから読み出したアタッチメントの情報には、実データではなくポインタしか保存されていないことが分かります。</p>
+
+<p>そうなると、<a href="http://masayuki038.github.io/blog/2014/07/27/couchdb-code-reading9/#couchdbdocflushatts2">前回</a>の<code>couch_db:doc_flush_atts/2</code>にて、ファイルに書き込んだ際のポインタを<code>#att.data</code>に設定する箇所があるはずです。<code>couch_db:doc_flush_atts/2</code>は<code>couch_db:flush_att/2</code>の戻り値を<code>#doc.atts</code>に設定しているので、<code>couch_db:flush_att/2</code>が返す<code>#att.data</code>に、アタッチメントデータをファイルに書き込んだ際のポインタが設定されることになります。</p>
+
+<h2 id="write-attachement-data-to-file">Write attachement data to file</h2>
+
+<p><a href="http://masayuki038.github.io/blog/2014/07/27/couchdb-code-reading9/#couchdbdocflushatts2">前回</a>と同様に、<code>couch_db:flush_att/2</code>の<code>when is_binary(Data)</code>というガードがある関数を再度見てみます。</p>
+
+<p>couch_db.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>flush_att<span class="o">(</span>Fd, <span class="c1">#att{data=Data}=Att) when is_binary(Data) -&gt;
+</span><span class="ln">2</span><span class="c1"></span>    with_stream<span class="o">(</span>Fd, Att, fun<span class="o">(</span>OutputStream<span class="o">)</span> -&gt;
+<span class="ln">3</span>        couch_stream:write<span class="o">(</span>OutputStream, Data<span class="o">)</span>
+<span class="ln">4</span>    end<span class="o">)</span><span class="p">;</span></code></pre></div></p>
+
+<p>この関数の戻り値の<code>#att.data</code>に書き込んだデータのポインタが設定されていることになります。もう一度<code>couch_db:with_stream/3</code>を見てみます。</p>
+
+<p>couch_db.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>with_stream<span class="o">(</span>Fd, <span class="c1">#att{md5=InMd5,type=Type,encoding=Enc}=Att, Fun) -&gt;
+</span><span class="ln"> 2</span><span class="c1"></span>...
+<span class="ln"> 3</span>    <span class="o">{</span>StreamInfo, Len, IdentityLen, Md5, IdentityMd5<span class="o">}</span> <span class="o">=</span>
+<span class="ln"> 4</span>        couch_stream:close<span class="o">(</span>OutputStream<span class="o">)</span>,
+<span class="ln"> 5</span>    check_md5<span class="o">(</span>IdentityMd5, ReqMd5<span class="o">)</span>,
+<span class="ln"> 6</span>    <span class="o">{</span>AttLen, DiskLen, NewEnc<span class="o">}</span> <span class="o">=</span> <span class="k">case</span> Enc of
+<span class="ln"> 7</span>    identity -&gt;
+<span class="ln"> 8</span>        <span class="k">case</span> <span class="o">{</span>Md5, IdentityMd5<span class="o">}</span> of
+<span class="ln"> 9</span>        <span class="o">{</span>Same, Same<span class="o">}</span> -&gt;
+<span class="ln">10</span>            <span class="o">{</span>Len, IdentityLen, identity<span class="o">}</span><span class="p">;</span>
+<span class="ln">11</span>        _ -&gt;
+<span class="ln">12</span>            <span class="o">{</span>Len, IdentityLen, gzip<span class="o">}</span>
+<span class="ln">13</span>        end<span class="p">;</span>
+<span class="ln">14</span>    gzip -&gt;
+<span class="ln">15</span>        <span class="k">case</span> <span class="o">{</span>Att#att.att_len, Att#att.disk_len<span class="o">}</span> of
+<span class="ln">16</span>        <span class="o">{</span>AL, DL<span class="o">}</span> when <span class="nv">AL</span> <span class="o">=</span>:<span class="o">=</span> undefined orelse <span class="nv">DL</span> <span class="o">=</span>:<span class="o">=</span> undefined -&gt;
+<span class="ln">17</span>            % Compressed attachment uploaded through the standalone API.
+<span class="ln">18</span>            <span class="o">{</span>Len, Len, gzip<span class="o">}</span><span class="p">;</span>
+<span class="ln">19</span>        <span class="o">{</span>AL, DL<span class="o">}</span> -&gt;
+<span class="ln">20</span>            % This <span class="k">case</span> is used <span class="k">for</span> efficient push-replication, where a
+<span class="ln">21</span>            % compressed attachment is located in the body of multipart
+<span class="ln">22</span>            % content-type request.
+<span class="ln">23</span>            <span class="o">{</span>AL, DL, gzip<span class="o">}</span>
+<span class="ln">24</span>        end
+<span class="ln">25</span>    end,
+<span class="ln">26</span>    Att#att<span class="o">{</span>
+<span class="ln">27</span>        <span class="nv">data</span><span class="o">={</span>Fd,StreamInfo<span class="o">}</span>,
+<span class="ln">28</span>        <span class="nv">att_len</span><span class="o">=</span>AttLen,
+<span class="ln">29</span>        <span class="nv">disk_len</span><span class="o">=</span>DiskLen,
+<span class="ln">30</span>        <span class="nv">md5</span><span class="o">=</span>Md5,
+<span class="ln">31</span>        <span class="nv">encoding</span><span class="o">=</span>NewEnc
+<span class="ln">32</span>    <span class="o">}</span>.</code></pre></div></p>
+
+<p><a href="http://masayuki038.github.io/blog/2014/07/27/couchdb-code-reading9/#couchdbdocflushatts2">前回</a>は<code>couch_stream:close/1</code>までしか読みませんでしたが、今回はその先を読んでみます。</p>
+
+<p>この関数の最後のところで<code>#att.data</code>に対して、<code>{Fd, StreamInfo}</code>を設定しています。この<code>StreamInfo</code>は<code>couch_stream:close(OutputStream)</code>を呼び出した戻り値に含まれる値です。この関数は、アタッチメントのデータバッファに残ったデータをファイルに書き込む、という処理で、<code>StreamInfo</code>は書き込んだデータの開始位置とサイズを</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="o">[{</span>Pos, BinSize<span class="o">}</span>, <span class="o">{</span>Pos, BinSize<span class="o">}</span>, ...<span class="o">]</span></code></pre></div>
+
+<p>という形式で保持しています。</p>
+
+<p>この<code>StreamInfo</code>が<code>#att.data</code>に設定されていることによって、ドキュメントからアタッチメントのデータが取得できるようになっています。</p>
+
+<h2 id="data-block">Data block</h2>
+
+<p>一度見ていますが、改めてファイルからデータを読み込んでいる部分を見てみます。</p>
+
+<p>couch_file.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>handle_call<span class="o">({</span>pread_iolist, Pos<span class="o">}</span>, _From, File<span class="o">)</span> -&gt;
+<span class="ln"> 2</span>    <span class="o">{</span>RawData, NextPos<span class="o">}</span> <span class="o">=</span> try
+<span class="ln"> 3</span>        % up to 8Kbs of <span class="nb">read</span> ahead
+<span class="ln"> 4</span>        read_raw_iolist_int<span class="o">(</span>File, Pos, <span class="m">2</span> * ?SIZE_BLOCK - <span class="o">(</span>Pos rem ?SIZE_BLOCK<span class="o">))</span>
+<span class="ln"> 5</span>    catch
+<span class="ln"> 6</span>    _:_ -&gt;
+<span class="ln"> 7</span>        read_raw_iolist_int<span class="o">(</span>File, Pos, <span class="m">4</span><span class="o">)</span>
+<span class="ln"> 8</span>    end,
+<span class="ln"> 9</span>    <span class="s">&lt;&lt;Prefix:1/integer, Len:31/integer, RestRawData/binary&gt;&gt; =
+</span><span class="ln">10</span><span class="s">        iolist_to_binary(RawData),
+</span><span class="ln">11</span><span class="s">    case Prefix</span> of
+<span class="ln">12</span>    <span class="m">1</span> -&gt;
+<span class="ln">13</span>        <span class="o">{</span>Md5, IoList<span class="o">}</span> <span class="o">=</span> extract_md5<span class="o">(</span>
+<span class="ln">14</span>            maybe_read_more_iolist<span class="o">(</span>RestRawData, <span class="m">16</span> + Len, NextPos, File<span class="o">))</span>,
+<span class="ln">15</span>        <span class="o">{</span>reply, <span class="o">{</span>ok, IoList, Md5<span class="o">}</span>, File<span class="o">}</span><span class="p">;</span>
+<span class="ln">16</span>    <span class="m">0</span> -&gt;
+<span class="ln">17</span>        <span class="nv">IoList</span> <span class="o">=</span> maybe_read_more_iolist<span class="o">(</span>RestRawData, Len, NextPos, File<span class="o">)</span>,
+<span class="ln">18</span>        <span class="o">{</span>reply, <span class="o">{</span>ok, IoList, &lt;&lt;&gt;&gt;<span class="o">}</span>, File<span class="o">}</span>
+<span class="ln">19</span>    end<span class="p">;</span></code></pre></div></p>
+
+<p>最初に<code>couch_file:read_raw_iolist_int/3</code>で約8KB(2ブロック分)を読み込み、<code>NextPos</code>を取得しています。この関数と、この関数の中で呼び出している<code>couch_file:calculate_total_read_len/2</code>を見てみます。</p>
+
+<p>couch_file.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>-spec read_raw_iolist_int<span class="o">(</span><span class="c1">#file{}, Pos::non_neg_integer(), Len::non_neg_integer()) -&gt;
+</span><span class="ln"> 2</span><span class="c1"></span>    <span class="o">{</span>Data::iolist<span class="o">()</span>, CurPos::non_neg_integer<span class="o">()}</span>.
+<span class="ln"> 3</span>read_raw_iolist_int<span class="o">(</span>Fd, <span class="o">{</span>Pos, _Size<span class="o">}</span>, Len<span class="o">)</span> -&gt; % <span class="m">0110</span> UPGRADE CODE
+<span class="ln"> 4</span>    read_raw_iolist_int<span class="o">(</span>Fd, Pos, Len<span class="o">)</span><span class="p">;</span>
+<span class="ln"> 5</span>read_raw_iolist_int<span class="o">(</span><span class="c1">#file{fd = Fd}, Pos, Len) -&gt;
+</span><span class="ln"> 6</span><span class="c1"></span>    <span class="nv">BlockOffset</span> <span class="o">=</span> Pos rem ?SIZE_BLOCK,
+<span class="ln"> 7</span>    <span class="nv">TotalBytes</span> <span class="o">=</span> calculate_total_read_len<span class="o">(</span>BlockOffset, Len<span class="o">)</span>,
+<span class="ln"> 8</span>    <span class="o">{</span>ok, <span class="s">&lt;&lt;RawBin:TotalBytes/binary&gt;&gt;} = file:pread(Fd, Pos, TotalBytes),
+</span><span class="ln"> 9</span><span class="s">    {remove_block_prefixes(BlockOffset, RawBin</span><span class="o">)</span>, Pos + TotalBytes<span class="o">}</span>.
+<span class="ln">10</span>...
+<span class="ln">11</span>calculate_total_read_len<span class="o">(</span><span class="m">0</span>, FinalLen<span class="o">)</span> -&gt;
+<span class="ln">12</span>    calculate_total_read_len<span class="o">(</span><span class="m">1</span>, FinalLen<span class="o">)</span> + <span class="m">1</span><span class="p">;</span>
+<span class="ln">13</span>calculate_total_read_len<span class="o">(</span>BlockOffset, FinalLen<span class="o">)</span> -&gt;
+<span class="ln">14</span>    <span class="k">case</span> ?SIZE_BLOCK - BlockOffset of
+<span class="ln">15</span>    BlockLeft when BlockLeft &gt;<span class="o">=</span> FinalLen -&gt;
+<span class="ln">16</span>        FinalLen<span class="p">;</span>
+<span class="ln">17</span>    BlockLeft -&gt;
+<span class="ln">18</span>        FinalLen + <span class="o">((</span>FinalLen - BlockLeft<span class="o">)</span> div <span class="o">(</span>?SIZE_BLOCK -1<span class="o">))</span> +
+<span class="ln">19</span>            <span class="k">if</span> <span class="o">((</span>FinalLen - BlockLeft<span class="o">)</span> rem <span class="o">(</span>?SIZE_BLOCK -1<span class="o">))</span> <span class="o">=</span>:<span class="o">=</span> <span class="m">0</span> -&gt; <span class="m">0</span><span class="p">;</span>
+<span class="ln">20</span>                <span class="nb">true</span> -&gt; <span class="m">1</span> end
+<span class="ln">21</span>    end.</code></pre></div></p>
+
+<p><code>couch_file:read_raw_iolist_int/3</code>の呼び出しでは、<code>Len</code>は約8KB(2ブロック)、<code>BlockOffset</code>はデータファイルのファイルポインタ(<code>Pos</code>)に対して、ブロックの先頭からのオフセットを求めています。これらを<code>couch_file:calculate_total_read_len/2</code>に渡してファイルから読み込むサイズを決定し、ファイルの読み込みを開始したポイント(<code>Pos</code>)からそのサイズ分加算した数値を返します。これが<code>NextPos</code>になっています。</p>
+
+<p><code>couch_file:calculate_total_read_len/2</code>では、渡された<code>BlockOffset</code>から、そのオフセットからブロック終端までのサイズと、<code>FinalLen</code>で指定した読み出すサイズを比較しています。読み出すサイズ(<code>FinalLen</code>)がブロックオフセットからブロック終端までのサイズ、つまりそのブロック内に収まるのであれば<code>FinalLen</code>を返します。収まらない場合はこの関数の最後の式になるのですが、<code>(?SIZE_BLOCK -1)</code>という値を使っている理由が良くわかりません。そこで前回追っていったブロック単位で書き込む箇所を再度確認します。</p>
+
+<p>couch_file.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>make_blocks<span class="o">(</span>_BlockOffset, <span class="o">[])</span> -&gt;
+<span class="ln"> 2</span>    <span class="o">[]</span><span class="p">;</span>
+<span class="ln"> 3</span>make_blocks<span class="o">(</span><span class="m">0</span>, IoList<span class="o">)</span> -&gt;
+<span class="ln"> 4</span>    <span class="o">[</span><span class="s">&lt;&lt;0&gt;&gt; | make_blocks(1, IoList)];
+</span><span class="ln"> 5</span><span class="s">make_blocks(BlockOffset, IoList) -&gt;
+</span><span class="ln"> 6</span><span class="s">    case split_iolist(IoList, (?SIZE_BLOCK - BlockOffset), []) of
+</span><span class="ln"> 7</span><span class="s">    {Begin, End} -&gt;
+</span><span class="ln"> 8</span><span class="s">        [Begin | make_blocks(0</span>, End<span class="o">)]</span><span class="p">;</span>
+<span class="ln"> 9</span>    _SplitRemaining -&gt;
+<span class="ln">10</span>        IoList
+<span class="ln">11</span>    end.</code></pre></div></p>
+
+<p>この関数を見ると、ブロックの先頭に<code>&lt;&lt;0&gt;&gt;</code>を設定しています。<code>(?SIZE_BLOCK -1)</code>の-1はこの分を意図しているようです。</p>
+
+<p>最後に<code>couch_file:read_raw_iolist_int/3</code>で約8KB読み込んだ後に呼び出す<code>couch_file:maybe_read_more_iolist/4</code>を見てみます。</p>
+
+<p>couch_file.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>maybe_read_more_iolist<span class="o">(</span>Buffer, DataSize, _, _<span class="o">)</span>
+<span class="ln">2</span>    when <span class="nv">DataSize</span> <span class="o">=</span>&lt; byte_size<span class="o">(</span>Buffer<span class="o">)</span> -&gt;
+<span class="ln">3</span>    <span class="s">&lt;&lt;Data:Data</span>Size/binary, _/binary&gt;&gt; <span class="o">=</span> Buffer,
+<span class="ln">4</span>    <span class="o">[</span>Data<span class="o">]</span><span class="p">;</span>
+<span class="ln">5</span>maybe_read_more_iolist<span class="o">(</span>Buffer, DataSize, NextPos, File<span class="o">)</span> -&gt;
+<span class="ln">6</span>    <span class="o">{</span>Missing, _<span class="o">}</span> <span class="o">=</span>
+<span class="ln">7</span>        read_raw_iolist_int<span class="o">(</span>File, NextPos, DataSize - byte_size<span class="o">(</span>Buffer<span class="o">))</span>,
+<span class="ln">8</span>    <span class="o">[</span>Buffer, Missing<span class="o">]</span>.</code></pre></div></p>
+
+<p><code>Buffer</code>は読み込んだ8KBの中の実データ部(<code>RestRawData</code>)、<code>Len</code>は読み込んだ8KBの中で31bitで表現されるデータサイズです。<code>RestRawData</code>のサイズ&gt;=<code>Len</code>、つまり読み込み済みのデータにすべて収まっている場合は、<code>RestRawData</code>の先頭から<code>Len</code>の長さ分だけ取って、<code>Data</code>にバインドします。収まらない場合は、<code>couch_file:read_raw_iolist_int/3</code>を呼び出して収まらない分を読み込みます。</p>
+
+<p>以上より、CouchDBは各データを以下の形式でファイルに読み書きしているようです。</p>
+
+<p><img src="/images/couchdb/block.png" alt="couchdb_block" /></p>
+
+<p>1ブロックは4KBで、データのポインタはブロック内に存在しています。先頭1bitはフォーマットレイアウト、その次の31ビットはデータサイズ、残りはtermをシリアライズしたバイナリデータです。</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>前回読んだアタッチメントのデータが、データファイル上でどのように識別されるか見てみました。</p>
+
+<p>アタッチメントデータを表す識別子はデータファイルには書き込まれず、書き込んだデータファイルのファイルポインタを<code>#att.data</code>に設定しているだけでした。これはファイルに書き込まれたデータそのものにはデータ種別を表す識別子が無くて、データ種別を表現するオブジェクトがそのファイルポインタを持つ、という管理をしていることになります。</p>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        This post was published <strong>1281</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2018 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>

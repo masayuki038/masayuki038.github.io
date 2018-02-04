@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Implicit Conversion in Scala</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="Actor model in Scala 先週、ちょっとしたアイデアとアクターモデルの相性が良いことに気がつき、アクターモデルを使ってコードを書いてみたいと思うようになりまし" />
+
+  
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@masayuki" />
+    <meta name="twitter:title" content="Implicit Conversion in Scala" />
+    <meta name="twitter:description" content="Actor model in Scala 先週、ちょっとしたアイデアとアクターモデルの相性が良いことに気がつき、アクターモデルを使ってコードを書いてみたいと思うようになりまし" />
+    <meta name="twitter:image" content="/img/avatar.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Implicit Conversion in Scala" />
+  <meta property="og:description" content="Actor model in Scala 先週、ちょっとしたアイデアとアクターモデルの相性が良いことに気がつき、アクターモデルを使ってコードを書いてみたいと思うようになりまし" />
+  <meta property="og:url" content="/2012/07/16/implicit-conversion-in-scala/" />
+  <meta property="og:image" content="/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.32" />
+
+
+<link rel="canonical" href="/2012/07/16/implicit-conversion-in-scala/" />
+<link rel="alternative" href="/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="/css/bundle.css" />
+<link rel="stylesheet" href="/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://s.gravatar.com/avatar/4b97fb839e6040cfb353bd667ac93e54?s=80" alt="Avatar">
+  
+  <h2 class="title">act-act</h2>
+  
+  <p class="subtitle"></p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Implicit Conversion in Scala</h1>
+      <p class="post-meta">@Masayuki Takahashi · Jul 16, 2012 · 5 min read</p>
+    </header>
+    <article class="post-content">
+
+<h1 id="actor-model-in-scala">Actor model in Scala</h1>
+
+<p>先週、ちょっとしたアイデアとアクターモデルの相性が良いことに気がつき、アクターモデルを使ってコードを書いてみたいと思うようになりました。</p>
+
+<p>アクターモデルは、ErlangやScalaのように言語に組み込まれていたり、Akkaのようにライブラリとして提供されています。最近は仕事も仕事以外のコードもJavaで組むことが多いのですが、これを機にErlangかScalaのどちらかを学ぼうと考えました。これまでJavaとJVMに触れている機会が多いことを考え、まずはScalaを学んでみることにしました。</p>
+
+<h1 id="implicit-conversion">Implicit Conversion</h1>
+
+<p>勉強がてら、WEB+DB vol.67の赤黒木のHaskellコードをScalaで書いてみることにしたのですが、何せ命令プログラミング脳なのでなかなか思うように進みません。特に躓くのは、型が合わない際の対処です。Scalaでは暗黙の型変換(implicit conversion)があり、コード上では型が合わなくてもこの機構によりコンパイルが通ることがあります。今回はその暗黙の型変換絡みで理解に時間がかかった点を一つ記載します。</p>
+
+<p>Scalaには、implicitキーワードを付けたメソッドを作成し、その中で型変換を行う処理を記載することで、暗黙の型変換を実現します。</p>
+
+<p>ImplicitConversionTest.scala:
+<div class="highlight"><pre class="chroma"><code class="language-scala" data-lang="scala"><span class="ln"> 1</span><span class="k">package</span> <span class="nn">net.wrap_trap.scala.examples</span>
+<span class="ln"> 2</span>
+<span class="ln"> 3</span><span class="k">object</span> <span class="nc">ImplicitConversionTest</span> <span class="o">{</span>
+<span class="ln"> 4</span>    <span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span> <span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span> <span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+<span class="ln"> 5</span>        <span class="k">val</span> <span class="n">s1</span> <span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">&#34;Foo&#34;</span>
+<span class="ln"> 6</span>        <span class="k">val</span> <span class="n">i</span> <span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="n">s1</span> <span class="c1">// compile error &#39;type mismatch; found : String required: Int&#39; without string2Int 
+</span><span class="ln"> 7</span><span class="c1"></span>        <span class="nc">System</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">println</span><span class="o">(</span><span class="s">&#34;i: &#34;</span> <span class="o">+</span> <span class="n">i</span><span class="o">);</span>
+<span class="ln"> 8</span>    <span class="o">}</span>
+<span class="ln"> 9</span>  
+<span class="ln">10</span>    <span class="k">implicit</span> <span class="k">def</span> <span class="n">string2Int</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="o">{</span>
+<span class="ln">11</span>          <span class="mi">1</span>
+<span class="ln">12</span>    <span class="o">}</span>
+<span class="ln">13</span><span class="o">}</span></code></pre></div></p>
+
+<p>上記のコードでは、StringをIntの1に変換するメソッドstring2Intを定義しています。このメソッドが定義されていない場合、変数iを定義する箇所でコンパイルエラーとなります。実行すると、コンソールには「i: 1」と表示されることから、このメソッドが暗黙の型変換を行っていることが分かります。</p>
+
+<h1 id="why-do-ordered-a-require-an-implicit-conversion-from-string-to-stringops">Why do Ordered[A] require an implicit conversion from String to StringOps?</h1>
+
+<p>今回、すんなり理解できなかったのは以下のコードです。</p>
+
+<p>OrderComparableTest.scala:
+<div class="highlight"><pre class="chroma"><code class="language-scala" data-lang="scala"><span class="ln"> 1</span><span class="k">package</span> <span class="nn">net.wrap_trap.scala.examples</span>
+<span class="ln"> 2</span>
+<span class="ln"> 3</span><span class="k">object</span> <span class="nc">OrderedComparableTest</span> <span class="o">{</span>
+<span class="ln"> 4</span>    <span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span> <span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span> <span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+<span class="ln"> 5</span>        <span class="k">val</span> <span class="n">s1</span> <span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">&#34;Hoge&#34;</span>
+<span class="ln"> 6</span>        <span class="k">val</span> <span class="n">s2</span> <span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">&#34;Bar&#34;</span>
+<span class="ln"> 7</span>        <span class="nc">System</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">println</span><span class="o">(</span><span class="k">new</span> <span class="nc">Sample1</span><span class="o">[</span><span class="kt">String</span><span class="o">](</span><span class="n">s1</span><span class="o">).</span><span class="n">compare</span><span class="o">(</span><span class="n">s2</span><span class="o">))</span>
+<span class="ln"> 8</span>        <span class="nc">System</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">println</span><span class="o">(</span><span class="k">new</span> <span class="nc">Sample2</span><span class="o">[</span><span class="kt">String</span><span class="o">](</span><span class="n">s1</span><span class="o">).</span><span class="n">compare</span><span class="o">(</span><span class="n">s2</span><span class="o">))</span> <span class="c1">// &#39;Implicit conversions found: s1 =&gt; augmentString(s1)&#39;
+</span><span class="ln"> 9</span><span class="c1"></span>    <span class="o">}</span>
+<span class="ln">10</span><span class="o">}</span>
+<span class="ln">11</span>
+<span class="ln">12</span><span class="k">class</span> <span class="nc">Sample1</span><span class="o">[</span><span class="kt">K</span><span class="o">](</span><span class="k">val</span> <span class="n">k</span> <span class="k">:</span> <span class="kt">Comparable</span><span class="o">[</span><span class="kt">K</span><span class="o">])</span> <span class="o">{</span>
+<span class="ln">13</span>    <span class="k">def</span> <span class="n">compare</span><span class="o">(</span><span class="n">k2</span> <span class="k">:</span> <span class="kt">K</span><span class="o">)</span> <span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="o">{</span>
+<span class="ln">14</span>        <span class="nc">System</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">println</span><span class="o">(</span><span class="s">&#34;Sample1 type of k: &#34;</span> <span class="o">+</span> <span class="n">k</span><span class="o">.</span><span class="n">getClass</span><span class="o">().</span><span class="n">getName</span><span class="o">())</span>
+<span class="ln">15</span>        <span class="k">return</span> <span class="n">k</span><span class="o">.</span><span class="n">compareTo</span><span class="o">(</span><span class="n">k2</span><span class="o">)</span>
+<span class="ln">16</span>    <span class="o">}</span>
+<span class="ln">17</span><span class="o">}</span>
+<span class="ln">18</span>
+<span class="ln">19</span><span class="k">class</span> <span class="nc">Sample2</span><span class="o">[</span><span class="kt">K</span><span class="o">](</span><span class="k">val</span> <span class="n">k</span> <span class="k">:</span> <span class="kt">Ordered</span><span class="o">[</span><span class="kt">K</span><span class="o">])</span> <span class="o">{</span>
+<span class="ln">20</span>    <span class="k">def</span> <span class="n">compare</span><span class="o">(</span><span class="n">k2</span> <span class="k">:</span> <span class="kt">K</span><span class="o">)</span> <span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="o">{</span>
+<span class="ln">21</span>        <span class="nc">System</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">println</span><span class="o">(</span><span class="s">&#34;Sample2 type of k: &#34;</span> <span class="o">+</span> <span class="n">k</span><span class="o">.</span><span class="n">getClass</span><span class="o">().</span><span class="n">getName</span><span class="o">())</span>
+<span class="ln">22</span>        <span class="k">return</span> <span class="n">k</span><span class="o">.</span><span class="n">compareTo</span><span class="o">(</span><span class="n">k2</span><span class="o">)</span>
+<span class="ln">23</span>    <span class="o">}</span>
+<span class="ln">24</span><span class="o">}</span></code></pre></div></p>
+
+<p>Sample1とSample2ではcompareToメソッドを使って値の比較を行います。Comparable[A]とOrdered[A]は共にtraitで、Ordered[A]はComparable[A]を継承しています。compareToメソッドはComparable[A]でabstract methodとして、Ordered[A]ではconcrete methodとして定義されています。</p>
+
+<p>このコードをScala IDEで見ると、8行目でs1がaugmentStringというメソッドにより型変換されると表示されます。augmentStringというメソッドは暗黙的にインポートされるPredefオブジェクトにて定義されており、Stringを<a href="http://www.scala-lang.org/api/current/scala/collection/immutable/StringOps.html">StringOps</a>という別のクラスに変換します。</p>
+
+<p>StringはcompareToメソッドを持っている為、Ordered[A]を使用している22行目、およびComparable[A]を使用している15行目は共にコンパイルエラーにならず、わざわざ型変換する必要は無いように見えます。しかし、何故Ordered[A]を使用しているSample2だけ型変換が行われるのか？という点が理解できませんでした。</p>
+
+<h1 id="answer">Answer</h1>
+
+<p>Ordered[A]ではcompareToはconcrete methodなので、メソッドが実装されています。このコードは以下のようになっています。</p>
+
+<p>Ordered.scala:
+<div class="highlight"><pre class="chroma"><code class="language-scala" data-lang="scala"><span class="ln"> 1</span><span class="k">trait</span> <span class="nc">Ordered</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="nc">extends</span> <span class="n">java</span><span class="o">.</span><span class="n">lang</span><span class="o">.</span><span class="nc">Comparable</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="o">{</span>
+<span class="ln"> 2</span>
+<span class="ln"> 3</span>  <span class="cm">/** Result of comparing `this` with operand `that`.
+</span><span class="ln"> 4</span><span class="cm">   *
+</span><span class="ln"> 5</span><span class="cm">   * Implement this method to determine how instances of A will be sorted.
+</span><span class="ln"> 6</span><span class="cm">   *
+</span><span class="ln"> 7</span><span class="cm">   * Returns `x` where:
+</span><span class="ln"> 8</span><span class="cm">   *
+</span><span class="ln"> 9</span><span class="cm">   *   - `x &lt; 0` when `this &lt; that`
+</span><span class="ln">10</span><span class="cm">   *
+</span><span class="ln">11</span><span class="cm">   *   - `x == 0` when `this == that`
+</span><span class="ln">12</span><span class="cm">   *
+</span><span class="ln">13</span><span class="cm">   *   - `x &gt; 0` when  `this &gt; that`
+</span><span class="ln">14</span><span class="cm">   *
+</span><span class="ln">15</span><span class="cm">   */</span>
+<span class="ln">16</span>  <span class="k">def</span> <span class="n">compare</span><span class="o">(</span><span class="n">that</span><span class="k">:</span> <span class="kt">A</span><span class="o">)</span><span class="k">:</span> <span class="kt">Int</span>
+<span class="ln">17</span>
+<span class="ln">18</span>  <span class="o">...(</span><span class="n">snip</span><span class="o">)...</span>
+<span class="ln">19</span>
+<span class="ln">20</span>  <span class="k">def</span> <span class="n">compareTo</span><span class="o">(</span><span class="n">that</span><span class="k">:</span> <span class="kt">A</span><span class="o">)</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="n">compare</span><span class="o">(</span><span class="n">that</span><span class="o">)</span>
+<span class="ln">21</span><span class="o">}</span></code></pre></div></p>
+
+<p>Ordered[A]のcomareToの実装は、compareというabstract methodの呼び出しとなっていました。こうなると[A]にあたるStringはcompareというメソッドが定義されている必要があるのですが、定義されていません。そしてStringOpsにはcompareというメソッドが定義されており、ここでString-&gt;StringOpsへの型変換が行われます。</p>
+
+<p>一方、Comparable[A]のcompareToメソッドはabstract methodなので実装がありません。AはcompareToを実装しているクラスが必要になりますが、StringはcompareToを実装しており、15行目のcompareToではString#compareToが呼び出されます。</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>Predefで定義されている型変換は他にも色々とあり、型が合わない際に、こちらから呼び出してもいない暗黙の型変換メソッドの名前がコンパイルエラーに含まれてくるので、最初は混乱しました。</p>
+
+<p>Scala IDEは暗黙の型変換がどこで行われるかを表示してくれる為、大分助かります。これをうまく使って、Scalaの型変換に慣れていきたいと思います。</p>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        This post was published <strong>2029</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2018 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>
