@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Eralng on act-act</title>
-    <link>https://masayuki038.github.io/categories/eralng/</link>
+    <link>/categories/eralng/</link>
     <description>Recent content in Eralng on act-act</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja</language>
     <lastBuildDate>Sun, 27 Jul 2014 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://masayuki038.github.io/categories/eralng/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/categories/eralng/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>CouchDB Source Code Reading part9</title>
-      <link>https://masayuki038.github.io/2014/07/27/couchdb-code-reading9/</link>
+      <link>/2014/07/27/couchdb-code-reading9/</link>
       <pubDate>Sun, 27 Jul 2014 00:00:00 +0000</pubDate>
       
-      <guid>https://masayuki038.github.io/2014/07/27/couchdb-code-reading9/</guid>
+      <guid>/2014/07/27/couchdb-code-reading9/</guid>
       <description>couch_db:update_doc/4 引き続きcouch_db:update_docs/4を。 couch_db.erl: 1 if (AllOrNothing) and (PreCommitFailures /= []) -&amp;gt; 2 {aborted, 3 lists:foldl(fun({#doc{id=Id,revs=Revs}, Ref},Acc) -&amp;gt; 4 case lists:keyfind(Ref,1,PreCommitFailures) of 5 {Ref, Error} -&amp;gt; 6 case Revs of 7 {Pos, [RevId|_]} -&amp;gt; 8 [{{Id,{Pos, RevId}}, Error} | Acc]; 9 {0, []} -&amp;gt;</description>
     </item>
     

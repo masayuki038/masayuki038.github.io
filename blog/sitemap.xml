@@ -3,381 +3,381 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://masayuki038.github.io/2017/06/17/file-serdes-with-apache-arrow/</loc>
+    <loc>/2017/06/17/file-serdes-with-apache-arrow/</loc>
     <lastmod>2017-06-17T12:57:35+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2017/06/04/drill-remote-debugging/</loc>
+    <loc>/2017/06/04/drill-remote-debugging/</loc>
     <lastmod>2017-06-04T12:57:35+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2017/05/06/migrate-to-jekyll3/</loc>
+    <loc>/2017/05/06/migrate-to-jekyll3/</loc>
     <lastmod>2017-05-06T12:57:35+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2016/05/04/update-octopress/</loc>
+    <loc>/2016/05/04/update-octopress/</loc>
     <lastmod>2016-05-04T14:24:20+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2015/01/03/getting-started-with-quasar/</loc>
+    <loc>/2015/01/03/getting-started-with-quasar/</loc>
     <lastmod>2015-01-03T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2014/08/24/mvndebug/</loc>
+    <loc>/2014/08/24/mvndebug/</loc>
     <lastmod>2014-08-24T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2014/08/17/couchdb-code-reading11/</loc>
+    <loc>/2014/08/17/couchdb-code-reading11/</loc>
     <lastmod>2014-08-17T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2014/08/03/couchdb-code-reading10/</loc>
+    <loc>/2014/08/03/couchdb-code-reading10/</loc>
     <lastmod>2014-08-03T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2014/07/27/couchdb-code-reading9/</loc>
+    <loc>/2014/07/27/couchdb-code-reading9/</loc>
     <lastmod>2014-07-27T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2014/07/19/couchdb-code-reading8/</loc>
+    <loc>/2014/07/19/couchdb-code-reading8/</loc>
     <lastmod>2014-07-19T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2014/07/12/couchdb-code-reading7/</loc>
+    <loc>/2014/07/12/couchdb-code-reading7/</loc>
     <lastmod>2014-07-12T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2014/07/05/couchdb-code-reading6/</loc>
+    <loc>/2014/07/05/couchdb-code-reading6/</loc>
     <lastmod>2014-07-05T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2014/06/21/couchdb-code-reading5/</loc>
+    <loc>/2014/06/21/couchdb-code-reading5/</loc>
     <lastmod>2014-06-21T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2014/06/08/couchdb-code-reading4/</loc>
+    <loc>/2014/06/08/couchdb-code-reading4/</loc>
     <lastmod>2014-06-08T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2014/05/30/couchdb-code-reading3/</loc>
+    <loc>/2014/05/30/couchdb-code-reading3/</loc>
     <lastmod>2014-05-30T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2014/05/25/couchdb-code-reading2/</loc>
+    <loc>/2014/05/25/couchdb-code-reading2/</loc>
     <lastmod>2014-05-25T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2014/05/24/couchdb-code-reading1/</loc>
+    <loc>/2014/05/24/couchdb-code-reading1/</loc>
     <lastmod>2014-05-24T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2014/02/22/devenv-rails4-with-docker-ansible/</loc>
+    <loc>/2014/02/22/devenv-rails4-with-docker-ansible/</loc>
     <lastmod>2014-02-22T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2014/01/19/serf-code-reading2/</loc>
+    <loc>/2014/01/19/serf-code-reading2/</loc>
     <lastmod>2014-01-19T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2014/01/13/serf-code-reading/</loc>
+    <loc>/2014/01/13/serf-code-reading/</loc>
     <lastmod>2014-01-13T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2013/12/30/how-to-assign-a-port-mapping-to-an-running-docker-container/</loc>
+    <loc>/2013/12/30/how-to-assign-a-port-mapping-to-an-running-docker-container/</loc>
     <lastmod>2013-12-30T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2013/10/13/mock-hive-server/</loc>
+    <loc>/2013/10/13/mock-hive-server/</loc>
     <lastmod>2013-10-13T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2013/09/23/erlcscope-and-ascope-el/</loc>
+    <loc>/2013/09/23/erlcscope-and-ascope-el/</loc>
     <lastmod>2013-09-23T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2013/09/21/package-el-and-init-loader-el/</loc>
+    <loc>/2013/09/21/package-el-and-init-loader-el/</loc>
     <lastmod>2013-09-21T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2013/09/16/devenv-for-erlang/</loc>
+    <loc>/2013/09/16/devenv-for-erlang/</loc>
     <lastmod>2013-09-16T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2013/06/09/thrift-hive-part2/</loc>
+    <loc>/2013/06/09/thrift-hive-part2/</loc>
     <lastmod>2013-06-09T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2013/06/05/thrift-hive-part1/</loc>
+    <loc>/2013/06/05/thrift-hive-part1/</loc>
     <lastmod>2013-06-05T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2013/04/18/erlang-mode-and-distel/</loc>
+    <loc>/2013/04/18/erlang-mode-and-distel/</loc>
     <lastmod>2013-04-18T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2012/08/09/b-plus-tree-in-ruby/</loc>
+    <loc>/2012/08/09/b-plus-tree-in-ruby/</loc>
     <lastmod>2012-08-09T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2012/07/23/ordered-and-ordering-in-scala/</loc>
+    <loc>/2012/07/23/ordered-and-ordering-in-scala/</loc>
     <lastmod>2012-07-23T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2012/07/16/implicit-conversion-in-scala/</loc>
+    <loc>/2012/07/16/implicit-conversion-in-scala/</loc>
     <lastmod>2012-07-16T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2012/06/24/translate-redis-expire-appendix/</loc>
+    <loc>/2012/06/24/translate-redis-expire-appendix/</loc>
     <lastmod>2012-06-24T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2012/05/13/see-jit-compiled-code/</loc>
+    <loc>/2012/05/13/see-jit-compiled-code/</loc>
     <lastmod>2012-05-13T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2012/05/12/inlining-by-jit/</loc>
+    <loc>/2012/05/12/inlining-by-jit/</loc>
     <lastmod>2012-05-12T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2012/05/06/get-utf8-bytes2/</loc>
+    <loc>/2012/05/06/get-utf8-bytes2/</loc>
     <lastmod>2012-05-06T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2012/05/04/get-utf8-bytes/</loc>
+    <loc>/2012/05/04/get-utf8-bytes/</loc>
     <lastmod>2012-05-04T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2012/05/03/fsm-bdb-write1/</loc>
+    <loc>/2012/05/03/fsm-bdb-write1/</loc>
     <lastmod>2012-05-03T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2012/04/30/nio2-asyncio/</loc>
+    <loc>/2012/04/30/nio2-asyncio/</loc>
     <lastmod>2012-04-30T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2012/04/27/nio-non-blocking/</loc>
+    <loc>/2012/04/27/nio-non-blocking/</loc>
     <lastmod>2012-04-27T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2012/04/26/nio-multiplexing2/</loc>
+    <loc>/2012/04/26/nio-multiplexing2/</loc>
     <lastmod>2012-04-26T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2012/04/22/nio-multiplexing/</loc>
+    <loc>/2012/04/22/nio-multiplexing/</loc>
     <lastmod>2012-04-22T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2012/04/15/file-stored-map-bench2/</loc>
+    <loc>/2012/04/15/file-stored-map-bench2/</loc>
     <lastmod>2012-04-15T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2012/04/10/maven-repo-problem/</loc>
+    <loc>/2012/04/10/maven-repo-problem/</loc>
     <lastmod>2012-04-10T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2012/04/08/file-stored-map/</loc>
+    <loc>/2012/04/08/file-stored-map/</loc>
     <lastmod>2012-04-08T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/2012/04/06/start/</loc>
+    <loc>/2012/04/06/start/</loc>
     <lastmod>2012-04-06T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/categories/ansible/</loc>
+    <loc>/categories/ansible/</loc>
     <lastmod>2014-02-22T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/categories/</loc>
+    <loc>/categories/</loc>
     <lastmod>2014-02-22T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/categories/couchdb/</loc>
+    <loc>/categories/couchdb/</loc>
     <lastmod>2014-08-17T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/categories/docker/</loc>
+    <loc>/categories/docker/</loc>
     <lastmod>2014-02-22T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/categories/emacs/</loc>
+    <loc>/categories/emacs/</loc>
     <lastmod>2013-09-21T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/categories/eralng/</loc>
+    <loc>/categories/eralng/</loc>
     <lastmod>2014-07-27T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/categories/erlang/</loc>
+    <loc>/categories/erlang/</loc>
     <lastmod>2014-08-17T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/categories/filestoredmap/</loc>
+    <loc>/categories/filestoredmap/</loc>
     <lastmod>2012-05-03T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/categories/hive/</loc>
+    <loc>/categories/hive/</loc>
     <lastmod>2013-10-13T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/categories/hotspot/</loc>
+    <loc>/categories/hotspot/</loc>
     <lastmod>2012-05-13T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/categories/java/</loc>
+    <loc>/categories/java/</loc>
     <lastmod>2015-01-03T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/categories/jdb/</loc>
+    <loc>/categories/jdb/</loc>
     <lastmod>2014-08-24T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/categories/m2eclipse/</loc>
+    <loc>/categories/m2eclipse/</loc>
     <lastmod>2012-04-10T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/categories/maven/</loc>
+    <loc>/categories/maven/</loc>
     <lastmod>2014-08-24T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/categories/nio/</loc>
+    <loc>/categories/nio/</loc>
     <lastmod>2012-04-30T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/categories/octopress/</loc>
+    <loc>/categories/octopress/</loc>
     <lastmod>2016-05-04T14:24:20+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/categories/performance/</loc>
+    <loc>/categories/performance/</loc>
     <lastmod>2012-04-15T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/post/</loc>
+    <loc>/post/</loc>
     <lastmod>2017-06-17T12:57:35+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/categories/rails/</loc>
+    <loc>/categories/rails/</loc>
     <lastmod>2014-02-22T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/categories/redis/</loc>
+    <loc>/categories/redis/</loc>
     <lastmod>2012-06-24T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/categories/ruby/</loc>
+    <loc>/categories/ruby/</loc>
     <lastmod>2014-02-22T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/categories/scala/</loc>
+    <loc>/categories/scala/</loc>
     <lastmod>2012-07-23T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/categories/serf/</loc>
+    <loc>/categories/serf/</loc>
     <lastmod>2014-01-19T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/tags/</loc>
+    <loc>/tags/</loc>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/categories/thrift/</loc>
+    <loc>/categories/thrift/</loc>
     <lastmod>2013-10-13T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://masayuki038.github.io/</loc>
+    <loc>/</loc>
     <lastmod>2017-06-17T12:57:35+00:00</lastmod>
     <priority>0</priority>
   </url>

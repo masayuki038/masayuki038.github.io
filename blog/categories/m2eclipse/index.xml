@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>M2eclipse on act-act</title>
-    <link>https://masayuki038.github.io/categories/m2eclipse/</link>
+    <link>/categories/m2eclipse/</link>
     <description>Recent content in M2eclipse on act-act</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja</language>
     <lastBuildDate>Tue, 10 Apr 2012 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://masayuki038.github.io/categories/m2eclipse/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/categories/m2eclipse/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>ArtifactResolutionException raised</title>
-      <link>https://masayuki038.github.io/2012/04/10/maven-repo-problem/</link>
+      <link>/2012/04/10/maven-repo-problem/</link>
       <pubDate>Tue, 10 Apr 2012 00:00:00 +0000</pubDate>
       
-      <guid>https://masayuki038.github.io/2012/04/10/maven-repo-problem/</guid>
+      <guid>/2012/04/10/maven-repo-problem/</guid>
       <description>m2eclipseでArtifactResolutionExceptionが出て困った話。 Mavenのリモートリポジトリで管理されていないj</description>
     </item>
     
