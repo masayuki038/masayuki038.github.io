@@ -2,30 +2,30 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Serf on act-act</title>
-    <link>https://masayuki038.github.io/blog/categories/serf/</link>
+    <link>https://masayuki038.github.io/categories/serf/</link>
     <description>Recent content in Serf on act-act</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja</language>
     <lastBuildDate>Sun, 19 Jan 2014 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://masayuki038.github.io/blog/categories/serf/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://masayuki038.github.io/categories/serf/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Serf Source Code Reading part2</title>
-      <link>https://masayuki038.github.io/blog/2014/01/19/serf-code-reading2/</link>
+      <link>https://masayuki038.github.io/2014/01/19/serf-code-reading2/</link>
       <pubDate>Sun, 19 Jan 2014 00:00:00 +0000</pubDate>
       
-      <guid>https://masayuki038.github.io/blog/2014/01/19/serf-code-reading2/</guid>
+      <guid>https://masayuki038.github.io/2014/01/19/serf-code-reading2/</guid>
       <description>前回のmemberlistに続き、今回はserfのコードを読んでみました。 Serf Summery serfは、memberlistを利用してクラスタ内のノードの</description>
     </item>
     
     <item>
       <title>Serf Source Code Reading</title>
-      <link>https://masayuki038.github.io/blog/2014/01/13/serf-code-reading/</link>
+      <link>https://masayuki038.github.io/2014/01/13/serf-code-reading/</link>
       <pubDate>Mon, 13 Jan 2014 00:00:00 +0000</pubDate>
       
-      <guid>https://masayuki038.github.io/blog/2014/01/13/serf-code-reading/</guid>
+      <guid>https://masayuki038.github.io/2014/01/13/serf-code-reading/</guid>
       <description>このところ、Serfのコードを読んでいました。一旦、読んで理解した内容をまとめてみたいと思います。 Packages Serfは大きく次の2つのパッケージに分</description>
     </item>
     

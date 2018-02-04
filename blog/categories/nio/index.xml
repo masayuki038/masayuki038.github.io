@@ -2,48 +2,48 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Nio on act-act</title>
-    <link>https://masayuki038.github.io/blog/categories/nio/</link>
+    <link>https://masayuki038.github.io/categories/nio/</link>
     <description>Recent content in Nio on act-act</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja</language>
     <lastBuildDate>Mon, 30 Apr 2012 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://masayuki038.github.io/blog/categories/nio/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://masayuki038.github.io/categories/nio/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Java NIO2 Asynchronous</title>
-      <link>https://masayuki038.github.io/blog/2012/04/30/nio2-asyncio/</link>
+      <link>https://masayuki038.github.io/2012/04/30/nio2-asyncio/</link>
       <pubDate>Mon, 30 Apr 2012 00:00:00 +0000</pubDate>
       
-      <guid>https://masayuki038.github.io/blog/2012/04/30/nio2-asyncio/</guid>
+      <guid>https://masayuki038.github.io/2012/04/30/nio2-asyncio/</guid>
       <description>Asynchronous 前回ノンブロッキングI/Oを使ってみましたが、今回はNIO2の非同期I/Oを試してみます。 NIO2の非同期I/Oは、大きく2つの方法が提供</description>
     </item>
     
     <item>
       <title>Java NIO Non-Blocking I/O</title>
-      <link>https://masayuki038.github.io/blog/2012/04/27/nio-non-blocking/</link>
+      <link>https://masayuki038.github.io/2012/04/27/nio-non-blocking/</link>
       <pubDate>Fri, 27 Apr 2012 00:00:00 +0000</pubDate>
       
-      <guid>https://masayuki038.github.io/blog/2012/04/27/nio-non-blocking/</guid>
+      <guid>https://masayuki038.github.io/2012/04/27/nio-non-blocking/</guid>
       <description>configureBlocking(false) 前回のコードで、acceptした後にOP_READでselectorにregisterする直前に、以下のような記述がありました。 SocketChannel channel = serverChannel.accept(); channel.configureBlocking(false);</description>
     </item>
     
     <item>
       <title>Java NIO I/O Multiplexing2(solved)</title>
-      <link>https://masayuki038.github.io/blog/2012/04/26/nio-multiplexing2/</link>
+      <link>https://masayuki038.github.io/2012/04/26/nio-multiplexing2/</link>
       <pubDate>Thu, 26 Apr 2012 00:00:00 +0000</pubDate>
       
-      <guid>https://masayuki038.github.io/blog/2012/04/26/nio-multiplexing2/</guid>
+      <guid>https://masayuki038.github.io/2012/04/26/nio-multiplexing2/</guid>
       <description>Stack Overflow 前回のnioのsocket readがbusy loopになってしまう問題について、Stack Overflowでも同じような事象が出ていまし</description>
     </item>
     
     <item>
       <title>Java NIO I/O Multiplexing</title>
-      <link>https://masayuki038.github.io/blog/2012/04/22/nio-multiplexing/</link>
+      <link>https://masayuki038.github.io/2012/04/22/nio-multiplexing/</link>
       <pubDate>Sun, 22 Apr 2012 00:00:00 +0000</pubDate>
       
-      <guid>https://masayuki038.github.io/blog/2012/04/22/nio-multiplexing/</guid>
+      <guid>https://masayuki038.github.io/2012/04/22/nio-multiplexing/</guid>
       <description>Introduction たまたま仕事でnioを使っているコードを読む機会があり、それをキッカケにnioのI/O多重化を試してみました。 Single Process, Single Thread, I/O Multiplexing 「シングルプロセ</description>
     </item>
     

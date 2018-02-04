@@ -29,7 +29,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:title" content="act-act" />
   <meta property="og:description" content="" />
-  <meta property="og:url" content="https://masayuki038.github.io/blog/" />
+  <meta property="og:url" content="https://masayuki038.github.io/" />
   <meta property="og:image" content="https://masayuki038.github.io/img/avatar.jpg" />
 
 
@@ -38,8 +38,8 @@
 <meta name="generator" content="Hugo 0.32" />
 
 
-<link rel="canonical" href="https://masayuki038.github.io/blog/" />
-<link rel="alternative" href="https://masayuki038.github.io/blog/index.xml" title="act-act" type="application/atom+xml" />
+<link rel="canonical" href="https://masayuki038.github.io/" />
+<link rel="alternative" href="https://masayuki038.github.io/index.xml" title="act-act" type="application/atom+xml" />
 
 
 <meta name="renderer" content="webkit" />
@@ -64,17 +64,17 @@
 <meta name='msapplication-navbutton-color' content="#5fbf5e" />
 <meta name="msapplication-TileColor" content="#5fbf5e" />
 <meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
-<link rel="icon" href="https://masayuki038.github.io/blog/img/favicon.ico" />
-<link rel="icon" type="image/png" sizes="16x16" href="https://masayuki038.github.io/blog/img/favicon-16x16.png" />
-<link rel="icon" type="image/png" sizes="32x32" href="https://masayuki038.github.io/blog/img/favicon-32x32.png" />
-<link rel="icon" sizes="192x192" href="https://masayuki038.github.io/blog/img/touch-icon-android.png" />
-<link rel="apple-touch-icon" href="https://masayuki038.github.io/blog/img/touch-icon-apple.png" />
-<link rel="mask-icon" href="https://masayuki038.github.io/blog/img/safari-pinned-tab.svg" color="#5fbf5e" />
+<link rel="icon" href="https://masayuki038.github.io/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="https://masayuki038.github.io/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="https://masayuki038.github.io/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="https://masayuki038.github.io/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="https://masayuki038.github.io/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="https://masayuki038.github.io/img/safari-pinned-tab.svg" color="#5fbf5e" />
 
 
 
-<link rel="stylesheet" href="https://masayuki038.github.io/blog/css/bundle.css" />
-<link rel="stylesheet" href="https://masayuki038.github.io/blog/css/chroma-styles.css" />
+<link rel="stylesheet" href="https://masayuki038.github.io/css/bundle.css" />
+<link rel="stylesheet" href="https://masayuki038.github.io/css/chroma-styles.css" />
 
   
   <!--[if lt IE 9]>
@@ -125,7 +125,7 @@
             
             
             ">
-            <a href="https://masayuki038.github.io/blog/">Home</a>
+            <a href="https://masayuki038.github.io/">Home</a>
           </li>
       
     </ul>
@@ -189,7 +189,7 @@
       
 
       <li class="social-item">
-        <a href="https://masayuki038.github.io/blog/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+        <a href="https://masayuki038.github.io/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
       </li>
 
     </ul>
@@ -205,130 +205,130 @@
       
         <article class="post-entry">
   <header class="post-header">
-    <h3 class="post-title"><a href="https://masayuki038.github.io/blog/2014/07/12/couchdb-code-reading7/" class="post-link">CouchDB Source Code Reading part7</a></h3>
+    <h3 class="post-title"><a href="https://masayuki038.github.io/2014/07/12/couchdb-code-reading7/" class="post-link">CouchDB Source Code Reading part7</a></h3>
     <p class="post-meta">@Masayuki Takahashi · Jul 12, 2014 · 7 min read</p>
   </header>
   
   <p class="post-summary">couch_db:update_doc/4 前回はHTTP経由でドキュメントを更新する流れを見てきました。今回は更新まわりのより深いところを見ていこうと思います。前回の流れからcou</p>
   <footer class="post-footer">
-    <a class="read-more" href="https://masayuki038.github.io/blog/2014/07/12/couchdb-code-reading7/">Read More →</a>
+    <a class="read-more" href="https://masayuki038.github.io/2014/07/12/couchdb-code-reading7/">Read More →</a>
   </footer>
 </article>
 
       
         <article class="post-entry">
   <header class="post-header">
-    <h3 class="post-title"><a href="https://masayuki038.github.io/blog/2014/07/05/couchdb-code-reading6/" class="post-link">CouchDB Source Code Reading part6</a></h3>
+    <h3 class="post-title"><a href="https://masayuki038.github.io/2014/07/05/couchdb-code-reading6/" class="post-link">CouchDB Source Code Reading part6</a></h3>
     <p class="post-meta">@Masayuki Takahashi · Jul 5, 2014 · 5 min read</p>
   </header>
   
   <p class="post-summary">couch_httpd_db:db_req/2 前回までドキュメントの取得の流れを見てきたので、次に更新まわりを見ていこうと思います。 couch_httpd_db.erl: 1db_req(#httpd{method=&#39;POST&#39;,path_parts=[_DbName]}=Req, Db) -&gt; 2 couch_httpd:validate_ctype(Req, &#34;application/json&#34;), 3 Doc = couch_doc:from_json_obj(couch_httpd:json_body(Req)), 4 validate_attachment_names(Doc), 5 Doc2 = case Doc#doc.id of 6 &lt;&lt;&#34;&#34;&gt;&gt; -&gt; 7 Doc#doc{id=couch_uuids:new(), revs={0, []}};</p>
   <footer class="post-footer">
-    <a class="read-more" href="https://masayuki038.github.io/blog/2014/07/05/couchdb-code-reading6/">Read More →</a>
+    <a class="read-more" href="https://masayuki038.github.io/2014/07/05/couchdb-code-reading6/">Read More →</a>
   </footer>
 </article>
 
       
         <article class="post-entry">
   <header class="post-header">
-    <h3 class="post-title"><a href="https://masayuki038.github.io/blog/2014/06/21/couchdb-code-reading5/" class="post-link">CouchDB Source Code Reading part5</a></h3>
+    <h3 class="post-title"><a href="https://masayuki038.github.io/2014/06/21/couchdb-code-reading5/" class="post-link">CouchDB Source Code Reading part5</a></h3>
     <p class="post-meta">@Masayuki Takahashi · Jun 21, 2014 · 7 min read</p>
   </header>
   
   <p class="post-summary">couch_db:open_doc_int/3 前回はcouch_db_updater:refresh_validate_doc_funs/1を読んでいく中でDesignDocsを取得す</p>
   <footer class="post-footer">
-    <a class="read-more" href="https://masayuki038.github.io/blog/2014/06/21/couchdb-code-reading5/">Read More →</a>
+    <a class="read-more" href="https://masayuki038.github.io/2014/06/21/couchdb-code-reading5/">Read More →</a>
   </footer>
 </article>
 
       
         <article class="post-entry">
   <header class="post-header">
-    <h3 class="post-title"><a href="https://masayuki038.github.io/blog/2014/06/08/couchdb-code-reading4/" class="post-link">CouchDB Source Code Reading part4</a></h3>
+    <h3 class="post-title"><a href="https://masayuki038.github.io/2014/06/08/couchdb-code-reading4/" class="post-link">CouchDB Source Code Reading part4</a></h3>
     <p class="post-meta">@Masayuki Takahashi · Jun 8, 2014 · 9 min read</p>
   </header>
   
   <p class="post-summary">couch_db_updater:refresh_validate_doc_funs/1 今回はcouch_db_updater:init/1から呼び出している関数の中でまだ見ていないrefresh_validate_doc_f</p>
   <footer class="post-footer">
-    <a class="read-more" href="https://masayuki038.github.io/blog/2014/06/08/couchdb-code-reading4/">Read More →</a>
+    <a class="read-more" href="https://masayuki038.github.io/2014/06/08/couchdb-code-reading4/">Read More →</a>
   </footer>
 </article>
 
       
         <article class="post-entry">
   <header class="post-header">
-    <h3 class="post-title"><a href="https://masayuki038.github.io/blog/2014/05/30/couchdb-code-reading3/" class="post-link">CouchDB Source Code Reading part3</a></h3>
+    <h3 class="post-title"><a href="https://masayuki038.github.io/2014/05/30/couchdb-code-reading3/" class="post-link">CouchDB Source Code Reading part3</a></h3>
     <p class="post-meta">@Masayuki Takahashi · May 30, 2014 · 8 min read</p>
   </header>
   
   <p class="post-summary">couch_db_updater:init_db/6の以下の部分を掘り下げてみたいと思います。 couch_db_updater.erl: 1 {ok, IdBtree} = couch_btree:open(Header#db_header.fulldocinfo_by_id_btree_state, Fd, 2 [{split, fun(X) -&gt; btree_by_id_split(X) end}, 3 {join, fun(X,Y) -&gt; btree_by_id_join(X,Y) end}, 4 {reduce, fun(X,Y) -&gt;</p>
   <footer class="post-footer">
-    <a class="read-more" href="https://masayuki038.github.io/blog/2014/05/30/couchdb-code-reading3/">Read More →</a>
+    <a class="read-more" href="https://masayuki038.github.io/2014/05/30/couchdb-code-reading3/">Read More →</a>
   </footer>
 </article>
 
       
         <article class="post-entry">
   <header class="post-header">
-    <h3 class="post-title"><a href="https://masayuki038.github.io/blog/2014/05/25/couchdb-code-reading2/" class="post-link">CouchDB Source Code Reading part2</a></h3>
+    <h3 class="post-title"><a href="https://masayuki038.github.io/2014/05/25/couchdb-code-reading2/" class="post-link">CouchDB Source Code Reading part2</a></h3>
     <p class="post-meta">@Masayuki Takahashi · May 25, 2014 · 5 min read</p>
   </header>
   
   <p class="post-summary">couch_db_updater:init/1 前回はヘッダ部を読み込むコードを読んだので、今回はDBの読み込み準備？のところを読んでみます。couch_db_updater:init/</p>
   <footer class="post-footer">
-    <a class="read-more" href="https://masayuki038.github.io/blog/2014/05/25/couchdb-code-reading2/">Read More →</a>
+    <a class="read-more" href="https://masayuki038.github.io/2014/05/25/couchdb-code-reading2/">Read More →</a>
   </footer>
 </article>
 
       
         <article class="post-entry">
   <header class="post-header">
-    <h3 class="post-title"><a href="https://masayuki038.github.io/blog/2014/05/24/couchdb-code-reading1/" class="post-link">CouchDB Source Code Reading part1</a></h3>
+    <h3 class="post-title"><a href="https://masayuki038.github.io/2014/05/24/couchdb-code-reading1/" class="post-link">CouchDB Source Code Reading part1</a></h3>
     <p class="post-meta">@Masayuki Takahashi · May 24, 2014 · 4 min read</p>
   </header>
   
   <p class="post-summary">Why CouchDB? 数年前にCouchDBのデータフォーマットについて解説しているページを読みました。CouchDBの内部ではデータをB&#43;treeで保持して</p>
   <footer class="post-footer">
-    <a class="read-more" href="https://masayuki038.github.io/blog/2014/05/24/couchdb-code-reading1/">Read More →</a>
+    <a class="read-more" href="https://masayuki038.github.io/2014/05/24/couchdb-code-reading1/">Read More →</a>
   </footer>
 </article>
 
       
         <article class="post-entry">
   <header class="post-header">
-    <h3 class="post-title"><a href="https://masayuki038.github.io/blog/2014/02/22/devenv-rails4-with-docker-ansible/" class="post-link">Development Environment For Rails4 With Docker And Ansible</a></h3>
+    <h3 class="post-title"><a href="https://masayuki038.github.io/2014/02/22/devenv-rails4-with-docker-ansible/" class="post-link">Development Environment For Rails4 With Docker And Ansible</a></h3>
     <p class="post-meta">@Masayuki Takahashi · Feb 22, 2014 · 4 min read</p>
   </header>
   
   <p class="post-summary">DockerとAnsibleを使ってRails4の開発環境を作ってみました。 Environment ruby2.1.0 rails4 emacs24 ruby-mode rinari rhtml Docker Dockerfileにはsshdでログインできる</p>
   <footer class="post-footer">
-    <a class="read-more" href="https://masayuki038.github.io/blog/2014/02/22/devenv-rails4-with-docker-ansible/">Read More →</a>
+    <a class="read-more" href="https://masayuki038.github.io/2014/02/22/devenv-rails4-with-docker-ansible/">Read More →</a>
   </footer>
 </article>
 
       
         <article class="post-entry">
   <header class="post-header">
-    <h3 class="post-title"><a href="https://masayuki038.github.io/blog/2014/01/19/serf-code-reading2/" class="post-link">Serf Source Code Reading part2</a></h3>
+    <h3 class="post-title"><a href="https://masayuki038.github.io/2014/01/19/serf-code-reading2/" class="post-link">Serf Source Code Reading part2</a></h3>
     <p class="post-meta">@Masayuki Takahashi · Jan 19, 2014 · 7 min read</p>
   </header>
   
   <p class="post-summary">前回のmemberlistに続き、今回はserfのコードを読んでみました。 Serf Summery serfは、memberlistを利用してクラスタ内のノードの</p>
   <footer class="post-footer">
-    <a class="read-more" href="https://masayuki038.github.io/blog/2014/01/19/serf-code-reading2/">Read More →</a>
+    <a class="read-more" href="https://masayuki038.github.io/2014/01/19/serf-code-reading2/">Read More →</a>
   </footer>
 </article>
 
       
         <article class="post-entry">
   <header class="post-header">
-    <h3 class="post-title"><a href="https://masayuki038.github.io/blog/2014/01/13/serf-code-reading/" class="post-link">Serf Source Code Reading</a></h3>
+    <h3 class="post-title"><a href="https://masayuki038.github.io/2014/01/13/serf-code-reading/" class="post-link">Serf Source Code Reading</a></h3>
     <p class="post-meta">@Masayuki Takahashi · Jan 13, 2014 · 8 min read</p>
   </header>
   
   <p class="post-summary">このところ、Serfのコードを読んでいました。一旦、読んで理解した内容をまとめてみたいと思います。 Packages Serfは大きく次の2つのパッケージに分</p>
   <footer class="post-footer">
-    <a class="read-more" href="https://masayuki038.github.io/blog/2014/01/13/serf-code-reading/">Read More →</a>
+    <a class="read-more" href="https://masayuki038.github.io/2014/01/13/serf-code-reading/">Read More →</a>
   </footer>
 </article>
 
@@ -339,10 +339,10 @@
         <nav class="pagination">
           <h3 class="offscreen">Pagination</h3>
           
-            <a class="pagination-previous" href="https://masayuki038.github.io/blog/">← Newer Posts</a>
+            <a class="pagination-previous" href="https://masayuki038.github.io/">← Newer Posts</a>
           
           
-            <a class="pagination-next" href="https://masayuki038.github.io/blog/page/3/">Older Posts →</a>
+            <a class="pagination-next" href="https://masayuki038.github.io/page/3/">Older Posts →</a>
           
         </nav>
       </footer>
@@ -356,7 +356,7 @@
 
 
 
-<script src="https://masayuki038.github.io/blog/js/bundle.js"></script>
+<script src="https://masayuki038.github.io/js/bundle.js"></script>
 
 
 
