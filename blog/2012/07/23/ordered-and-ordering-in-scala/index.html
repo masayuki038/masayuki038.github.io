@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Ordered And Ordering</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="Ordered and Ordering Scalaには2値の比較を扱うtraitがあります。一つはComparable[T]を継承しているOredered[T]、もう一つはC" />
+
+  
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@masayuki" />
+    <meta name="twitter:title" content="Ordered And Ordering" />
+    <meta name="twitter:description" content="Ordered and Ordering Scalaには2値の比較を扱うtraitがあります。一つはComparable[T]を継承しているOredered[T]、もう一つはC" />
+    <meta name="twitter:image" content="/img/avatar.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Ordered And Ordering" />
+  <meta property="og:description" content="Ordered and Ordering Scalaには2値の比較を扱うtraitがあります。一つはComparable[T]を継承しているOredered[T]、もう一つはC" />
+  <meta property="og:url" content="/blog/2012/07/23/ordered-and-ordering-in-scala/" />
+  <meta property="og:image" content="/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.32" />
+
+
+<link rel="canonical" href="/blog/2012/07/23/ordered-and-ordering-in-scala/" />
+<link rel="alternative" href="/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="/css/bundle.css" />
+<link rel="stylesheet" href="/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://s.gravatar.com/avatar/4b97fb839e6040cfb353bd667ac93e54?s=80" alt="Avatar">
+  
+  <h2 class="title">act-act</h2>
+  
+  <p class="subtitle"></p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Ordered And Ordering</h1>
+      <p class="post-meta">@Masayuki Takahashi · Jul 23, 2012 · 7 min read</p>
+    </header>
+    <article class="post-content">
+
+<h1 id="ordered-and-ordering">Ordered and Ordering</h1>
+
+<p>Scalaには2値の比較を扱うtraitがあります。一つはComparable[T]を継承しているOredered[T]、もう一つはComparator[T]を継承しているOrdering[T]です。</p>
+
+<p>Comparable[T]はjava.util.Comparable、Comparator[T]はjava.util.Comparatorに対応しており、前者はcompareTo(t)を、後者はcompare(t1, t2)を持っています。つまり自分と他のオブジェクトを比較するか、2つのオブジェクトを比較するか、という点が異なります。</p>
+
+<p>Ordered[T]を扱っていると、たまにOrderingへの変換に失敗した、というコンパイルエラーが出ることがあります。これがどうも気になったので、今回はOrderedとOrderingの関係を調べてみました。</p>
+
+<h1 id="a-comparison-of-ordered-t">A comparison of Ordered[T]</h1>
+
+<p>2つのOrdered[T]を比較するメソッドを作成してみたいと思います。そもそもOrdered[K]はcompare(k: K)というメソッドを持っているので、それを使えば良いはず。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">compareAB</span><span class="o">[</span><span class="kt">K</span><span class="o">](</span><span class="n">a</span><span class="k">:</span> <span class="kt">Ordered</span><span class="o">[</span><span class="kt">K</span><span class="o">],</span> <span class="n">b</span><span class="k">:</span> <span class="kt">Ordered</span><span class="o">[</span><span class="kt">K</span><span class="o">])</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">compare</span><span class="o">(</span><span class="n">b</span><span class="o">)</span>
+<span class="o">}</span></code></pre></div>
+
+<p>しかしこのメソッドはコンパイルエラーになります。</p>
+
+<p>エラーの原因は、Ordred[K]#compare(k: K)が引数に取るのはKであって、Ordered[K]ではないことにあります。Ordered[K]はKの親クラスではないので、型に互換性がありません。しかしcompareメソッドを持っているのはOrdered[K]なので、このメソッドを使うにはOrdered[K]の型で扱う必要があります。以上より、compareABメソッドの定義は以下となります。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">compareAB</span><span class="o">[</span><span class="kt">K</span><span class="o">](</span><span class="n">a</span><span class="k">:</span> <span class="kt">Ordered</span><span class="o">[</span><span class="kt">K</span><span class="o">],</span> <span class="n">b</span><span class="k">:</span> <span class="kt">K</span><span class="o">)</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">compare</span><span class="o">(</span><span class="n">b</span><span class="o">)</span>
+<span class="o">}</span></code></pre></div>
+
+<p>2値の比較であるにも関わらず、2値の型が違うのは違和感があります。</p>
+
+<h1 id="a-way-to-sorting-ordered-k">A way to sorting Ordered[K]</h1>
+
+<p>先ほどの例は2値の比較だったので引数の型の調整は簡単に行えました。しかし、これが任意の要素を対象とした場合、どうなるのでしょうか？
+特に方法を思いつけなかったので、sortを行うAPIを見てみたところ、<a href="https://github.com/scala/scala/blob/v2.9.2/src/library/scala/util/Sorting.scala">scala.util.Sorting</a>に以下のメソッドが定義されていました。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">quickSort</span><span class="o">[</span><span class="kt">K:</span> <span class="kt">Ordering</span><span class="o">](</span><span class="n">a</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">K</span><span class="o">])</span> <span class="o">{</span> <span class="n">sort1</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">a</span><span class="o">.</span><span class="n">length</span><span class="o">)</span> <span class="o">}</span></code></pre></div>
+
+<p>[K: Ordering]という箇所の意味が分からず調べてみたところ、これはContext Boundと呼ばれるシンタックスシュガーでした。</p>
+
+<p><a href="http://blog.takeda-soft.jp/blog/show/396">View Bound／Context Bound ｜ ブログ．武田ソフト．jp</a></p>
+
+<p>これをシンタックスシュガーを適用せずに記述すると以下になります。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">quickSort</span><span class="o">[</span><span class="kt">K</span><span class="o">](</span><span class="n">a</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">K</span><span class="o">])(</span><span class="k">implicit</span> <span class="n">arg0</span><span class="k">:</span> <span class="kt">Ordering</span><span class="o">[</span><span class="kt">K</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span></code></pre></div>
+
+<p><a href="http://www.scala-lang.org/api/current/scala/util/Sorting$.html">SortingのAPIリファレンス</a>にもこの形式で載っています。前記のシンタックスシュガーを使っているのはソースコードの方です。</p>
+
+<p>とはいえ丸括弧が2つ連なっており、そんなに分かりやすくなった感も無いのですが、要はソート対象のArray以外に、Ordering[K]という暗黙パラメータを指定する仕組みになっています。</p>
+
+<p>Orderingは前記のとおり、2値を比較するメソッドcompareを保持している為、quickSortメソッドの中ではこの暗黙パラメータを使って値の比較を行うことになっています。</p>
+
+<h1 id="where-has-this-implicit-parameter-defined">Where has this implicit parameter defined?</h1>
+
+<p>Ordering[K]はどこで定義されているのでしょうか？
+試しに、以下のようなコードを書いてみました。</p>
+
+<p>OrderedCompareTest.scala:
+<div class="highlight"><pre class="chroma"><code class="language-scala" data-lang="scala"><span class="ln"> 1</span><span class="k">package</span> <span class="nn">net.wrap_trap.scala.examples</span>
+<span class="ln"> 2</span>
+<span class="ln"> 3</span><span class="k">import</span> <span class="nn">java.util.Comparator</span>
+<span class="ln"> 4</span>
+<span class="ln"> 5</span><span class="k">object</span> <span class="nc">OrderedCompareTest</span> <span class="o">{</span>
+<span class="ln"> 6</span>    <span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span> <span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span> <span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+<span class="ln"> 7</span>
+<span class="ln"> 8</span>        <span class="nc">System</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">println</span><span class="o">(</span><span class="s">&#34;called main&#34;</span><span class="o">)</span>
+<span class="ln"> 9</span>        <span class="nc">System</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">println</span><span class="o">(</span>
+<span class="ln">10</span>            <span class="n">compareAB</span><span class="o">(</span><span class="k">new</span> <span class="nc">OrderedClass</span><span class="o">(</span><span class="mi">2</span><span class="o">),</span> <span class="k">new</span> <span class="nc">OrderedClass</span><span class="o">(</span><span class="mi">1</span><span class="o">)))</span>
+<span class="ln">11</span>    <span class="o">}</span>
+<span class="ln">12</span>    
+<span class="ln">13</span>    <span class="k">class</span> <span class="nc">OrderedClass</span><span class="o">(</span><span class="k">val</span> <span class="n">n</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">Ordered</span><span class="o">[</span><span class="kt">OrderedClass</span><span class="o">]</span> <span class="o">{</span>
+<span class="ln">14</span>        <span class="nc">System</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">println</span><span class="o">(</span><span class="s">&#34;called new OrderedClass&#34;</span><span class="o">)</span>
+<span class="ln">15</span>        <span class="k">def</span> <span class="n">compare</span><span class="o">(</span><span class="n">that</span><span class="k">:</span> <span class="kt">OrderedClass</span><span class="o">)</span> <span class="k">=</span>  <span class="k">this</span><span class="o">.</span><span class="n">n</span> <span class="o">-</span> <span class="n">that</span><span class="o">.</span><span class="n">n</span>
+<span class="ln">16</span>    <span class="o">}</span> 
+<span class="ln">17</span>
+<span class="ln">18</span>    <span class="c1">// View Bound from scala.math.LowPriorityOrderingImplicits 
+</span><span class="ln">19</span><span class="c1"></span>    <span class="k">implicit</span> <span class="k">def</span> <span class="n">ordered</span><span class="o">[</span><span class="kt">T</span> <span class="k">&lt;%</span> <span class="kt">Comparable</span><span class="o">[</span><span class="kt">T</span><span class="o">]]</span><span class="k">:</span> <span class="kt">Ordering</span><span class="o">[</span><span class="kt">T</span><span class="o">]</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Ordering</span><span class="o">[</span><span class="kt">T</span><span class="o">]</span> <span class="o">{</span>
+<span class="ln">20</span>    <span class="cm">/* = implicit def ordered[T](implicit f: T =&gt; Comparable[T]): Ordering[T] = new Ordering[T] { */</span>
+<span class="ln">21</span>        <span class="nc">System</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">println</span><span class="o">(</span><span class="s">&#34;called ordered. f: &#34;</span> <span class="o">+</span> <span class="n">implicitly</span><span class="o">)</span>
+<span class="ln">22</span>        <span class="k">def</span> <span class="n">compare</span><span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">T</span><span class="o">,</span> <span class="n">y</span><span class="k">:</span> <span class="kt">T</span><span class="o">)</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="o">{</span>
+<span class="ln">23</span>            <span class="n">x</span><span class="o">.</span><span class="n">compareTo</span><span class="o">(</span><span class="n">y</span><span class="o">)</span> 
+<span class="ln">24</span>        <span class="o">}</span>
+<span class="ln">25</span>    <span class="o">}</span>
+<span class="ln">26</span>    
+<span class="ln">27</span>    <span class="c1">// Context Bound
+</span><span class="ln">28</span><span class="c1"></span>    <span class="k">def</span> <span class="n">compareAB</span><span class="o">[</span><span class="kt">K:Ordering</span><span class="o">](</span><span class="n">a</span><span class="k">:</span> <span class="kt">K</span><span class="o">,</span> <span class="n">b</span><span class="k">:</span> <span class="kt">K</span><span class="o">)</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="o">{</span>
+<span class="ln">29</span>    <span class="cm">/* = def compareAB[K](a: K, b: K)(implicit comp: Ordering[K]): Int = { */</span>
+<span class="ln">30</span>        <span class="k">val</span> <span class="n">comp</span> <span class="k">=</span> <span class="n">implicitly</span>
+<span class="ln">31</span>        <span class="nc">System</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">println</span><span class="o">(</span><span class="s">&#34;called compareAB comp:&#34;</span> <span class="o">+</span> <span class="n">comp</span><span class="o">)</span>
+<span class="ln">32</span>        <span class="n">comp</span><span class="o">.</span><span class="n">compare</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">b</span><span class="o">);</span>
+<span class="ln">33</span>    <span class="o">}</span>
+<span class="ln">34</span><span class="o">}</span></code></pre></div></p>
+
+<p>Context Boundを使っていたquickSortのメソッド定義を、compareABという2値を比較するメソッドに適用してみました(上記コードの最下部)。</p>
+
+<p>このメソッドの中で、暗黙パラメータをimplicitlyメソッドで取得しコンソールに出力してみたところ、Ordering[K]は<a href="http://www.scala-lang.org/api/current/scala/math/LowPriorityOrderingImplicits.html">scala.math.LowPriorityOrderingImplicits</a>で定義されていました。ソースコードは以下となります。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-scala" data-lang="scala"><span class="ln"> 1</span><span class="k">trait</span> <span class="nc">LowPriorityOrderingImplicits</span> <span class="o">{</span>
+<span class="ln"> 2</span>  <span class="cm">/** This would conflict with all the nice implicit Orderings
+</span><span class="ln"> 3</span><span class="cm">   *  available, but thanks to the magic of prioritized implicits
+</span><span class="ln"> 4</span><span class="cm">   *  via subclassing we can make `Ordered[A] =&gt; Ordering[A]` only
+</span><span class="ln"> 5</span><span class="cm">   *  turn up if nothing else works.  Since `Ordered[A]` extends
+</span><span class="ln"> 6</span><span class="cm">   *  `Comparable[A]` anyway, we can throw in some Java interop too.
+</span><span class="ln"> 7</span><span class="cm">   */</span>
+<span class="ln"> 8</span>  <span class="k">implicit</span> <span class="k">def</span> <span class="n">ordered</span><span class="o">[</span><span class="kt">A</span> <span class="k">&lt;%</span> <span class="kt">Comparable</span><span class="o">[</span><span class="kt">A</span><span class="o">]]</span><span class="k">:</span> <span class="kt">Ordering</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Ordering</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="o">{</span>
+<span class="ln"> 9</span>    <span class="k">def</span> <span class="n">compare</span><span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">A</span><span class="o">,</span> <span class="n">y</span><span class="k">:</span> <span class="kt">A</span><span class="o">)</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="n">x</span> <span class="n">compareTo</span> <span class="n">y</span>
+<span class="ln">10</span>  <span class="o">}</span>
+<span class="ln">11</span>  <span class="k">implicit</span> <span class="k">def</span> <span class="n">comparatorToOrdering</span><span class="o">[</span><span class="kt">A</span><span class="o">](</span><span class="k">implicit</span> <span class="n">cmp</span><span class="k">:</span> <span class="kt">Comparator</span><span class="o">[</span><span class="kt">A</span><span class="o">])</span><span class="k">:</span> <span class="kt">Ordering</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Ordering</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="o">{</span>
+<span class="ln">12</span>    <span class="k">def</span> <span class="n">compare</span><span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">A</span><span class="o">,</span> <span class="n">y</span><span class="k">:</span> <span class="kt">A</span><span class="o">)</span> <span class="k">=</span> <span class="n">cmp</span><span class="o">.</span><span class="n">compare</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">)</span>
+<span class="ln">13</span>  <span class="o">}</span>
+<span class="ln">14</span><span class="o">}</span></code></pre></div>
+
+<p>2つの暗黙的な型変換を行うメソッドが定義されていますが、今回はorderedの方が適用されていました。暗黙的な型変換は定義されたメソッドのスコープが近い方が優先されるはずなので、先ほどのコード上で同じメソッドを定義し、そちらが暗黙裡に呼ばれるようにしています。</p>
+
+<p>そしてこのメソッドも[A &lt;% Comparable[A]]という部分が理解できませんでした。調べてみたところ、こちらはView Boundと呼ばれるシンタックスシュガーでした。詳しくは前記の「ブログ.武田ソフト.jp」のページを参照してください。</p>
+
+<p>要は、AがComparable[A]に変換可能である場合、AをOrdering[A]に変換する暗黙的な型変換メソッドを定義しています。</p>
+
+<p>今回の場合、Kの親クラスはOrdered[K]で、Ordered[K]の親traitはComparable[K]なので、KはComparable[K]に変換可能であることから、この条件が成り立ちます。このメソッドによって暗黙パラメータのOrdering[K]が提供されていたことになります。</p>
+
+<p>ということで、Comparable[K]からOrdering[K]が生成され、それをcompareABが使用することで、K(extends Order[K])の2値を比較することができました。</p>
+
+<h1 id="a-comparison-of-k-not-ordered-k">A comparison of K(not Ordered[K])</h1>
+
+<p>もしKがOrdered[K]を継承していないとしたら、LowPriorityOrderingImplicits#orderedが適用されず、Ordering[K]が生成されない為、compareABメソッドは実行できないことになります。</p>
+
+<p>これを確かめる為、前記のコードをOrdered[K]を継承していないクラスに適用してみました。</p>
+
+<p>OrderedCompareTest2.scala:
+<div class="highlight"><pre class="chroma"><code class="language-scala" data-lang="scala"><span class="ln"> 1</span><span class="k">package</span> <span class="nn">net.wrap_trap.scala.examples</span>
+<span class="ln"> 2</span>
+<span class="ln"> 3</span><span class="k">import</span> <span class="nn">java.util.Comparator</span>
+<span class="ln"> 4</span>
+<span class="ln"> 5</span><span class="k">object</span> <span class="nc">OrderedCompareTest2</span> <span class="o">{</span>
+<span class="ln"> 6</span>    <span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span> <span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span> <span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+<span class="ln"> 7</span>
+<span class="ln"> 8</span>        <span class="nc">System</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">println</span><span class="o">(</span><span class="s">&#34;called main&#34;</span><span class="o">)</span>
+<span class="ln"> 9</span>        <span class="c1">// compile error when disabling nonOrderedClassToComparable Method. 
+</span><span class="ln">10</span><span class="c1"></span>        <span class="c1">// No implicit Ordering defined for 
+</span><span class="ln">11</span><span class="c1"></span>        <span class="c1">// net.wrap_trap.scala.examples.OrderedCompareTest2.NonOrderedClass.
+</span><span class="ln">12</span><span class="c1"></span>        <span class="nc">System</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">println</span><span class="o">(</span>
+<span class="ln">13</span>            <span class="n">compareAB</span><span class="o">(</span><span class="k">new</span> <span class="nc">NonOrderedClass</span><span class="o">(</span><span class="mi">4</span><span class="o">),</span> <span class="k">new</span> <span class="nc">NonOrderedClass</span><span class="o">(</span><span class="mi">3</span><span class="o">)))</span>     
+<span class="ln">14</span>    <span class="o">}</span>
+<span class="ln">15</span>    
+<span class="ln">16</span>    <span class="k">class</span> <span class="nc">NonOrderedClass</span><span class="o">(</span><span class="k">val</span> <span class="n">n</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="o">{}</span>
+<span class="ln">17</span>
+<span class="ln">18</span>    <span class="k">implicit</span> <span class="k">def</span> <span class="n">nonOrderedClassToComparable</span><span class="o">(</span><span class="n">from</span><span class="k">:</span> <span class="kt">NonOrderedClass</span><span class="o">)</span><span class="k">:</span> <span class="kt">Comparable</span><span class="o">[</span><span class="kt">NonOrderedClass</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+<span class="ln">19</span>        <span class="k">new</span> <span class="nc">Comparable</span><span class="o">[</span><span class="kt">NonOrderedClass</span><span class="o">]</span> <span class="o">{</span>
+<span class="ln">20</span>            <span class="k">def</span> <span class="n">compareTo</span><span class="o">(</span><span class="n">b</span><span class="k">:</span> <span class="kt">NonOrderedClass</span><span class="o">)</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="o">{</span>
+<span class="ln">21</span>                <span class="n">from</span><span class="o">.</span><span class="n">n</span> <span class="o">-</span> <span class="n">b</span><span class="o">.</span><span class="n">n</span>
+<span class="ln">22</span>            <span class="o">}</span>
+<span class="ln">23</span>        <span class="o">}</span>
+<span class="ln">24</span>    <span class="o">}</span>
+<span class="ln">25</span>    
+<span class="ln">26</span>    <span class="c1">// View Bound from scala.math.LowPriorityOrderingImplicits 
+</span><span class="ln">27</span><span class="c1"></span>    <span class="k">implicit</span> <span class="k">def</span> <span class="n">ordered</span><span class="o">[</span><span class="kt">T</span> <span class="k">&lt;%</span> <span class="kt">Comparable</span><span class="o">[</span><span class="kt">T</span><span class="o">]]</span><span class="k">:</span> <span class="kt">Ordering</span><span class="o">[</span><span class="kt">T</span><span class="o">]</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Ordering</span><span class="o">[</span><span class="kt">T</span><span class="o">]</span> <span class="o">{</span>
+<span class="ln">28</span>    <span class="cm">/* = implicit def ordered[T](implicit f: T =&gt; Comparable[T]): Ordering[T] = new Ordering[T] { */</span>
+<span class="ln">29</span>        <span class="k">def</span> <span class="n">compare</span><span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">T</span><span class="o">,</span> <span class="n">y</span><span class="k">:</span> <span class="kt">T</span><span class="o">)</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="o">{</span>
+<span class="ln">30</span>            <span class="n">x</span><span class="o">.</span><span class="n">compareTo</span><span class="o">(</span><span class="n">y</span><span class="o">)</span> 
+<span class="ln">31</span>        <span class="o">}</span>
+<span class="ln">32</span>    <span class="o">}</span>
+<span class="ln">33</span>    
+<span class="ln">34</span>    <span class="c1">// Context Bound
+</span><span class="ln">35</span><span class="c1"></span>    <span class="k">def</span> <span class="n">compareAB</span><span class="o">[</span><span class="kt">K:Ordering</span><span class="o">](</span><span class="n">a</span><span class="k">:</span> <span class="kt">K</span><span class="o">,</span> <span class="n">b</span><span class="k">:</span> <span class="kt">K</span><span class="o">)</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="o">{</span>
+<span class="ln">36</span>    <span class="cm">/* = def compareAB2[K](a: K, b: K)(implicit comp: Ordering[K]): Int = { */</span>
+<span class="ln">37</span>        <span class="k">val</span> <span class="n">comp</span> <span class="k">=</span> <span class="nc">Ordering</span><span class="o">[</span><span class="kt">K</span><span class="o">]</span>
+<span class="ln">38</span>        <span class="nc">System</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">println</span><span class="o">(</span><span class="s">&#34;called compareAB comp:&#34;</span> <span class="o">+</span> <span class="n">comp</span><span class="o">)</span>
+<span class="ln">39</span>        <span class="n">comp</span><span class="o">.</span><span class="n">compare</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">b</span><span class="o">);</span>
+<span class="ln">40</span>    <span class="o">}</span>
+<span class="ln">41</span><span class="o">}</span></code></pre></div></p>
+
+<p>すると以下のコンパイルエラーがでました。</p>
+
+<p><div class="highlight"><pre class="chroma"><code class="language-scala" data-lang="scala"><span class="nc">No</span> <span class="k">implicit</span> <span class="nc">Ordering</span> <span class="n">defined</span> <span class="k">for</span>
+<span class="n">net</span><span class="o">.</span><span class="n">wrap_trap</span><span class="o">.</span><span class="n">scala</span><span class="o">.</span><span class="n">examples</span><span class="o">.</span><span class="nc">OrderedCompareTest2</span><span class="o">.</span><span class="nc">NonOrderedClass</span><span class="o">.</span></code></pre></div></p>
+
+<p>やはりComparable[K]に変換できないことが原因のようです。</p>
+
+<p>Comparable[K]に変換できるように、暗黙的な型変換メソッド「nonOrderedClassToComparable」を定義したところ、コンパイルがとおり、Ordered[K]の時と同じ結果になりました。</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>今回はOrdered[K]とOrdering[K]の関係について調べてみました。元々はHaskellの赤黒木のコードをScalaに移植するのが事の始まりなのですが、implicitな型変換、パラメータやシンタックスシュガーによって簡素化された構文が理解できず大分苦労しています。今回の件で暗黙パラメータ、View BoundとContext Boundは理解できたので、ここから先はスラスラ行く、と思いたい…。</p>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        This post was published <strong>2022</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2018 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>

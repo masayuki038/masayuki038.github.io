@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Little improvement in development environment for Erlang</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="erl-shib ここ最近は、Erlangの習作としてshibのクローンを作ってました。erl-shibと言います。HQLを実行して結果を取得するところまで" />
+
+  
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@masayuki" />
+    <meta name="twitter:title" content="Little improvement in development environment for Erlang" />
+    <meta name="twitter:description" content="erl-shib ここ最近は、Erlangの習作としてshibのクローンを作ってました。erl-shibと言います。HQLを実行して結果を取得するところまで" />
+    <meta name="twitter:image" content="/img/avatar.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Little improvement in development environment for Erlang" />
+  <meta property="og:description" content="erl-shib ここ最近は、Erlangの習作としてshibのクローンを作ってました。erl-shibと言います。HQLを実行して結果を取得するところまで" />
+  <meta property="og:url" content="/blog/2013/09/16/devenv-for-erlang/" />
+  <meta property="og:image" content="/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.32" />
+
+
+<link rel="canonical" href="/blog/2013/09/16/devenv-for-erlang/" />
+<link rel="alternative" href="/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="/css/bundle.css" />
+<link rel="stylesheet" href="/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://s.gravatar.com/avatar/4b97fb839e6040cfb353bd667ac93e54?s=80" alt="Avatar">
+  
+  <h2 class="title">act-act</h2>
+  
+  <p class="subtitle"></p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Little improvement in development environment for Erlang</h1>
+      <p class="post-meta">@Masayuki Takahashi · Sep 16, 2013 · 3 min read</p>
+    </header>
+    <article class="post-content">
+
+<h1 id="erl-shib-https-github-com-masayuki038-erl-shib"><a href="https://github.com/masayuki038/erl-shib">erl-shib</a></h1>
+
+<p>ここ最近は、Erlangの習作として<a href="https://github.com/tagomoris/shib">shib</a>のクローンを作ってました。<a href="https://github.com/masayuki038/erl-shib">erl-shib</a>と言います。HQLを実行して結果を取得するところまでは何とか動くようになりました。</p>
+
+<p>そうこうしているうちにHiveまわりの開発環境を移行する必要が出てきてしまったので、そのついでに開発環境そのものを見直すことに。</p>
+
+<p>まずはとにかく作って動かすことを優先してきたので、コードがヒドく、リファクタリングしようにもテストコードをあまり書いておらず、テストコード自体もメンテをしてきませんでした。</p>
+
+<p>そこで今回は、Erlangのコードをリファクタリングできる状態にする為、以下のページを参考にしながら開発環境を再構築しました。</p>
+
+<ul>
+<li><a href="https://gist.github.com/voluntas/9ee65f0dfa9b7dd78fde">継続開発のススメ Erlang/OTP 編</a></li>
+</ul>
+
+<h1 id="makefile">Makefile</h1>
+
+<p>ErlangのコードのビルドにはMakefileを使用しています。基本的には<a href="https://github.com/basho/rebar">rebar</a>でコンパイルや依存モジュールの取得、テスト、リファレンスの生成など何でもできるのですが、タスク間の依存関係やリリースを考えるとMakefileの方が管理しやすい、ということなのでしょうか。以下のページのMakefileを使わせてもらってます。</p>
+
+<ul>
+<li>[Erlang 環境構築 コトハジメ (<a href="https://gist.github.com/voluntas/4243809">https://gist.github.com/voluntas/4243809</a>)</li>
+</ul>
+
+<h1 id="watchdog">Watchdog</h1>
+
+<p>Erlangはコンパイル言語(でも型の解決は動的)なので、コードを変更したらコンパイルが必要になります。IDEによっては変更を検知して自動的にビルドしてくれる機能がありますが、私はEmacsを使っていてそこまでの機能は準備していませんでした。</p>
+
+<p>そこで、前記ページにあるように<a href="https://pypi.python.org/pypi/watchdog">Watchdog</a>を使ってみることに。ただ、どうも環境が悪いのか、そのままだとpipでwatchdogのモジュールが見つからなかったので、pip.confにmirrorの設定してインストールしました。</p>
+
+<p>Emacsの場合、バッファに変更が入った時点で.#ファイルができてしまい、それがwatchmedoに拾われてしまうので、.#ファイルはignoreするようにしました。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>$ watchmedo shell-command --patterns<span class="o">=</span><span class="s2">&#34;*.erl;*.hrl&#34;</span> --ignore-pattns<span class="o">=</span><span class="s2">&#34;*.#*.erl;*.#*.hrl&#34;</span> --recursive --wait --command<span class="o">=</span><span class="s2">&#34;make test&#34;</span> include src test</code></pre></div>
+
+<p>これでErlangのコードに変更が入ったらEUnitが動くようになり、リファクタリングする環境は整いました。</p>
+
+<h2 id="eunit">EUnit</h2>
+
+<p>EUnitの使い方は以下のページを参考にしました。</p>
+
+<ul>
+<li><a href="http://articles.shibu.jp/article/30612137.html">shibu.jp: Erlang用の軽量ユニットテストフレームワーク</a></li>
+</ul>
+
+<p>xUnitのコードを書いたことがあれば特に難しくありません。ただ、ちょっと面倒なのはsetup/cleanupの指定の仕方。テストジェネレータを使って都度指定するのがちょっと億劫です。このあたりはもうちょっと何か探してみます。</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>これでようやくリファクタリングできる状態になりました。コードを直していきながら、Erlangを理解していきたいと思います。</p>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        This post was published <strong>1602</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2018 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Hotspot on act-act</title>
+    <link>/categories/hotspot/</link>
+    <description>Recent content in Hotspot on act-act</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja</language>
+    <lastBuildDate>Sun, 13 May 2012 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/hotspot/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Print JIT-compiled code</title>
+      <link>/blog/2012/05/13/see-jit-compiled-code/</link>
+      <pubDate>Sun, 13 May 2012 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/2012/05/13/see-jit-compiled-code/</guid>
+      <description>How do you check performance optimized code? 前回、インライン化を確認する為に最初に調べたことは、インライン化されたコードの確認方法でした。調べた範囲ではアセンブリコードで</description>
+    </item>
+    
+    <item>
+      <title>Inlining By JIT Compiler</title>
+      <link>/blog/2012/05/12/inlining-by-jit/</link>
+      <pubDate>Sat, 12 May 2012 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/2012/05/12/inlining-by-jit/</guid>
+      <description>Inlining or not? 前回のエントリで、インライン化についてちょっと触れました。 ちなみにCharacter#charCountは補助文字の場合に2が、それ以</description>
+    </item>
+    
+  </channel>
+</rss>

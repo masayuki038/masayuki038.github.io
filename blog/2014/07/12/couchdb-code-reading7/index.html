@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>CouchDB Source Code Reading part7</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="couch_db:update_doc/4 前回はHTTP経由でドキュメントを更新する流れを見てきました。今回は更新まわりのより深いところを見ていこうと思います。前回の流れからcou" />
+
+  
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@masayuki" />
+    <meta name="twitter:title" content="CouchDB Source Code Reading part7" />
+    <meta name="twitter:description" content="couch_db:update_doc/4 前回はHTTP経由でドキュメントを更新する流れを見てきました。今回は更新まわりのより深いところを見ていこうと思います。前回の流れからcou" />
+    <meta name="twitter:image" content="/img/avatar.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="CouchDB Source Code Reading part7" />
+  <meta property="og:description" content="couch_db:update_doc/4 前回はHTTP経由でドキュメントを更新する流れを見てきました。今回は更新まわりのより深いところを見ていこうと思います。前回の流れからcou" />
+  <meta property="og:url" content="/blog/2014/07/12/couchdb-code-reading7/" />
+  <meta property="og:image" content="/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.32" />
+
+
+<link rel="canonical" href="/blog/2014/07/12/couchdb-code-reading7/" />
+<link rel="alternative" href="/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="/css/bundle.css" />
+<link rel="stylesheet" href="/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://s.gravatar.com/avatar/4b97fb839e6040cfb353bd667ac93e54?s=80" alt="Avatar">
+  
+  <h2 class="title">act-act</h2>
+  
+  <p class="subtitle"></p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">CouchDB Source Code Reading part7</h1>
+      <p class="post-meta">@Masayuki Takahashi · Jul 12, 2014 · 7 min read</p>
+    </header>
+    <article class="post-content">
+
+<h2 id="couch-db-update-doc-4">couch_db:update_doc/4</h2>
+
+<p>前回はHTTP経由でドキュメントを更新する流れを見てきました。今回は更新まわりのより深いところを見ていこうと思います。前回の流れから<code>couch_db:update_doc/4</code>を見ていきます。</p>
+
+<p>couch_db.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>update_doc<span class="o">(</span>Db, Doc, Options, UpdateType<span class="o">)</span> -&gt;
+<span class="ln"> 2</span>    <span class="k">case</span> update_docs<span class="o">(</span>Db, <span class="o">[</span>Doc<span class="o">]</span>, Options, UpdateType<span class="o">)</span> of
+<span class="ln"> 3</span>    <span class="o">{</span>ok, <span class="o">[{</span>ok, NewRev<span class="o">}]}</span> -&gt;
+<span class="ln"> 4</span>        <span class="o">{</span>ok, NewRev<span class="o">}</span><span class="p">;</span>
+<span class="ln"> 5</span>    <span class="o">{</span>ok, <span class="o">[{{</span>_Id, _Rev<span class="o">}</span>, Error<span class="o">}]}</span> -&gt;
+<span class="ln"> 6</span>        throw<span class="o">(</span>Error<span class="o">)</span><span class="p">;</span>
+<span class="ln"> 7</span>    <span class="o">{</span>ok, <span class="o">[</span>Error<span class="o">]}</span> -&gt;
+<span class="ln"> 8</span>        throw<span class="o">(</span>Error<span class="o">)</span><span class="p">;</span>
+<span class="ln"> 9</span>    <span class="o">{</span>ok, <span class="o">[]}</span> -&gt;
+<span class="ln">10</span>        % replication success
+<span class="ln">11</span>        <span class="o">{</span>Pos, <span class="o">[</span>RevId <span class="p">|</span> _<span class="o">]}</span> <span class="o">=</span> Doc#doc.revs,
+<span class="ln">12</span>        <span class="o">{</span>ok, <span class="o">{</span>Pos, RevId<span class="o">}}</span>
+<span class="ln">13</span>    end.</code></pre></div></p>
+
+<p>単にリストにドキュメントを1つ入れて<code>couch_db:update_docs/4</code>を呼び出します。そのまま見ていきます。この関数は第四引数の<code>UpdateType</code>に<code>replicated_changes</code>と<code>interactive_edit</code>のどちらかを指定するようになっており、実装も大きく分かれています。<a href="http://wiki.apache.org/couchdb/HTTP_Bulk_Document_API#Posting_Existing_Revisions">CouchDBのWiki</a>を読む限り、<code>replicated_changes(new_edit=false)</code>は既存のrevに対して更新をかける特殊な処理らしいので、ここでは<code>interactive_edit</code>の方を読んでいきます。ちょっとコード量が多いので分割してみていきます。</p>
+
+<p>couch_db.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>update_docs<span class="o">(</span>Db, Docs, Options, interactive_edit<span class="o">)</span> -&gt;
+<span class="ln"> 2</span>    increment_stat<span class="o">(</span>Db, <span class="o">{</span>couchdb, database_writes<span class="o">})</span>,
+<span class="ln"> 3</span>    <span class="nv">AllOrNothing</span> <span class="o">=</span> lists:member<span class="o">(</span>all_or_nothing, Options<span class="o">)</span>,
+<span class="ln"> 4</span>    % go ahead and generate the new revision ids <span class="k">for</span> the documents.
+<span class="ln"> 5</span>    % separate out the NonRep documents from the rest of the documents
+<span class="ln"> 6</span>
+<span class="ln"> 7</span>    % associate reference with each doc in order to track duplicates
+<span class="ln"> 8</span>    <span class="nv">Docs2</span> <span class="o">=</span> lists:map<span class="o">(</span>fun<span class="o">(</span>Doc<span class="o">)</span> -&gt; <span class="o">{</span>Doc, make_ref<span class="o">()}</span> end,Docs<span class="o">)</span>,
+<span class="ln"> 9</span>    <span class="o">{</span>Docs3, NonRepDocs<span class="o">}</span> <span class="o">=</span> lists:foldl<span class="o">(</span>
+<span class="ln">10</span>         fun<span class="o">({</span><span class="c1">#doc{id=Id},_Ref}=Doc, {DocsAcc, NonRepDocsAcc}) -&gt;
+</span><span class="ln">11</span><span class="c1"></span>            <span class="k">case</span> Id of
+<span class="ln">12</span>            &lt;&lt;?LOCAL_DOC_PREFIX, _/binary&gt;&gt; -&gt;
+<span class="ln">13</span>                <span class="o">{</span>DocsAcc, <span class="o">[</span>Doc <span class="p">|</span> NonRepDocsAcc<span class="o">]}</span><span class="p">;</span>
+<span class="ln">14</span>            Id-&gt;
+<span class="ln">15</span>                <span class="o">{[</span>Doc <span class="p">|</span> DocsAcc<span class="o">]</span>, NonRepDocsAcc<span class="o">}</span>
+<span class="ln">16</span>            end
+<span class="ln">17</span>        end, <span class="o">{[]</span>, <span class="o">[]}</span>, Docs2<span class="o">)</span>,
+<span class="ln">18</span>
+<span class="ln">19</span>    <span class="nv">DocBuckets</span> <span class="o">=</span> before_docs_update<span class="o">(</span>Db, group_alike_docs<span class="o">(</span>Docs3<span class="o">))</span>,
+<span class="ln">20</span>    ...</code></pre></div></p>
+
+<p>まずは<code>couch_db:increment_stat/2</code>を見てみます。</p>
+
+<p>couch_db.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>increment_stat<span class="o">(</span><span class="c1">#db{options = Options}, Stat) -&gt;
+</span><span class="ln">2</span><span class="c1"></span>    <span class="k">case</span> lists:member<span class="o">(</span>sys_db, Options<span class="o">)</span> of
+<span class="ln">3</span>    <span class="nb">true</span> -&gt;
+<span class="ln">4</span>        ok<span class="p">;</span>
+<span class="ln">5</span>    <span class="nb">false</span> -&gt;
+<span class="ln">6</span>        couch_stats_collector:increment<span class="o">(</span>Stat<span class="o">)</span>
+<span class="ln">7</span>    end.</code></pre></div></p>
+
+<p><code>Options</code>に<code>sys_db</code>が含まれている場合はインクリメントしないようです。<code>sys_db</code>が何を表しているか確認してみます。</p>
+
+<h2 id="sys-db">sys_db</h2>
+
+<p><code>sys_db</code>をオプション等で指定している箇所を<a href="http://www.emacswiki.org/emacs/ascope.el">ascope.el</a>の<code>ascope-find-this-symbol</code>を使ってピックアップします。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>Find this symbol: sys_db
+<span class="ln"> 2</span>
+<span class="ln"> 3</span>-------------------------------------------------------------------------------
+<span class="ln"> 4</span>*** /home/masayuki/work/erlang/couchdb/src/couchdb/couch_db_updater.erl:
+<span class="ln"> 5</span>open_reader_fd<span class="o">[</span><span class="m">490</span><span class="o">]</span>            <span class="o">{</span>ok, Fd<span class="o">}</span> <span class="o">=</span> <span class="k">case</span> lists:member<span class="o">(</span>sys_db, Options<span class="o">)</span> of
+<span class="ln"> 6</span>open_reader_fd<span class="o">[</span><span class="m">492</span><span class="o">]</span>            couch_file:open<span class="o">(</span>Filepath, <span class="o">[</span>read_only, sys_db<span class="o">])</span><span class="p">;</span>
+<span class="ln"> 7</span>
+<span class="ln"> 8</span>*** /home/masayuki/work/erlang/couchdb/src/couchdb/couch_file.erl:
+<span class="ln"> 9</span>maybe_track_open_os_files<span class="o">[</span><span class="m">333</span><span class="o">]</span> <span class="k">case</span> lists:member<span class="o">(</span>sys_db, FileOptions<span class="o">)</span> of
+<span class="ln">10</span>
+<span class="ln">11</span>*** /home/masayuki/work/erlang/couchdb/src/couchdb/couch_auth_cache.erl:
+<span class="ln">12</span>open_auth_db<span class="o">[</span><span class="m">367</span><span class="o">]</span>              <span class="o">{</span>ok, AuthDb<span class="o">}</span> <span class="o">=</span> ensure_users_db_exists<span class="o">(</span>DbName, <span class="o">[</span>sys_db<span class="o">])</span>,
+<span class="ln">13</span>
+<span class="ln">14</span>*** /home/masayuki/work/erlang/couchdb/src/couchdb/couch_server.erl:
+<span class="ln">15</span>maybe_add_sys_db_callbacks<span class="o">[</span><span class="m">99</span><span class="o">]</span> sys_db <span class="p">|</span> Options
+<span class="ln">16</span>maybe_add_sys_db_callbacks<span class="o">[</span><span class="m">107</span><span class="o">]</span> sys_db <span class="p">|</span> Options
+<span class="ln">17</span>open_async<span class="o">[</span><span class="m">303</span><span class="o">]</span>                <span class="nv">DbsOpen</span> <span class="o">=</span> <span class="k">case</span> lists:member<span class="o">(</span>sys_db, Options<span class="o">)</span> of
+<span class="ln">18</span>handle_call<span class="o">[</span><span class="m">345</span><span class="o">]</span>               <span class="nv">DbsOpen</span> <span class="o">=</span> <span class="k">case</span> lists:member<span class="o">(</span>sys_db, Options<span class="o">)</span> of
+<span class="ln">19</span>open_db<span class="o">[</span><span class="m">486</span><span class="o">]</span>                   <span class="k">case</span> lists:member<span class="o">(</span>sys_db, Options<span class="o">)</span> of
+<span class="ln">20</span>
+<span class="ln">21</span>*** /home/masayuki/work/erlang/couchdb/src/couchdb/couch_db.erl:
+<span class="ln">22</span>is_system_db<span class="o">[</span><span class="m">105</span><span class="o">]</span>              lists:member<span class="o">(</span>sys_db, Options<span class="o">)</span>.
+<span class="ln">23</span>init<span class="o">[</span><span class="m">1099</span><span class="o">]</span>                     <span class="k">case</span> lists:member<span class="o">(</span>sys_db, Options<span class="o">)</span> of
+<span class="ln">24</span>increment_stat<span class="o">[</span><span class="m">1334</span><span class="o">]</span>           <span class="k">case</span> lists:member<span class="o">(</span>sys_db, Options<span class="o">)</span> of
+<span class="ln">25</span>
+<span class="ln">26</span>*** /home/masayuki/work/erlang/couchdb/src/couch_replicator/src/couch_replicator_manager.erl:
+<span class="ln">27</span>changes_feed_loop<span class="o">[</span><span class="m">241</span><span class="o">]</span>         <span class="nv">DbOpenOptions</span> <span class="o">=</span> <span class="o">[{</span>user_ctx, RepDb#db.user_ctx<span class="o">}</span>, sys_db<span class="o">]</span>,
+<span class="ln">28</span>ensure_rep_db_exists<span class="o">[</span><span class="m">585</span><span class="o">]</span>      <span class="k">case</span> couch_db:open_int<span class="o">(</span>DbName, <span class="o">[</span>sys_db, <span class="o">{</span>user_ctx, UserCtx<span class="o">}</span>, nologifmissing<span class="o">])</span> of
+<span class="ln">29</span>ensure_rep_db_exists<span class="o">[</span><span class="m">589</span><span class="o">]</span>      <span class="o">{</span>ok, Db<span class="o">}</span> <span class="o">=</span> couch_db:create<span class="o">(</span>DbName, <span class="o">[</span>sys_db, <span class="o">{</span>user_ctx, UserCtx<span class="o">}])</span>
+<span class="ln">30</span>-------------------------------------------------------------------------------
+<span class="ln">31</span>
+<span class="ln">32</span>Search complete.</code></pre></div>
+
+<p>この結果を見ると、以下のポイントで<code>sys_db</code>が指定されていることが分かります。</p>
+
+<ul>
+<li>couch_db_updater:open_reader_fd</li>
+<li>couch_auth_cache:open_auth_db</li>
+<li>couch_replicator_manager:changes_feed_loop</li>
+<li>couch_replicator_manager:ensure_rep_db_exists</li>
+</ul>
+
+<p>このうち、<code>couch_db_updater:open_reader_fd</code>は<code>Options</code>に<code>sys_db</code>が指定されている場合に<code>couch_file:open/2</code>に<code>sys_db</code>を渡すようになっている為、この関数が<code>sys_db</code>でオープンすることを決めているわけではありません。<code>couch_auth_cache:open_auth_db</code>は認証DBをオープンする関数なので、認証DBをオープンする際に<code>sys_db</code>を指定する、ということになります。残りは<code>couch_replicator_manager</code>モジュールなので、レプリケーション関連であると推測できます。CouchDBのwikiにはこのオプションに関する記載がないので、<code>sys_db</code>は認証DBをオープンする際と、レプリケーションまわりでDBをオープンする際に指定されるものと考えられます。</p>
+
+<p><code>couch_db:increment_stat/2</code>に戻ると、現状は認証DBやレプリケーションでオープンした場合はインクリメントせず、それ以外の場合は<code>couch_stats_collector:increment/1</code>を呼び出しています。</p>
+
+<h2 id="couch-stats-collector-increment-1">couch_stats_collector:increment/1</h2>
+
+<p><code>couch_stats_collector:increment/1</code>のコードを見てみます。</p>
+
+<p>couch_stats_collector.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>increment<span class="o">(</span>Key<span class="o">)</span> -&gt;
+<span class="ln">2</span>    <span class="nv">Key2</span> <span class="o">=</span> make_key<span class="o">(</span>Key<span class="o">)</span>,
+<span class="ln">3</span>    <span class="k">case</span> catch ets:update_counter<span class="o">(</span>?HIT_TABLE, Key2, <span class="m">1</span><span class="o">)</span> of
+<span class="ln">4</span>        <span class="o">{</span><span class="s1">&#39;EXIT&#39;</span>, <span class="o">{</span>badarg, _<span class="o">}}</span> -&gt;
+<span class="ln">5</span>            catch ets:insert<span class="o">(</span>?HIT_TABLE, <span class="o">{</span>Key2, <span class="m">1</span><span class="o">})</span>,
+<span class="ln">6</span>            ok<span class="p">;</span>
+<span class="ln">7</span>        _ -&gt;
+<span class="ln">8</span>            ok
+<span class="ln">9</span>    end.</code></pre></div></p>
+
+<p>インクリメントしているカウンタは<code>Key</code>毎にETSで管理されていることが分かります。<code>make_key/1</code>を見て、この<code>Key</code>がどのように生成されているかを確認します。</p>
+
+<p>couch_stats_collector.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>make_key<span class="o">({</span>Module, Key<span class="o">})</span> when is_integer<span class="o">(</span>Key<span class="o">)</span> -&gt;
+<span class="ln">2</span>    <span class="o">{</span>Module, list_to_atom<span class="o">(</span>integer_to_list<span class="o">(</span>Key<span class="o">))}</span><span class="p">;</span>
+<span class="ln">3</span>make_key<span class="o">(</span>Key<span class="o">)</span> -&gt;
+<span class="ln">4</span>    Key.</code></pre></div></p>
+
+<p><code>Key</code>が数値の場合はatomに、そうでない場合は<code>Key</code>のまま戻されています。今回のコンテキストだとこの関数に指定される<code>Key</code>は<code>couch_db:update_docs/4</code>で指定している<code>{couchdb, database_writes}</code>なので、この値がそのまま戻されることになります。この値を見る限り、ETSで管理しているカウンタはデータベースの書き込み回数のようです。</p>
+
+<h2 id="all-or-nothing">all_or_nothing</h2>
+
+<p><code>couch_db:update_docs/4</code>に戻ると、次に<code>Options</code>に<code>all_or_nothing</code>が含まれているかどうか見ています。この<code>all_or_nothing</code>は、<a href="http://wiki.apache.org/couchdb/HTTP_Bulk_Document_API">HTTP Bulk Document API</a>に以下のように記載があります。</p>
+
+<blockquote>
+<p>Transactional Semantics with Bulk Updates</p>
+
+<p>In short, there are none (by design). However, you can ask CouchDB to check that all the documents in your _bulk_docs request pass all your validation functions. If even one fails, none of the documents are written. You can select this mode by including &ldquo;all_or_nothing&rdquo;:true in your request. With this mode, if all documents pass validation, then all documents will be updated, even if that introduces a conflict for some or all of the documents.</p>
+</blockquote>
+
+<p>複数のドキュメントを一度に更新する際、<code>all_or_nothing</code>が<code>true</code>の場合は、ドキュメントが1つでもvalidationに引っかかるとすべて更新されないようになっているとのこと。</p>
+
+<p>次に、各ドキュメントに<code>make_ref/0</code>の値をバインドしています。この関数はユニークな値を返すようになっています。コメントにもあるように、ドキュメントの重複をチェックする為に入っている処理です。</p>
+
+<p>そしてその次に、各ドキュメントを、レプリケーション対象かどうかで2つに分けているようです。それを分ける為にドキュメントのIDが<code>?LOCAL_DOC_PREFIX</code>で始まっていたらレプリケーション対象外となっています。この<code>?LOCAL_DOC_PREFIX</code>はcouch_db.hrlで定義されていて、実際の値は<code>&quot;_local/&quot;</code>となっています。</p>
+
+<h2 id="local-doc">local_doc</h2>
+
+<p>この<code>&quot;_local/&quot;</code>のIDを持つドキュメントはどこで生成されるのか見てみます。<code>?LOCAL_DOC_PREFIX</code>で探してみましたが、イマイチそれらしい箇所を見つけられなかったので、find-grepで<code>&quot;_local&quot;</code>を探してみました。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>-*- mode: grep<span class="p">;</span> default-directory: <span class="s2">&#34;~/work/erlang/couchdb/src/couchdb/&#34;</span> -*-
+<span class="ln"> 2</span>Grep started at Sat Jul <span class="m">12</span> <span class="m">22</span>:04:39
+<span class="ln"> 3</span>
+<span class="ln"> 4</span>find . -type f -exec grep -nH -e _local/ <span class="o">{}</span> +
+<span class="ln"> 5</span>./couch_db.hrl:13:-define<span class="o">(</span>LOCAL_DOC_PREFIX, <span class="s2">&#34;_local/&#34;</span><span class="o">)</span>.
+<span class="ln"> 6</span>./couch_httpd_db.erl:455:db_req<span class="o">(</span><span class="c1">#httpd{path_parts=[_DbName, &lt;&lt;&#34;_local/&#34;&gt;&gt;]}, _Db) -&gt;
+</span><span class="ln"> 7</span><span class="c1"></span>./couch_httpd_db.erl:459:    db_doc_req<span class="o">(</span>Req, Db, &lt;&lt;<span class="s2">&#34;_local/&#34;</span>, Name/binary&gt;&gt;<span class="o">)</span><span class="p">;</span>
+<span class="ln"> 8</span>./couch_doc.erl:200:    &lt;&lt;<span class="s2">&#34;_local/&#34;</span>, _/binary&gt;&gt; -&gt; ok<span class="p">;</span>
+<span class="ln"> 9</span>./couch_util.erl:431:encode_doc_id<span class="o">(</span>&lt;&lt;<span class="s2">&#34;_local/&#34;</span>, Rest/binary&gt;&gt;<span class="o">)</span> -&gt;
+<span class="ln">10</span>./couch_util.erl:432:    <span class="s2">&#34;_local/&#34;</span> ++ url_encode<span class="o">(</span>Rest<span class="o">)</span><span class="p">;</span>
+<span class="ln">11</span>./couch_db.erl:467:validate_doc_update<span class="o">(</span>_Db, <span class="c1">#doc{id= &lt;&lt;&#34;_local/&#34;,_/binary&gt;&gt;}, _GetDiskDocFun) -&gt;
+</span><span class="ln">12</span><span class="c1"></span>
+<span class="ln">13</span>Grep finished <span class="o">(</span>matches found<span class="o">)</span> at Sat Jul <span class="m">12</span> <span class="m">22</span>:04:39</code></pre></div>
+
+<p><code>couch_httpd_db</code>モジュールで使用されている箇所を見てみます。</p>
+
+<p>couch_httpd_db.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>db_req<span class="o">(</span><span class="c1">#httpd{path_parts=[_DbName, &lt;&lt;&#34;_local&#34;&gt;&gt;, Name]}=Req, Db) -&gt;
+</span><span class="ln">2</span><span class="c1"></span>    db_doc_req<span class="o">(</span>Req, Db, &lt;&lt;<span class="s2">&#34;_local/&#34;</span>, Name/binary&gt;&gt;<span class="o">)</span><span class="p">;</span></code></pre></div></p>
+
+<p>HTTP APIで指定されているようです。<a href="http://wiki.apache.org/couchdb/HTTP_Document_API">HTTP Document API</a>を見てみたところ、<code>&quot;_local/&quot;</code>について以下のように記されていました。</p>
+
+<blockquote>
+<p>are not being replicated (local documents) and used for Replication checkpointing.</p>
+</blockquote>
+
+<p>IDが<code>&quot;_local/&quot;</code>で始まるドキュメントは、レプリケーションされていないことを示しており、レプリケーションのチェックポイントまわりで使われているようです。レプリケーションに関してはそのうち見てみたいと思いますが、今は取り合えず先に進めたいと思います。</p>
+
+<h2 id="couch-db-before-docs-update-2">couch_db:before_docs_update/2</h2>
+
+<p>また<code>couch_db:update_docs/4</code>に戻り、次の<code>couch_db:before_docs_update/2</code>の前に、<code>couch_db:goup_alike_docs/1</code>を見てみます。</p>
+
+<p>couch_db.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>% group_alike_docs groups the sorted documents into sublist buckets, by id.
+<span class="ln"> 2</span>% <span class="o">([</span>DocA, DocA, DocB, DocC<span class="o">]</span>, <span class="o">[])</span> -&gt; <span class="o">[[</span>DocA, DocA<span class="o">]</span>, <span class="o">[</span>DocB<span class="o">]</span>, <span class="o">[</span>DocC<span class="o">]]</span>
+<span class="ln"> 3</span><span class="o">=</span>&gt;oup_alike_docs<span class="o">(</span>Docs<span class="o">)</span> -&gt;
+<span class="ln"> 4</span>    <span class="nv">Sorted</span> <span class="o">=</span> lists:sort<span class="o">(</span>fun<span class="o">({</span><span class="c1">#doc{id=A},_},{#doc{id=B},_})-&gt; A &lt; B end, Docs),
+</span><span class="ln"> 5</span><span class="c1"></span>    group_alike_docs<span class="o">(</span>Sorted, <span class="o">[])</span>.
+<span class="ln"> 6</span>
+<span class="ln"> 7</span>group_alike_docs<span class="o">([]</span>, Buckets<span class="o">)</span> -&gt;
+<span class="ln"> 8</span>    lists:reverse<span class="o">(</span>lists:map<span class="o">(</span>fun lists:reverse/1, Buckets<span class="o">))</span><span class="p">;</span>
+<span class="ln"> 9</span>group_alike_docs<span class="o">([</span>Doc<span class="p">|</span>Rest<span class="o">]</span>, <span class="o">[])</span> -&gt;
+<span class="ln">10</span>    group_alike_docs<span class="o">(</span>Rest, <span class="o">[[</span>Doc<span class="o">]])</span><span class="p">;</span>
+<span class="ln">11</span>group_alike_docs<span class="o">([{</span>Doc,Ref<span class="o">}</span><span class="p">|</span>Rest<span class="o">]</span>, <span class="o">[</span>Bucket<span class="p">|</span>RestBuckets<span class="o">])</span> -&gt;
+<span class="ln">12</span>    <span class="o">[{</span><span class="c1">#doc{id=BucketId},_Ref}|_] = Bucket,
+</span><span class="ln">13</span><span class="c1"></span>    <span class="k">case</span> Doc#doc.id <span class="o">==</span> BucketId of
+<span class="ln">14</span>    <span class="nb">true</span> -&gt;
+<span class="ln">15</span>        % add to existing bucket
+<span class="ln">16</span>        group_alike_docs<span class="o">(</span>Rest, <span class="o">[[{</span>Doc,Ref<span class="o">}</span><span class="p">|</span>Bucket<span class="o">]</span><span class="p">|</span>RestBuckets<span class="o">])</span><span class="p">;</span>
+<span class="ln">17</span>    <span class="nb">false</span> -&gt;
+<span class="ln">18</span>        % add to new bucket
+<span class="ln">19</span>       group_alike_docs<span class="o">(</span>Rest, <span class="o">[[{</span>Doc,Ref<span class="o">}]</span><span class="p">|</span><span class="o">[</span>Bucket<span class="p">|</span>RestBuckets<span class="o">]])</span>
+<span class="ln">20</span>    end.</code></pre></div>
+これはコードを読むよりもコメントの部分が分かりやすいので、そちらを参照してください。次に<code>couch_db:before_docs_update/2</code>を見てみます。</p>
+
+<p>couch_db.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>before_docs_update<span class="o">(</span><span class="c1">#db{before_doc_update = nil}, BucketList) -&gt;
+</span><span class="ln">2</span><span class="c1"></span>    BucketList<span class="p">;</span>
+<span class="ln">3</span>before_docs_update<span class="o">(</span><span class="c1">#db{before_doc_update = Fun} = Db, BucketList) -&gt;
+</span><span class="ln">4</span><span class="c1"></span>    <span class="o">[</span>lists:map<span class="o">(</span>
+<span class="ln">5</span>        fun<span class="o">({</span>Doc, Ref<span class="o">})</span> -&gt;
+<span class="ln">6</span>            <span class="nv">NewDoc</span> <span class="o">=</span> Fun<span class="o">(</span>couch_doc:with_ejson_body<span class="o">(</span>Doc<span class="o">)</span>, Db<span class="o">)</span>,
+<span class="ln">7</span>            <span class="o">{</span>NewDoc, Ref<span class="o">}</span>
+<span class="ln">8</span>        end,
+<span class="ln">9</span>        Bucket<span class="o">)</span> <span class="o">||</span> Bucket &lt;- BucketList<span class="o">]</span>.</code></pre></div></p>
+
+<p><code>before_doc_update</code>に関数がバインドされている場合は、それを呼び出すようになっています。ActiveRecordのbefore_saveのようなものですかね。</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p><code>couch_db:update_docs/4</code>の前半をザッと見て、データベースの書き込みカウンタの存在、<code>sys_db</code>や<code>all_or_nothing</code>やlocal_docの意味、更新前のコールバック関数の呼び出しを確認しました。</p>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        This post was published <strong>1303</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2018 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>

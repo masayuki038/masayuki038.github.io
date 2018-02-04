@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>How to create Mock Hive Server</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="We need a Mock Hive Server for tests 以前、thrift_erlを使ってHiveクライアントを作成しました。このHiveクライアントのテストを書こうとすると、Hi" />
+
+  
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@masayuki" />
+    <meta name="twitter:title" content="How to create Mock Hive Server" />
+    <meta name="twitter:description" content="We need a Mock Hive Server for tests 以前、thrift_erlを使ってHiveクライアントを作成しました。このHiveクライアントのテストを書こうとすると、Hi" />
+    <meta name="twitter:image" content="/img/avatar.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="How to create Mock Hive Server" />
+  <meta property="og:description" content="We need a Mock Hive Server for tests 以前、thrift_erlを使ってHiveクライアントを作成しました。このHiveクライアントのテストを書こうとすると、Hi" />
+  <meta property="og:url" content="/blog/2013/10/13/mock-hive-server/" />
+  <meta property="og:image" content="/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.32" />
+
+
+<link rel="canonical" href="/blog/2013/10/13/mock-hive-server/" />
+<link rel="alternative" href="/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="/css/bundle.css" />
+<link rel="stylesheet" href="/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://s.gravatar.com/avatar/4b97fb839e6040cfb353bd667ac93e54?s=80" alt="Avatar">
+  
+  <h2 class="title">act-act</h2>
+  
+  <p class="subtitle"></p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">How to create Mock Hive Server</h1>
+      <p class="post-meta">@Masayuki Takahashi · Oct 13, 2013 · 2 min read</p>
+    </header>
+    <article class="post-content">
+
+<h1 id="we-need-a-mock-hive-server-for-tests">We need a Mock Hive Server for tests</h1>
+
+<p>以前、<a href="https://github.com/xslogic/thrift_erl">thrift_erl</a>を使ってHiveクライアントを作成しました。このHiveクライアントのテストを書こうとすると、Hive Serverが必要になります。テスト実行時に利用可能なHive Serverがあるとは限りません。そこで今回は、<a href="https://github.com/xslogic/thrift_erl">thrift_erl</a>を使ってHive Serverのモックを作ってみました。</p>
+
+<h1 id="thrift-code-generation">Thrift Code generation</h1>
+
+<p>今回も、.thriftファイルから生成したコードを使います。コードの生成については以下のページに記載しています。</p>
+
+<ul>
+<li><a href="http://masayuki038.github.io/blog/2013/06/05/thrift-hive-part1/">Connecting to Hive From Erlang Using Thrift Part1</a></li>
+</ul>
+
+<h1 id="implementation-for-services">Implementation for services</h1>
+
+<p>まず、Hive Serverのどのserviceを実装するか決めます。今回は、テストコードから呼び出している以下の4メソッドにしました。</p>
+
+<ul>
+<li>execute</li>
+<li>fetchOne</li>
+<li>fetchAll</li>
+<li>getQueryPlan</li>
+</ul>
+
+<p>次にhandle_functionという関数を用意し、service毎に返したいレスポンスを用意します。</p>
+
+<p>test/hive_server_mock.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>-module<span class="o">(</span>hive_server_mock<span class="o">)</span>.
+<span class="ln"> 2</span>
+<span class="ln"> 3</span>-export<span class="o">([</span>start/0, stop/0, handle_function/2<span class="o">])</span>.
+<span class="ln"> 4</span>
+<span class="ln"> 5</span>-include_lib<span class="o">(</span><span class="s2">&#34;eunit/include/eunit.hrl&#34;</span><span class="o">)</span>.
+<span class="ln"> 6</span>-include<span class="o">(</span><span class="s2">&#34;queryplan_types.hrl&#34;</span><span class="o">)</span>.
+<span class="ln"> 7</span>
+<span class="ln"> 8</span>start<span class="o">()</span> -&gt;
+<span class="ln"> 9</span>    <span class="o">{</span>ok, _<span class="o">}</span> <span class="o">=</span> thrift_socket_server:start<span class="o">([{</span>name, mock_server<span class="o">}</span>, <span class="o">{</span>port, <span class="m">10000</span><span class="o">}</span>, <span class="o">{</span>service, thriftHive_thrift<span class="o">}</span>, <span class="o">{</span>handler, hive_server_mock<span class="o">}])</span>,
+<span class="ln">10</span>    ok.
+<span class="ln">11</span>
+<span class="ln">12</span>stop<span class="o">()</span> -&gt;
+<span class="ln">13</span>    thrift_socket_server:stop<span class="o">(</span>mock_server<span class="o">)</span>.
+<span class="ln">14</span>
+<span class="ln">15</span>handle_function<span class="o">(</span>Function, Params<span class="o">)</span> -&gt;
+<span class="ln">16</span>    ?debugVal<span class="o">(</span>Function<span class="o">)</span>,
+<span class="ln">17</span>    ?debugVal<span class="o">(</span>Params<span class="o">)</span>,
+<span class="ln">18</span>    <span class="k">case</span> Function of
+<span class="ln">19</span>    execute -&gt;
+<span class="ln">20</span>        <span class="o">{</span>reply, Params<span class="o">}</span><span class="p">;</span>
+<span class="ln">21</span>	fetchOne -&gt;
+<span class="ln">22</span>	    <span class="o">{</span>reply, <span class="s2">&#34;a\t1&#34;</span><span class="o">}</span><span class="p">;</span>
+<span class="ln">23</span>	fetchAll -&gt;
+<span class="ln">24</span>	    <span class="o">{</span>reply, <span class="o">[</span><span class="s2">&#34;a\t1&#34;</span>, <span class="s2">&#34;b\t2&#34;</span>, <span class="s2">&#34;c\t3&#34;</span>, <span class="s2">&#34;d\t1&#34;</span>, <span class="s2">&#34;e\t2&#34;</span>, <span class="s2">&#34;f\t3&#34;</span>, <span class="s2">&#34;a\t4&#34;</span>, <span class="s2">&#34;b\t5&#34;</span><span class="o">]}</span><span class="p">;</span>
+<span class="ln">25</span>	getQueryPlan -&gt;
+<span class="ln">26</span>            <span class="o">{</span>reply, <span class="c1">#queryPlan{queries = [], done = true, started = true}}
+</span><span class="ln">27</span><span class="c1"></span>    end.</code></pre></div></p>
+
+<p>これで実装は完了です。</p>
+
+<h2 id="starting-and-stoping-server-in-tests">Starting and Stoping server in tests</h2>
+
+<p>あとは、テストの実行前にmockサーバを起動し、テスト完了後にmockサーバを停止します。</p>
+
+<p>test/thrift_hive_tests.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>-module<span class="o">(</span>thrift_hive_tests<span class="o">)</span>.
+<span class="ln"> 2</span>-include_lib<span class="o">(</span><span class="s2">&#34;eunit/include/eunit.hrl&#34;</span><span class="o">)</span>.
+<span class="ln"> 3</span>-export<span class="o">([</span>start/0<span class="o">])</span>.
+<span class="ln"> 4</span>-export<span class="o">([</span>stop/1<span class="o">])</span>.
+<span class="ln"> 5</span>
+<span class="ln"> 6</span>fetchOne_test_<span class="o">()</span> -&gt;
+<span class="ln"> 7</span>    <span class="o">{</span>timeout, <span class="m">1200</span>,
+<span class="ln"> 8</span>        <span class="o">{</span>setup, fun start/0, fun stop/1,
+<span class="ln"> 9</span>            ?_assertEqual<span class="o">(</span>
+<span class="ln">10</span>                <span class="o">{</span>ok, <span class="s2">&#34;a\t1&#34;</span><span class="o">}</span>,
+<span class="ln">11</span>                begin thrift_hive:fetch_one<span class="o">(</span><span class="s2">&#34;select * from test&#34;</span><span class="o">)</span> end
+<span class="ln">12</span>            <span class="o">)}</span>
+<span class="ln">13</span>    <span class="o">}</span>.
+<span class="ln">14</span>
+<span class="ln">15</span>fetchAll_test_<span class="o">()</span> -&gt;
+<span class="ln">16</span>    <span class="o">{</span>timeout, <span class="m">1200</span>,
+<span class="ln">17</span>        <span class="o">{</span>setup, fun start/0, fun stop/1,
+<span class="ln">18</span>            fun<span class="o">()</span> -&gt;
+<span class="ln">19</span>                <span class="o">{</span>ok, Lst<span class="o">}</span> <span class="o">=</span> thrift_hive:fetch_all<span class="o">(</span><span class="s2">&#34;select * from test&#34;</span><span class="o">)</span>,
+<span class="ln">20</span>                ?assertEqual<span class="o">([</span><span class="s2">&#34;a\t1&#34;</span>, <span class="s2">&#34;b\t2&#34;</span>, <span class="s2">&#34;c\t3&#34;</span>, <span class="s2">&#34;d\t1&#34;</span>, <span class="s2">&#34;e\t2&#34;</span>, <span class="s2">&#34;f\t3&#34;</span>, <span class="s2">&#34;a\t4&#34;</span>, <span class="s2">&#34;b\t5&#34;</span><span class="o">]</span>, Lst<span class="o">)</span>
+<span class="ln">21</span>            end<span class="o">}</span>
+<span class="ln">22</span>    <span class="o">}</span>.
+<span class="ln">23</span>
+<span class="ln">24</span>getClusterStatus_test_<span class="o">()</span> -&gt;
+<span class="ln">25</span>    <span class="o">{</span>timeout, <span class="m">1200</span>,
+<span class="ln">26</span>        <span class="o">{</span>setup, fun start/0, fun stop/1,
+<span class="ln">27</span>            fun<span class="o">()</span> -&gt;
+<span class="ln">28</span>                <span class="o">{</span>ok, Lst<span class="o">}</span> <span class="o">=</span> thrift_hive:fetch_all_async<span class="o">(</span><span class="s2">&#34;select c1, count(*) from test group by c1&#34;</span><span class="o">)</span>,
+<span class="ln">29</span>                %?debugVal<span class="o">(</span>Lst<span class="o">)</span>,
+<span class="ln">30</span>                <span class="o">{</span>ok, Lst<span class="o">}</span>
+<span class="ln">31</span>        end<span class="o">}</span>
+<span class="ln">32</span>    <span class="o">}</span>.
+<span class="ln">33</span>
+<span class="ln">34</span>start<span class="o">()</span> -&gt;
+<span class="ln">35</span>    <span class="nv">ok</span> <span class="o">=</span> application:start<span class="o">(</span>gproc<span class="o">)</span>,
+<span class="ln">36</span>    <span class="nv">ok</span> <span class="o">=</span> application:start<span class="o">(</span>econfig<span class="o">)</span>,
+<span class="ln">37</span>    <span class="nv">ok</span> <span class="o">=</span> econfig:register_config<span class="o">(</span>erl_shib, <span class="o">[</span><span class="s2">&#34;../erl_shib.ini&#34;</span><span class="o">]</span>, <span class="o">[</span>autoreload<span class="o">])</span>,    
+<span class="ln">38</span>    <span class="nb">true</span> <span class="o">=</span> econfig:subscribe<span class="o">(</span>erl_shib<span class="o">)</span>,
+<span class="ln">39</span>    <span class="nv">ok</span> <span class="o">=</span> hive_server_mock:start<span class="o">()</span>.
+<span class="ln">40</span>
+<span class="ln">41</span>stop<span class="o">(</span>_Result<span class="o">)</span> -&gt;
+<span class="ln">42</span>    <span class="nv">ok</span> <span class="o">=</span> hive_server_mock:stop<span class="o">()</span>,
+<span class="ln">43</span>    <span class="nv">ok</span> <span class="o">=</span> application:stop<span class="o">(</span>econfig<span class="o">)</span>,
+<span class="ln">44</span>    <span class="nv">ok</span> <span class="o">=</span> application:stop<span class="o">(</span>gproc<span class="o">)</span>,
+<span class="ln">45</span>    ok.</code></pre></div></p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Mock Hive Serverを作成し、Hive Serverが無くてもHiveクライアントのテストを動かせるようになりました。</p>
+
+<p>並列でテストを実行することを考えると、サーバの起動/停止は全テストの前後に実行する必要があります。</p>
+
+<p>また、実際のHive Serverは、fetchOneやfetchAllを呼び出した際に、直前に実行したexecuteの実行結果を参照することになるので、サーバ側で状態を保持してるものと思われます。今回のコードではこの部分がない為、executeで指定したHQL毎に実行結果を変更することができません。このあたりはもう少し調べてみたいと思います。</p>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        This post was published <strong>1575</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2018 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>

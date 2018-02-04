@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Maven on act-act</title>
+    <link>/categories/maven/</link>
+    <description>Recent content in Maven on act-act</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja</language>
+    <lastBuildDate>Sun, 24 Aug 2014 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/maven/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Debugging Maven Plugins</title>
+      <link>/blog/2014/08/24/mvndebug/</link>
+      <pubDate>Sun, 24 Aug 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/2014/08/24/mvndebug/</guid>
+      <description>Maven plugin throw some exception eclipseでincubator-parquet-mrのコードをビルドする為に、mvn eclipse:eclipseを実行したと</description>
+    </item>
+    
+  </channel>
+</rss>

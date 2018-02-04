@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Octopress on act-act</title>
+    <link>/categories/octopress/</link>
+    <description>Recent content in Octopress on act-act</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja</language>
+    <lastBuildDate>Wed, 04 May 2016 14:24:20 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/octopress/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Update Octopress to 3.0</title>
+      <link>/blog/2016/05/04/update-octopress/</link>
+      <pubDate>Wed, 04 May 2016 14:24:20 +0000</pubDate>
+      
+      <guid>/blog/2016/05/04/update-octopress/</guid>
+      <description>大分blogの更新をサボっていましたが、GWでちょっと時間ができたので、Octopressを3.0にアップデートしました。最初に構築した際の</description>
+    </item>
+    
+  </channel>
+</rss>

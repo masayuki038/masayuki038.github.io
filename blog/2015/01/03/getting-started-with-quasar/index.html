@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Getting Started with Quasar</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="Quasar - Fiber, Channel, Actor Quasarは軽量スレッド、GoライクなChannl、ErlangライクなActorや、非同期プログラミングツールを提供するJav" />
+
+  
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@masayuki" />
+    <meta name="twitter:title" content="Getting Started with Quasar" />
+    <meta name="twitter:description" content="Quasar - Fiber, Channel, Actor Quasarは軽量スレッド、GoライクなChannl、ErlangライクなActorや、非同期プログラミングツールを提供するJav" />
+    <meta name="twitter:image" content="/img/avatar.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Getting Started with Quasar" />
+  <meta property="og:description" content="Quasar - Fiber, Channel, Actor Quasarは軽量スレッド、GoライクなChannl、ErlangライクなActorや、非同期プログラミングツールを提供するJav" />
+  <meta property="og:url" content="/blog/2015/01/03/getting-started-with-quasar/" />
+  <meta property="og:image" content="/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.32" />
+
+
+<link rel="canonical" href="/blog/2015/01/03/getting-started-with-quasar/" />
+<link rel="alternative" href="/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="/css/bundle.css" />
+<link rel="stylesheet" href="/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://s.gravatar.com/avatar/4b97fb839e6040cfb353bd667ac93e54?s=80" alt="Avatar">
+  
+  <h2 class="title">act-act</h2>
+  
+  <p class="subtitle"></p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Getting Started with Quasar</h1>
+      <p class="post-meta">@Masayuki Takahashi · Jan 3, 2015 · 5 min read</p>
+    </header>
+    <article class="post-content">
+
+<h1 id="quasar-fiber-channel-actor">Quasar - Fiber, Channel, Actor</h1>
+
+<p><a href="http://docs.paralleluniverse.co/quasar/">Quasar</a>は軽量スレッド、GoライクなChannl、ErlangライクなActorや、非同期プログラミングツールを提供するJavaのライブラリです。</p>
+
+<p>今回は、Fiber、Channel、Actorを試してみました。</p>
+
+<h1 id="bytecode-instrumentation">Bytecode Instrumentation</h1>
+
+<p>このライブラリを使うには、Instrumentationを使ってバイトコードの書き換えを行う必要があります。この書き換えは、JVMの起動オプションにQuasarが提供するJava Agentを指定して実行時に書き換えを行うか、もしくはAntタスクを使って事前に書き換えを実行してく必要があります。今回はJava Agentを使って試してみました。どちらの使い方も以下のページに記載されています。</p>
+
+<ul>
+<li><a href="http://docs.paralleluniverse.co/quasar/#instrumentation">GETTING STARTED - Instrumenting Your Code</a></li>
+</ul>
+
+<h1 id="fiber">Fiber</h1>
+
+<p>Fiberは軽量スレッドです。インターフェースははThread/Runnableに近いので、特に難しくありません。</p>
+
+<p>FiberSample.java:
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln"> 1</span><span class="kn">package</span> <span class="nn">net.wrap_trap.quasar_sample</span><span class="o">;</span>
+<span class="ln"> 2</span>
+<span class="ln"> 3</span><span class="kn">import</span> <span class="nn">java.util.concurrent.ExecutionException</span><span class="o">;</span>
+<span class="ln"> 4</span>
+<span class="ln"> 5</span><span class="kn">import</span> <span class="nn">co.paralleluniverse.fibers.Fiber</span><span class="o">;</span>
+<span class="ln"> 6</span><span class="kn">import</span> <span class="nn">co.paralleluniverse.fibers.SuspendExecution</span><span class="o">;</span>
+<span class="ln"> 7</span>
+<span class="ln"> 8</span><span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">&#34;serial&#34;</span><span class="o">)</span>
+<span class="ln"> 9</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FiberSample</span> <span class="o">{</span>
+<span class="ln">10</span>
+<span class="ln">11</span>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">ExecutionException</span><span class="o">,</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+<span class="ln">12</span>    <span class="n">Fiber</span><span class="o">&lt;</span><span class="n">Void</span><span class="o">&gt;</span> <span class="n">a</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Fiber</span><span class="o">&lt;</span><span class="n">Void</span><span class="o">&gt;()</span> <span class="o">{</span>
+<span class="ln">13</span>      <span class="nd">@Override</span>
+<span class="ln">14</span>      <span class="kd">protected</span> <span class="n">Void</span> <span class="nf">run</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">InterruptedException</span><span class="o">,</span> <span class="n">SuspendExecution</span> <span class="o">{</span>
+<span class="ln">15</span>        <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">10</span><span class="o">;</span> <span class="n">i</span> <span class="o">++)</span> <span class="o">{</span>
+<span class="ln">16</span>          <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="s">&#34;a&#34;</span><span class="o">);</span>
+<span class="ln">17</span>          <span class="n">sleep</span><span class="o">(</span><span class="n">1000L</span><span class="o">);</span>
+<span class="ln">18</span>        <span class="o">}</span>
+<span class="ln">19</span>        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+<span class="ln">20</span>      <span class="o">}</span>
+<span class="ln">21</span>    <span class="o">}.</span><span class="na">start</span><span class="o">();</span>
+<span class="ln">22</span>
+<span class="ln">23</span>    <span class="n">Fiber</span><span class="o">&lt;</span><span class="n">Void</span><span class="o">&gt;</span> <span class="n">b</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Fiber</span><span class="o">&lt;</span><span class="n">Void</span><span class="o">&gt;()</span> <span class="o">{</span>
+<span class="ln">24</span>      <span class="nd">@Override</span>
+<span class="ln">25</span>      <span class="kd">protected</span> <span class="n">Void</span> <span class="nf">run</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">InterruptedException</span><span class="o">,</span> <span class="n">SuspendExecution</span> <span class="o">{</span>
+<span class="ln">26</span>        <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">10</span><span class="o">;</span> <span class="n">i</span> <span class="o">++)</span> <span class="o">{</span>
+<span class="ln">27</span>          <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="s">&#34;b&#34;</span><span class="o">);</span>
+<span class="ln">28</span>          <span class="n">sleep</span><span class="o">(</span><span class="n">1000L</span><span class="o">);</span>
+<span class="ln">29</span>        <span class="o">}</span>
+<span class="ln">30</span>        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+<span class="ln">31</span>      <span class="o">}</span>
+<span class="ln">32</span>    <span class="o">}.</span><span class="na">start</span><span class="o">();</span>
+<span class="ln">33</span>
+<span class="ln">34</span>    <span class="n">a</span><span class="o">.</span><span class="na">join</span><span class="o">();</span>
+<span class="ln">35</span>    <span class="n">b</span><span class="o">.</span><span class="na">join</span><span class="o">();</span>
+<span class="ln">36</span>  <span class="o">}</span>
+<span class="ln">37</span><span class="o">}</span></code></pre></div></p>
+
+<p>実行結果:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">abababababababababab</code></pre></div></p>
+
+<p>Fiberの実装が気になるところですが、今回は概要を。ザッと<a href="http://docs.paralleluniverse.co/quasar/#advanced-fibers">ドキュメント</a>を読んだ限りだと、以下のような記述があります。</p>
+
+<ul>
+<li>継続(continuation)を使っている</li>
+<li>Instrumentationを使って継続(continuation)を実現している</li>
+<li>Instrumentationでバイトコードの書き換えが行われるポイントは以下の2点
+
+<ul>
+<li>throws SuspendExecution</li>
+<li>@Suspendable</li>
+</ul></li>
+<li>Fiberのスケジューリングは<a href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ForkJoinPool.html">ForkJoinPool</a>を使っている</li>
+</ul>
+
+<p>Fiberがどのくらい軽量かについては、以下のページにベンチの結果が載っています。</p>
+
+<ul>
+<li><a href="http://vlkan.com/blog/post/2014/09/01/java-fiber-test/">Testing Fiber Implementations in JVM</a></li>
+</ul>
+
+<h1 id="channel">Channel</h1>
+
+<p>Fiber間やスレッド間でメッセージングを行う為の仕組みとしてChannelが提供されています。Fiber間でChannelを使ってメッセージングを行うコードを書いてみました。</p>
+
+<p>ChannelSample.java:
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln"> 1</span><span class="kn">package</span> <span class="nn">net.wrap_trap.quasar_sample</span><span class="o">;</span>
+<span class="ln"> 2</span>
+<span class="ln"> 3</span><span class="kn">import</span> <span class="nn">java.util.Calendar</span><span class="o">;</span>
+<span class="ln"> 4</span><span class="kn">import</span> <span class="nn">java.util.concurrent.ExecutionException</span><span class="o">;</span>
+<span class="ln"> 5</span>
+<span class="ln"> 6</span><span class="kn">import</span> <span class="nn">co.paralleluniverse.fibers.Fiber</span><span class="o">;</span>
+<span class="ln"> 7</span><span class="kn">import</span> <span class="nn">co.paralleluniverse.fibers.SuspendExecution</span><span class="o">;</span>
+<span class="ln"> 8</span><span class="kn">import</span> <span class="nn">co.paralleluniverse.strands.channels.Channel</span><span class="o">;</span>
+<span class="ln"> 9</span><span class="kn">import</span> <span class="nn">co.paralleluniverse.strands.channels.Channels</span><span class="o">;</span>
+<span class="ln">10</span><span class="kn">import</span> <span class="nn">co.paralleluniverse.strands.channels.Channels.OverflowPolicy</span><span class="o">;</span>
+<span class="ln">11</span>
+<span class="ln">12</span><span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">&#34;serial&#34;</span><span class="o">)</span>
+<span class="ln">13</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ChannelSample</span> <span class="o">{</span>
+<span class="ln">14</span>
+<span class="ln">15</span>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">ExecutionException</span><span class="o">,</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+<span class="ln">16</span>    <span class="n">Channel</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">channel</span> <span class="o">=</span> <span class="n">Channels</span><span class="o">.</span><span class="na">newChannel</span><span class="o">(</span><span class="n">0</span><span class="o">,</span> <span class="n">OverflowPolicy</span><span class="o">.</span><span class="na">BLOCK</span><span class="o">,</span> <span class="kc">false</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+<span class="ln">17</span>    <span class="n">Fiber</span><span class="o">&lt;</span><span class="n">Void</span><span class="o">&gt;</span> <span class="n">receiver</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Fiber</span><span class="o">&lt;</span><span class="n">Void</span><span class="o">&gt;()</span> <span class="o">{</span>
+<span class="ln">18</span>      <span class="nd">@Override</span>
+<span class="ln">19</span>      <span class="kd">protected</span> <span class="n">Void</span> <span class="nf">run</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">SuspendExecution</span><span class="o">,</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+<span class="ln">20</span>        <span class="k">while</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">21</span>          <span class="n">String</span> <span class="n">message</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="na">receive</span><span class="o">();</span>
+<span class="ln">22</span>          <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;received: &#34;</span> <span class="o">+</span> <span class="n">message</span><span class="o">);</span>
+<span class="ln">23</span>        <span class="o">}</span>
+<span class="ln">24</span>      <span class="o">}</span>
+<span class="ln">25</span>    <span class="o">}.</span><span class="na">start</span><span class="o">();</span>
+<span class="ln">26</span>
+<span class="ln">27</span>    <span class="n">Fiber</span><span class="o">&lt;</span><span class="n">Void</span><span class="o">&gt;</span> <span class="n">sender</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Fiber</span><span class="o">&lt;</span><span class="n">Void</span><span class="o">&gt;()</span> <span class="o">{</span>
+<span class="ln">28</span>      <span class="nd">@Override</span>
+<span class="ln">29</span>      <span class="kd">protected</span> <span class="n">Void</span> <span class="nf">run</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">SuspendExecution</span><span class="o">,</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+<span class="ln">30</span>        <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
+<span class="ln">31</span>        <span class="k">while</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">32</span>          <span class="n">String</span> <span class="n">message</span> <span class="o">=</span> <span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&#34;foo%d&#34;</span><span class="o">,</span> <span class="n">i</span><span class="o">++);</span>
+<span class="ln">33</span>          <span class="n">channel</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">message</span><span class="o">);</span>
+<span class="ln">34</span>          <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;sent: &#34;</span> <span class="o">+</span> <span class="n">message</span><span class="o">);</span>
+<span class="ln">35</span>          <span class="n">sleep</span><span class="o">(</span><span class="n">5000L</span><span class="o">);</span>
+<span class="ln">36</span>        <span class="o">}</span>
+<span class="ln">37</span>      <span class="o">}</span>
+<span class="ln">38</span>    <span class="o">}.</span><span class="na">start</span><span class="o">();</span>
+<span class="ln">39</span>
+<span class="ln">40</span>    <span class="n">receiver</span><span class="o">.</span><span class="na">join</span><span class="o">();</span>
+<span class="ln">41</span>    <span class="n">sender</span><span class="o">.</span><span class="na">join</span><span class="o">();</span>
+<span class="ln">42</span>  <span class="o">}</span>
+<span class="ln">43</span><span class="o">}</span></code></pre></div></p>
+
+<p><div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">sent: foo0
+received: foo0
+sent: foo1
+received: foo1
+sent: foo2
+received: foo2
+sent: foo3
+received: foo3
+sent: foo4
+received: foo4
+sent: foo5
+received: foo5
+...</code></pre></div></p>
+
+<p>Channel#receiveを呼び出すと、メッセージを受信するまでブロックします。golangを使ったことが無いのでこれが&rdquo;Go-like channels&rdquo;なのか良く分かりませんが、Fiber間のメッセージ送受信を簡単に書けるようになっていると思います。</p>
+
+<p>また、Channelの<a href="https://github.com/puniverse/quasar/blob/master/quasar-core/src/test/java/co/paralleluniverse/strands/channels/ChannelTest.java#L151">Example</a>を見ると、スレッド-Fiber間でもChannelを介してメッセージのやり取りができるようです。</p>
+
+<h1 id="actor">Actor</h1>
+
+<p>JavaでActorといえば<a href="http://akka.io/">Akka</a>ですが、Quasarを使ってActorを書くことができます。特にServerActorはErlangのgen_serverのようなインターフェースを提供しています。</p>
+
+<p>ServerActorを使ってサンプルコードを書いてみました。<code>call</code>が同期呼び出し、<code>cast</code>が非同期呼び出し、<code>sendMessage</code>がメッセージ送信です。サーバはメッセージを受信したらシャットダウンするようにしています。このあたりは&rdquo;Erlang-like actors&rdquo;を感じます。</p>
+
+<p>ActorSample.java:
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln">  1</span><span class="kn">package</span> <span class="nn">net.wrap_trap.quasar_sample</span><span class="o">;</span>
+<span class="ln">  2</span>
+<span class="ln">  3</span><span class="kn">import</span> <span class="nn">java.util.concurrent.ExecutionException</span><span class="o">;</span>
+<span class="ln">  4</span><span class="kn">import</span> <span class="nn">java.util.concurrent.TimeoutException</span><span class="o">;</span>
+<span class="ln">  5</span>
+<span class="ln">  6</span><span class="kn">import</span> <span class="nn">co.paralleluniverse.actors.ActorRef</span><span class="o">;</span>
+<span class="ln">  7</span><span class="kn">import</span> <span class="nn">co.paralleluniverse.actors.BasicActor</span><span class="o">;</span>
+<span class="ln">  8</span><span class="kn">import</span> <span class="nn">co.paralleluniverse.actors.behaviors.RequestMessage</span><span class="o">;</span>
+<span class="ln">  9</span><span class="kn">import</span> <span class="nn">co.paralleluniverse.actors.behaviors.RequestReplyHelper</span><span class="o">;</span>
+<span class="ln"> 10</span><span class="kn">import</span> <span class="nn">co.paralleluniverse.actors.behaviors.Server</span><span class="o">;</span>
+<span class="ln"> 11</span><span class="kn">import</span> <span class="nn">co.paralleluniverse.actors.behaviors.ServerActor</span><span class="o">;</span>
+<span class="ln"> 12</span><span class="kn">import</span> <span class="nn">co.paralleluniverse.actors.behaviors.ValueResponseMessage</span><span class="o">;</span>
+<span class="ln"> 13</span><span class="kn">import</span> <span class="nn">co.paralleluniverse.fibers.SuspendExecution</span><span class="o">;</span>
+<span class="ln"> 14</span><span class="kn">import</span> <span class="nn">co.paralleluniverse.strands.Strand</span><span class="o">;</span>
+<span class="ln"> 15</span>
+<span class="ln"> 16</span><span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">&#34;serial&#34;</span><span class="o">)</span>
+<span class="ln"> 17</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ActorSample</span> <span class="o">{</span>
+<span class="ln"> 18</span>
+<span class="ln"> 19</span>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">InterruptedException</span><span class="o">,</span> <span class="n">SuspendExecution</span><span class="o">,</span> <span class="n">ExecutionException</span><span class="o">,</span> <span class="n">TimeoutException</span> <span class="o">{</span>
+<span class="ln"> 20</span>    <span class="n">Server</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Integer</span><span class="o">,</span> <span class="n">Request</span><span class="o">&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">startServer</span><span class="o">();</span>
+<span class="ln"> 21</span>
+<span class="ln"> 22</span>    <span class="n">call</span><span class="o">(</span><span class="n">s</span><span class="o">);</span>
+<span class="ln"> 23</span>    <span class="n">cast</span><span class="o">(</span><span class="n">s</span><span class="o">);</span>
+<span class="ln"> 24</span>    <span class="n">sendMessage</span><span class="o">(</span><span class="n">s</span><span class="o">);</span>
+<span class="ln"> 25</span>  <span class="o">}</span>
+<span class="ln"> 26</span>
+<span class="ln"> 27</span>  <span class="kd">private</span> <span class="kd">static</span> <span class="n">Server</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Integer</span><span class="o">,</span> <span class="n">Request</span><span class="o">&gt;</span> <span class="nf">startServer</span><span class="o">()</span> <span class="o">{</span>
+<span class="ln"> 28</span>    <span class="k">return</span> <span class="k">new</span> <span class="n">ServerActor</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Integer</span><span class="o">,</span> <span class="n">Request</span><span class="o">&gt;()</span> <span class="o">{</span>
+<span class="ln"> 29</span>      <span class="nd">@Override</span>
+<span class="ln"> 30</span>      <span class="kd">public</span> <span class="kt">void</span> <span class="nf">init</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">SuspendExecution</span> <span class="o">{</span>
+<span class="ln"> 31</span>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;server: init&#34;</span><span class="o">);</span>
+<span class="ln"> 32</span>      <span class="o">}</span>
+<span class="ln"> 33</span>
+<span class="ln"> 34</span>      <span class="nd">@Override</span>
+<span class="ln"> 35</span>      <span class="kd">public</span> <span class="n">Integer</span> <span class="nf">handleCall</span><span class="o">(</span><span class="n">ActorRef</span><span class="o">&lt;?&gt;</span> <span class="n">from</span><span class="o">,</span> <span class="n">Object</span> <span class="n">id</span><span class="o">,</span> <span class="n">Request</span> <span class="n">m</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln"> 36</span>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;server: handleCall&#34;</span><span class="o">);</span>
+<span class="ln"> 37</span>        <span class="k">return</span> <span class="n">m</span><span class="o">.</span><span class="na">a</span> <span class="o">+</span> <span class="n">m</span><span class="o">.</span><span class="na">b</span><span class="o">;</span>
+<span class="ln"> 38</span>      <span class="o">}</span>
+<span class="ln"> 39</span>
+<span class="ln"> 40</span>      <span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">&#34;unchecked&#34;</span><span class="o">)</span>
+<span class="ln"> 41</span>      <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handleCast</span><span class="o">(</span><span class="n">ActorRef</span><span class="o">&lt;?&gt;</span> <span class="n">from</span><span class="o">,</span> <span class="n">Object</span> <span class="n">id</span><span class="o">,</span> <span class="n">Request</span> <span class="n">m</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">SuspendExecution</span> <span class="o">{</span>
+<span class="ln"> 42</span>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;server: handleCast&#34;</span><span class="o">);</span>
+<span class="ln"> 43</span>        <span class="n">RequestReplyHelper</span><span class="o">.</span><span class="na">reply</span><span class="o">(</span><span class="n">m</span><span class="o">,</span> <span class="n">m</span><span class="o">.</span><span class="na">a</span> <span class="o">+</span> <span class="n">m</span><span class="o">.</span><span class="na">b</span><span class="o">);</span>
+<span class="ln"> 44</span>      <span class="o">}</span>
+<span class="ln"> 45</span>
+<span class="ln"> 46</span>      <span class="nd">@Override</span>
+<span class="ln"> 47</span>      <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">handleInfo</span><span class="o">(</span><span class="n">Object</span> <span class="n">r</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">SuspendExecution</span> <span class="o">{</span>
+<span class="ln"> 48</span>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;server: handleInfo&#34;</span><span class="o">);</span>
+<span class="ln"> 49</span>        <span class="n">Request</span> <span class="n">m</span> <span class="o">=</span> <span class="o">(</span><span class="n">Request</span><span class="o">)</span><span class="n">r</span><span class="o">;</span>
+<span class="ln"> 50</span>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&#34;a=%d, b=%d&#34;</span><span class="o">,</span> <span class="n">m</span><span class="o">.</span><span class="na">a</span><span class="o">,</span> <span class="n">m</span><span class="o">.</span><span class="na">b</span><span class="o">));</span>
+<span class="ln"> 51</span>        <span class="n">ServerActor</span><span class="o">.</span><span class="na">currentServerActor</span><span class="o">().</span><span class="na">shutdown</span><span class="o">();</span>
+<span class="ln"> 52</span>      <span class="o">}</span>
+<span class="ln"> 53</span>
+<span class="ln"> 54</span>      <span class="nd">@Override</span>
+<span class="ln"> 55</span>      <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">terminate</span><span class="o">(</span><span class="n">Throwable</span> <span class="n">cause</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">SuspendExecution</span> <span class="o">{</span>
+<span class="ln"> 56</span>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;server: terminate&#34;</span><span class="o">);</span>
+<span class="ln"> 57</span>      <span class="o">}</span>
+<span class="ln"> 58</span>    <span class="o">}.</span><span class="na">spawnThread</span><span class="o">();</span>
+<span class="ln"> 59</span>  <span class="o">}</span>
+<span class="ln"> 60</span>
+<span class="ln"> 61</span>  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">call</span><span class="o">(</span><span class="n">Server</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Integer</span><span class="o">,</span> <span class="n">Request</span><span class="o">&gt;</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln"> 62</span>    <span class="k">new</span> <span class="n">BasicActor</span><span class="o">&lt;</span><span class="n">Void</span><span class="o">,</span> <span class="n">Void</span><span class="o">&gt;()</span> <span class="o">{</span>
+<span class="ln"> 63</span>      <span class="kd">protected</span> <span class="n">Void</span> <span class="nf">doRun</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">SuspendExecution</span><span class="o">,</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+<span class="ln"> 64</span>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;client: s.call(new Request(3, 4))&#34;</span><span class="o">);</span>
+<span class="ln"> 65</span>        <span class="n">Integer</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">call</span><span class="o">(</span><span class="k">new</span> <span class="n">Request</span><span class="o">(</span><span class="n">3</span><span class="o">,</span> <span class="n">4</span><span class="o">));</span>
+<span class="ln"> 66</span>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;client: s.call(new Request(3, 4)): &#34;</span> <span class="o">+</span> <span class="n">ret</span><span class="o">);</span>
+<span class="ln"> 67</span>        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+<span class="ln"> 68</span>      <span class="o">}</span>
+<span class="ln"> 69</span>    <span class="o">}.</span><span class="na">spawn</span><span class="o">();</span>
+<span class="ln"> 70</span>  <span class="o">}</span>
+<span class="ln"> 71</span>
+<span class="ln"> 72</span>  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">cast</span><span class="o">(</span><span class="n">Server</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Integer</span><span class="o">,</span> <span class="n">Request</span><span class="o">&gt;</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln"> 73</span>    <span class="k">new</span> <span class="n">BasicActor</span><span class="o">&lt;</span><span class="n">ValueResponseMessage</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;,</span> <span class="n">Void</span><span class="o">&gt;()</span> <span class="o">{</span>
+<span class="ln"> 74</span>      <span class="kd">protected</span> <span class="n">Void</span> <span class="nf">doRun</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">SuspendExecution</span><span class="o">,</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+<span class="ln"> 75</span>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;client: s.cast(new Request(3, 4))&#34;</span><span class="o">);</span>
+<span class="ln"> 76</span>        <span class="n">s</span><span class="o">.</span><span class="na">cast</span><span class="o">(</span><span class="k">new</span> <span class="n">Request</span><span class="o">(</span><span class="n">ref</span><span class="o">,</span> <span class="n">3</span><span class="o">,</span> <span class="n">4</span><span class="o">));</span>
+<span class="ln"> 77</span>        <span class="n">ValueResponseMessage</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">receive</span><span class="o">();</span>
+<span class="ln"> 78</span>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;client: s.cast(new Request(3, 4)): &#34;</span> <span class="o">+</span> <span class="n">ret</span><span class="o">.</span><span class="na">getValue</span><span class="o">());</span>
+<span class="ln"> 79</span>        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+<span class="ln"> 80</span>      <span class="o">}</span>
+<span class="ln"> 81</span>    <span class="o">}.</span><span class="na">spawn</span><span class="o">();</span>
+<span class="ln"> 82</span>  <span class="o">}</span>
+<span class="ln"> 83</span>
+<span class="ln"> 84</span>  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">sendMessage</span><span class="o">(</span><span class="n">Server</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Integer</span><span class="o">,</span> <span class="n">Request</span><span class="o">&gt;</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln"> 85</span>    <span class="k">new</span> <span class="n">BasicActor</span><span class="o">&lt;</span><span class="n">Void</span><span class="o">,</span> <span class="n">Void</span><span class="o">&gt;()</span> <span class="o">{</span>
+<span class="ln"> 86</span>      <span class="kd">protected</span> <span class="n">Void</span> <span class="nf">doRun</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">SuspendExecution</span><span class="o">,</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+<span class="ln"> 87</span>        <span class="n">Strand</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="n">3000L</span><span class="o">);</span> <span class="c1">// wait for sending shutdown request
+</span><span class="ln"> 88</span><span class="c1"></span>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;client: s.send(new Request(3, 4))&#34;</span><span class="o">);</span>
+<span class="ln"> 89</span>        <span class="n">s</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="k">new</span> <span class="n">Request</span><span class="o">(</span><span class="n">3</span><span class="o">,</span> <span class="n">4</span><span class="o">));</span>
+<span class="ln"> 90</span>        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+<span class="ln"> 91</span>      <span class="o">}</span>
+<span class="ln"> 92</span>    <span class="o">}.</span><span class="na">spawn</span><span class="o">();</span>
+<span class="ln"> 93</span>  <span class="o">}</span>
+<span class="ln"> 94</span>
+<span class="ln"> 95</span>  <span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">&#34;rawtypes&#34;</span><span class="o">)</span>
+<span class="ln"> 96</span>  <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Request</span> <span class="kd">extends</span> <span class="n">RequestMessage</span> <span class="o">{</span>
+<span class="ln"> 97</span>    <span class="kd">final</span> <span class="kt">int</span> <span class="n">a</span><span class="o">;</span>
+<span class="ln"> 98</span>    <span class="kd">final</span> <span class="kt">int</span> <span class="n">b</span><span class="o">;</span>
+<span class="ln"> 99</span>
+<span class="ln">100</span>    <span class="kd">public</span> <span class="nf">Request</span><span class="o">(</span><span class="kt">int</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">b</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">101</span>      <span class="k">this</span><span class="o">.</span><span class="na">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">;</span>
+<span class="ln">102</span>      <span class="k">this</span><span class="o">.</span><span class="na">b</span> <span class="o">=</span> <span class="n">b</span><span class="o">;</span>
+<span class="ln">103</span>    <span class="o">}</span>
+<span class="ln">104</span>
+<span class="ln">105</span>    <span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">&#34;unchecked&#34;</span><span class="o">)</span>
+<span class="ln">106</span>    <span class="kd">public</span> <span class="nf">Request</span><span class="o">(</span><span class="n">ActorRef</span><span class="o">&lt;?&gt;</span> <span class="n">ref</span><span class="o">,</span> <span class="kt">int</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">b</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">107</span>      <span class="kd">super</span><span class="o">(</span><span class="n">ref</span><span class="o">);</span>
+<span class="ln">108</span>      <span class="k">this</span><span class="o">.</span><span class="na">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">;</span>
+<span class="ln">109</span>      <span class="k">this</span><span class="o">.</span><span class="na">b</span> <span class="o">=</span> <span class="n">b</span><span class="o">;</span>
+<span class="ln">110</span>    <span class="o">}</span>
+<span class="ln">111</span>  <span class="o">}</span>
+<span class="ln">112</span><span class="o">}</span></code></pre></div></p>
+
+<p><div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">server: init
+client: s.call<span class="o">(</span>new Request<span class="o">(</span><span class="m">3</span>, <span class="m">4</span><span class="o">))</span>
+server: handleCall
+client: s.call<span class="o">(</span>new Request<span class="o">(</span><span class="m">3</span>, <span class="m">4</span><span class="o">))</span>: <span class="m">7</span>
+client: s.cast<span class="o">(</span>new Request<span class="o">(</span><span class="m">3</span>, <span class="m">4</span><span class="o">))</span>
+server: handleCast
+client: s.cast<span class="o">(</span>new Request<span class="o">(</span><span class="m">3</span>, <span class="m">4</span><span class="o">))</span>: <span class="m">7</span>
+client: s.send<span class="o">(</span>new Request<span class="o">(</span><span class="m">3</span>, <span class="m">4</span><span class="o">))</span>
+server: handleInfo
+<span class="nv">a</span><span class="o">=</span><span class="m">3</span>, <span class="nv">b</span><span class="o">=</span><span class="m">4</span>
+server: terminate</code></pre></div></p>
+
+<p>Erlangのように、LinkやMonitor、Supervisor、Hot Code Swapping等の機能があるようです。</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p><a href="http://vlkan.com/blog/post/2014/09/01/java-fiber-test/">ベンチの結果</a>を見る限りではスレッドより並列処理の性能が良さそうなので、Fiberは並列数が多い時に使えるかもしれません。また、簡単にActorを使えるのも嬉しいところです。</p>
+
+<p>ただ、Instrumentationが必要なのは面倒です。また、バイトコードの書き換えがデバッグを難しくする可能性はあります。情報もまだ少ないので、期待どおりに動かないとツラい…</p>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        This post was published <strong>1128</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2018 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>

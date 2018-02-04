@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>CouchDB Source Code Reading part8</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="couch_db:update_doc/4 前回からの続きで、couch_db:update_docs/4の続きを。 couch_db.erl: 1 case (Db#db.validate_doc_funs /= []) orelse 2 lists:any( 3 fun({#doc{id= &amp;lt;&amp;lt;?DESIGN_DOC_PREFIX, _/binary&amp;gt;&amp;gt;}, _Ref}) -&amp;gt; 4 true; 5 ({#doc{atts=Atts}, _Ref}) -&amp;gt; 6 Atts /= [] 7 end, Docs3) of 8 true -&amp;gt; 9" />
+
+  
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@masayuki" />
+    <meta name="twitter:title" content="CouchDB Source Code Reading part8" />
+    <meta name="twitter:description" content="couch_db:update_doc/4 前回からの続きで、couch_db:update_docs/4の続きを。 couch_db.erl: 1 case (Db#db.validate_doc_funs /= []) orelse 2 lists:any( 3 fun({#doc{id= &amp;lt;&amp;lt;?DESIGN_DOC_PREFIX, _/binary&amp;gt;&amp;gt;}, _Ref}) -&amp;gt; 4 true; 5 ({#doc{atts=Atts}, _Ref}) -&amp;gt; 6 Atts /= [] 7 end, Docs3) of 8 true -&amp;gt; 9" />
+    <meta name="twitter:image" content="/img/avatar.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="CouchDB Source Code Reading part8" />
+  <meta property="og:description" content="couch_db:update_doc/4 前回からの続きで、couch_db:update_docs/4の続きを。 couch_db.erl: 1 case (Db#db.validate_doc_funs /= []) orelse 2 lists:any( 3 fun({#doc{id= &amp;lt;&amp;lt;?DESIGN_DOC_PREFIX, _/binary&amp;gt;&amp;gt;}, _Ref}) -&amp;gt; 4 true; 5 ({#doc{atts=Atts}, _Ref}) -&amp;gt; 6 Atts /= [] 7 end, Docs3) of 8 true -&amp;gt; 9" />
+  <meta property="og:url" content="/blog/2014/07/19/couchdb-code-reading8/" />
+  <meta property="og:image" content="/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.32" />
+
+
+<link rel="canonical" href="/blog/2014/07/19/couchdb-code-reading8/" />
+<link rel="alternative" href="/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="/css/bundle.css" />
+<link rel="stylesheet" href="/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://s.gravatar.com/avatar/4b97fb839e6040cfb353bd667ac93e54?s=80" alt="Avatar">
+  
+  <h2 class="title">act-act</h2>
+  
+  <p class="subtitle"></p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">CouchDB Source Code Reading part8</h1>
+      <p class="post-meta">@Masayuki Takahashi · Jul 19, 2014 · 9 min read</p>
+    </header>
+    <article class="post-content">
+
+<h2 id="couch-db-update-doc-4">couch_db:update_doc/4</h2>
+
+<p>前回からの続きで、<code>couch_db:update_docs/4</code>の続きを。</p>
+
+<p>couch_db.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>    <span class="k">case</span> <span class="o">(</span>Db#db.validate_doc_funs /<span class="o">=</span> <span class="o">[])</span> orelse
+<span class="ln"> 2</span>        lists:any<span class="o">(</span>
+<span class="ln"> 3</span>            fun<span class="o">({</span><span class="c1">#doc{id= &lt;&lt;?DESIGN_DOC_PREFIX, _/binary&gt;&gt;}, _Ref}) -&gt;
+</span><span class="ln"> 4</span><span class="c1"></span>                true<span class="p">;</span>
+<span class="ln"> 5</span>            <span class="o">({</span><span class="c1">#doc{atts=Atts}, _Ref}) -&gt;
+</span><span class="ln"> 6</span><span class="c1"></span>                Atts /<span class="o">=</span> <span class="o">[]</span>
+<span class="ln"> 7</span>            end, Docs3<span class="o">)</span> of
+<span class="ln"> 8</span>    <span class="nb">true</span> -&gt;
+<span class="ln"> 9</span>        % lookup the doc by id and get the most recent
+<span class="ln">10</span>        <span class="nv">Ids</span> <span class="o">=</span> <span class="o">[</span>Id <span class="o">||</span> <span class="o">[{</span><span class="c1">#doc{id=Id}, _Ref}|_] &lt;- DocBuckets],
+</span><span class="ln">11</span><span class="c1"></span>        <span class="nv">ExistingDocInfos</span> <span class="o">=</span> get_full_doc_infos<span class="o">(</span>Db, Ids<span class="o">)</span>,
+<span class="ln">12</span>
+<span class="ln">13</span>        <span class="o">{</span>DocBucketsPrepped, PreCommitFailures<span class="o">}</span> <span class="o">=</span> prep_and_validate_updates<span class="o">(</span>Db,
+<span class="ln">14</span>                DocBuckets, ExistingDocInfos, AllOrNothing, <span class="o">[]</span>, <span class="o">[])</span>,
+<span class="ln">15</span>
+<span class="ln">16</span>        % strip out any empty buckets
+<span class="ln">17</span>        <span class="nv">DocBuckets2</span> <span class="o">=</span> <span class="o">[</span>Bucket <span class="o">||</span> <span class="o">[</span>_<span class="p">|</span>_<span class="o">]</span> <span class="o">=</span> Bucket &lt;- DocBucketsPrepped<span class="o">]</span><span class="p">;</span>
+<span class="ln">18</span>    <span class="nb">false</span> -&gt;
+<span class="ln">19</span>        <span class="nv">PreCommitFailures</span> <span class="o">=</span> <span class="o">[]</span>,
+<span class="ln">20</span>        <span class="nv">DocBuckets2</span> <span class="o">=</span> DocBuckets
+<span class="ln">21</span>    end,
+<span class="ln">22</span><span class="sb">```</span></code></pre></div></p>
+
+<p>#db.validate_doc_funsに何か関数がバインドされているか、更新対象のドキュメントの中に<code>DesignDoc</code>が含まれている場合は<code>prep_and_validate_updates/6</code>を呼び出します。</p>
+
+<h2 id="couch-db-prep-and-validate-updates-6">couch_db:prep_and_validate_updates/6</h2>
+
+<p><code>PreCommitFilures</code>はvalidationに引っかかった結果が返るのだと思いますが、<code>DocBucketsPrepped</code>が分からないので、この関数を追ってみます。</p>
+
+<p>couch_db.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span><span class="o">{</span>% raw %<span class="o">}</span>
+<span class="ln"> 2</span>prep_and_validate_updates<span class="o">(</span>_Db, <span class="o">[]</span>, <span class="o">[]</span>, _AllowConflict, AccPrepped,
+<span class="ln"> 3</span>       AccFatalErrors<span class="o">)</span> -&gt;
+<span class="ln"> 4</span>   <span class="o">{</span>AccPrepped, AccFatalErrors<span class="o">}</span><span class="p">;</span>
+<span class="ln"> 5</span>prep_and_validate_updates<span class="o">(</span>Db, <span class="o">[</span>DocBucket<span class="p">|</span>RestBuckets<span class="o">]</span>, <span class="o">[</span>not_found<span class="p">|</span>RestLookups<span class="o">]</span>,
+<span class="ln"> 6</span>        AllowConflict, AccPrepped, AccErrors<span class="o">)</span> -&gt;
+<span class="ln"> 7</span>    <span class="o">{</span>PreppedBucket, AccErrors3<span class="o">}</span> <span class="o">=</span> lists:foldl<span class="o">(</span>
+<span class="ln"> 8</span>        fun<span class="o">({</span><span class="c1">#doc{revs=Revs}=Doc,Ref}, {AccBucket, AccErrors2}) -&gt;
+</span><span class="ln"> 9</span><span class="c1"></span>            <span class="k">case</span> couch_doc:has_stubs<span class="o">(</span>Doc<span class="o">)</span> of
+<span class="ln">10</span>            <span class="nb">true</span> -&gt;
+<span class="ln">11</span>                couch_doc:merge_stubs<span class="o">(</span>Doc, <span class="c1">#doc{}); % will throw exception
+</span><span class="ln">12</span><span class="c1"></span>            <span class="nb">false</span> -&gt; ok
+<span class="ln">13</span>            end,
+<span class="ln">14</span>            <span class="k">case</span> Revs of
+<span class="ln">15</span>            <span class="o">{</span><span class="m">0</span>, <span class="o">[]}</span> -&gt;
+<span class="ln">16</span>                <span class="k">case</span> validate_doc_update<span class="o">(</span>Db, Doc, fun<span class="o">()</span> -&gt; nil end<span class="o">)</span> of
+<span class="ln">17</span>                ok -&gt;
+<span class="ln">18</span>                    <span class="o">{[{</span>Doc, Ref<span class="o">}</span> <span class="p">|</span> AccBucket<span class="o">]</span>, AccErrors2<span class="o">}</span><span class="p">;</span>
+<span class="ln">19</span>                Error -&gt;
+<span class="ln">20</span>                    <span class="o">{</span>AccBucket, <span class="o">[{</span>Ref, Error<span class="o">}</span> <span class="p">|</span> AccErrors2<span class="o">]}</span>
+<span class="ln">21</span>                end<span class="p">;</span>
+<span class="ln">22</span>            _ -&gt;
+<span class="ln">23</span>                % old revs specified but none exist, a conflict
+<span class="ln">24</span>                <span class="o">{</span>AccBucket, <span class="o">[{</span>Ref, conflict<span class="o">}</span> <span class="p">|</span> AccErrors2<span class="o">]}</span>
+<span class="ln">25</span>            end
+<span class="ln">26</span>        end,
+<span class="ln">27</span>        <span class="o">{[]</span>, AccErrors<span class="o">}</span>, DocBucket<span class="o">)</span>,
+<span class="ln">28</span>
+<span class="ln">29</span>    prep_and_validate_updates<span class="o">(</span>Db, RestBuckets, RestLookups, AllowConflict,
+<span class="ln">30</span>            <span class="o">[</span>lists:reverse<span class="o">(</span>PreppedBucket<span class="o">)</span> <span class="p">|</span> AccPrepped<span class="o">]</span>, AccErrors3<span class="o">)</span><span class="p">;</span>
+<span class="ln">31</span>prep_and_validate_updates<span class="o">(</span>Db, <span class="o">[</span>DocBucket<span class="p">|</span>RestBuckets<span class="o">]</span>,
+<span class="ln">32</span>        <span class="o">[{</span>ok, <span class="c1">#full_doc_info{rev_tree=OldRevTree}=OldFullDocInfo}|RestLookups],
+</span><span class="ln">33</span><span class="c1"></span>        AllowConflict, AccPrepped, AccErrors<span class="o">)</span> -&gt;
+<span class="ln">34</span>    <span class="nv">Leafs</span> <span class="o">=</span> couch_key_tree:get_all_leafs<span class="o">(</span>OldRevTree<span class="o">)</span>,
+<span class="ln">35</span>    <span class="nv">LeafRevsDict</span> <span class="o">=</span> dict:from_list<span class="o">([</span>
+<span class="ln">36</span>        begin
+<span class="ln">37</span>            <span class="nv">Deleted</span> <span class="o">=</span> element<span class="o">(</span><span class="m">1</span>, LeafVal<span class="o">)</span>,
+<span class="ln">38</span>            <span class="nv">Sp</span> <span class="o">=</span> element<span class="o">(</span><span class="m">2</span>, LeafVal<span class="o">)</span>,
+<span class="ln">39</span>
+<span class="ln">40</span>            <span class="o">{{</span>Start, RevId<span class="o">}</span>, <span class="o">{</span>Deleted, Sp, Revs<span class="o">}}</span>
+<span class="ln">41</span>        end <span class="o">||</span>
+<span class="ln">42</span>        <span class="o">{</span>LeafVal, <span class="o">{</span>Start, <span class="o">[</span>RevId <span class="p">|</span> _<span class="o">]}</span> <span class="o">=</span> Revs<span class="o">}</span> &lt;- Leafs
+<span class="ln">43</span>    <span class="o">])</span>,
+<span class="ln">44</span>    <span class="o">{</span>PreppedBucket, AccErrors3<span class="o">}</span> <span class="o">=</span> lists:foldl<span class="o">(</span>
+<span class="ln">45</span>        fun<span class="o">({</span>Doc, Ref<span class="o">}</span>, <span class="o">{</span>Docs2Acc, AccErrors2<span class="o">})</span> -&gt;
+<span class="ln">46</span>            <span class="k">case</span> prep_and_validate_update<span class="o">(</span>Db, Doc, OldFullDocInfo,
+<span class="ln">47</span>                    LeafRevsDict, AllowConflict<span class="o">)</span> of
+<span class="ln">48</span>            <span class="o">{</span>ok, Doc2<span class="o">}</span> -&gt;
+<span class="ln">49</span>                <span class="o">{[{</span>Doc2, Ref<span class="o">}</span> <span class="p">|</span> Docs2Acc<span class="o">]</span>, AccErrors2<span class="o">}</span><span class="p">;</span>
+<span class="ln">50</span>            <span class="o">{</span>Error, <span class="c1">#doc{}} -&gt;
+</span><span class="ln">51</span><span class="c1"></span>                % Record the error
+<span class="ln">52</span>                <span class="o">{</span>Docs2Acc, <span class="o">[{</span>Ref, Error<span class="o">}</span> <span class="p">|</span>AccErrors2<span class="o">]}</span>
+<span class="ln">53</span>            end
+<span class="ln">54</span>        end,
+<span class="ln">55</span>        <span class="o">{[]</span>, AccErrors<span class="o">}</span>, DocBucket<span class="o">)</span>,
+<span class="ln">56</span>    prep_and_validate_updates<span class="o">(</span>Db, RestBuckets, RestLookups, AllowConflict,
+<span class="ln">57</span>            <span class="o">[</span>PreppedBucket <span class="p">|</span> AccPrepped<span class="o">]</span>, AccErrors3<span class="o">)</span>.
+<span class="ln">58</span><span class="o">{</span>% endraw %<span class="o">}</span></code></pre></div></p>
+
+<p>最初のパターンマッチは、更新対象ドキュメントが無い(無くなった)ものなので読み飛ばします。次の<code>ExistingDocInfos</code>のheadが<code>not_found</code>のパターンマッチを見ていきます。</p>
+
+<p><code>couch_doc:has_stubs/1</code>を呼び出し、その結果が<code>true</code>であれば<code>couch_doc:merge_stubs/2</code>を呼び出して空のドキュメント(#doc{})とマージしているように見えます。stubとは何かを見たいので、<code>couch_doc:has_stubs/1</code>のコードを見てみます。</p>
+
+<p>couch_doc.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>has_stubs<span class="o">(</span><span class="c1">#doc{atts=Atts}) -&gt;
+</span><span class="ln">2</span><span class="c1"></span>    has_stubs<span class="o">(</span>Atts<span class="o">)</span><span class="p">;</span>
+<span class="ln">3</span>has_stubs<span class="o">([])</span> -&gt;
+<span class="ln">4</span>    false<span class="p">;</span>
+<span class="ln">5</span>has_stubs<span class="o">([</span><span class="c1">#att{data=stub}|_]) -&gt;
+</span><span class="ln">6</span><span class="c1"></span>    true<span class="p">;</span>
+<span class="ln">7</span>has_stubs<span class="o">([</span>_Att<span class="p">|</span>Rest<span class="o">])</span> -&gt;
+<span class="ln">8</span>    has_stubs<span class="o">(</span>Rest<span class="o">)</span>.</code></pre></div></p>
+
+<p>ドキュメントのアタッチメントの<code>data</code>が<code>stub</code>のものが1つでもあれば<code>true</code>が返るようになっています。そのまま<code>couch_doc:merge_stubs/2</code>を見てみます。</p>
+
+<p>couch_db.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>merge_stubs<span class="o">(</span><span class="c1">#doc{id = Id}, nil) -&gt;
+</span><span class="ln"> 2</span><span class="c1"></span>    throw<span class="o">({</span>missing_stub, &lt;&lt;<span class="s2">&#34;Previous revision missing for document &#34;</span>, Id/binary&gt;&gt;<span class="o">})</span><span class="p">;</span>
+<span class="ln"> 3</span>merge_stubs<span class="o">(</span><span class="c1">#doc{id=Id,atts=MemBins}=StubsDoc, #doc{atts=DiskBins}) -&gt;
+</span><span class="ln"> 4</span><span class="c1"></span>    <span class="nv">BinDict</span> <span class="o">=</span> dict:from_list<span class="o">([{</span>Name, Att<span class="o">}</span> <span class="o">||</span> <span class="c1">#att{name=Name}=Att &lt;- DiskBins]),
+</span><span class="ln"> 5</span><span class="c1"></span>    <span class="nv">MergedBins</span> <span class="o">=</span> lists:map<span class="o">(</span>
+<span class="ln"> 6</span>        fun<span class="o">(</span><span class="c1">#att{name=Name, data=stub, revpos=StubRevPos}) -&gt;
+</span><span class="ln"> 7</span><span class="c1"></span>            <span class="k">case</span> dict:find<span class="o">(</span>Name, BinDict<span class="o">)</span> of
+<span class="ln"> 8</span>            <span class="o">{</span>ok, <span class="c1">#att{revpos=DiskRevPos}=DiskAtt}
+</span><span class="ln"> 9</span><span class="c1"></span>                    when <span class="nv">DiskRevPos</span> <span class="o">==</span> StubRevPos orelse <span class="nv">StubRevPos</span> <span class="o">==</span> nil -&gt;
+<span class="ln">10</span>                DiskAtt<span class="p">;</span>
+<span class="ln">11</span>            _ -&gt;
+<span class="ln">12</span>                throw<span class="o">({</span>missing_stub,
+<span class="ln">13</span>                        &lt;&lt;<span class="s2">&#34;id:&#34;</span>, Id/binary, <span class="s2">&#34;, name:&#34;</span>, Name/binary&gt;&gt;<span class="o">})</span>
+<span class="ln">14</span>            end<span class="p">;</span>
+<span class="ln">15</span>        <span class="o">(</span>Att<span class="o">)</span> -&gt;
+<span class="ln">16</span>            Att
+<span class="ln">17</span>        end, MemBins<span class="o">)</span>,
+<span class="ln">18</span>    StubsDoc#doc<span class="o">{</span><span class="nv">atts</span><span class="o">=</span> MergedBins<span class="o">}</span>.</code></pre></div></p>
+
+<p>第二引数のドキュメントのアタッチメント(<code>DiskBins</code>)の名前をキーにしてdictionaryを作成し、第一引数のドキュメントのアタッチメント(<code>MemBins</code>)の名前と被っているのがあれば、<code>DiskBins</code>側のアタッチメントを採用する、というコードのようです。ただ、<code>prep_and_validate_updates/6</code>から呼び出す場合、第二引数は<code>#doc{}</code>なので、<code>DiskBins</code>は<code>undefined</code>になるんじゃないかな…。呼び出し側のコメントにも</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">% will throw exception</code></pre></div>
+
+<p>とあるし、動くことを想定しているコードなのかよく分かりませんでした。<code>prep_and_validate_updates/6</code>に戻り、バリデーションの結果問題がなければ<code>PreppedBucket</code>の方に、問題があれば<code>AccErrors</code>の方にドキュメントが振り分けられます。ここまでが、ドキュメントが見つからず<code>not_found</code>だった場合の話。</p>
+
+<p><code>prep_and_validate_updates/6</code>で最後にパターンマッチする関数を見ていきます。<code>couch_key_tree:get_all_leafs/1</code>で更新前の<code>rev_tree</code>のleafを取得しています。</p>
+
+<p>couch_key_tree.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>get_all_leafs<span class="o">(</span>Trees<span class="o">)</span> -&gt;
+<span class="ln"> 2</span>    get_all_leafs<span class="o">(</span>Trees, <span class="o">[])</span>.
+<span class="ln"> 3</span>
+<span class="ln"> 4</span>get_all_leafs<span class="o">([]</span>, Acc<span class="o">)</span> -&gt;
+<span class="ln"> 5</span>    Acc<span class="p">;</span>
+<span class="ln"> 6</span>get_all_leafs<span class="o">([{</span>Pos, Tree<span class="o">}</span><span class="p">|</span>Rest<span class="o">]</span>, Acc<span class="o">)</span> -&gt;
+<span class="ln"> 7</span>    get_all_leafs<span class="o">(</span>Rest, get_all_leafs_simple<span class="o">(</span>Pos, <span class="o">[</span>Tree<span class="o">]</span>, <span class="o">[])</span> ++ Acc<span class="o">)</span>.
+<span class="ln"> 8</span>
+<span class="ln"> 9</span>get_all_leafs_simple<span class="o">(</span>_Pos, <span class="o">[]</span>, _KeyPathAcc<span class="o">)</span> -&gt;
+<span class="ln">10</span>    <span class="o">[]</span><span class="p">;</span>
+<span class="ln">11</span>get_all_leafs_simple<span class="o">(</span>Pos, <span class="o">[{</span>KeyId, Value, <span class="o">[]}</span> <span class="p">|</span> RestTree<span class="o">]</span>, KeyPathAcc<span class="o">)</span> -&gt;
+<span class="ln">12</span>    <span class="o">[{</span>Value, <span class="o">{</span>Pos, <span class="o">[</span>KeyId <span class="p">|</span> KeyPathAcc<span class="o">]}}</span> <span class="p">|</span> get_all_leafs_simple<span class="o">(</span>Pos, RestTree, KeyPathAcc<span class="o">)]</span><span class="p">;</span>
+<span class="ln">13</span>get_all_leafs_simple<span class="o">(</span>Pos, <span class="o">[{</span>KeyId, _Value, SubTree<span class="o">}</span> <span class="p">|</span> RestTree<span class="o">]</span>, KeyPathAcc<span class="o">)</span> -&gt;
+<span class="ln">14</span>    get_all_leafs_simple<span class="o">(</span>Pos + <span class="m">1</span>, SubTree, <span class="o">[</span>KeyId <span class="p">|</span> KeyPathAcc<span class="o">])</span> ++ get_all_leafs_simple<span class="o">(</span>Pos, RestTree, KeyPathAcc<span class="o">)</span>.</code></pre></div></p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="o">[{</span>Value, <span class="o">{</span>Pos, <span class="o">[</span>KeyId, ...<span class="o">]}}</span>, ...<span class="o">]</span></code></pre></div>
+
+<p>というleafの集合が返ってきます。それを</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="o">[{{</span>Pos, RevId<span class="o">}</span>, <span class="o">{</span>Deleted, Sp, Revs<span class="o">}}</span>, ...<span class="o">]</span></code></pre></div>
+
+<p>というリストに変換した後、<code>dict:from_list/1</code>でdictionaryに変換します。それを<code>FullDocInfo</code>と共に<code>prep_and_validate_update/5</code>に渡してバリデーションチェック等を行い、ドキュメントが更新OKかNGかを判定しているようです。<code>not_found</code>が指定された場合と比較すると、<code>OldFullDocInfo</code>からleafの値を取り出して、バリデーションチェックを行っているであろう<code>prep_and_validate_update/5</code>に渡しているところが異なります。<code>prep_and_validate_update/5</code>を見てみます。</p>
+
+<p>couch_db.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>prep_and_validate_update<span class="o">(</span>Db, <span class="c1">#doc{id=Id,revs={RevStart, Revs}}=Doc,
+</span><span class="ln"> 2</span><span class="c1"></span>        OldFullDocInfo, LeafRevsDict, AllowConflict<span class="o">)</span> -&gt;
+<span class="ln"> 3</span>    <span class="k">case</span> Revs of
+<span class="ln"> 4</span>    <span class="o">[</span>PrevRev<span class="p">|</span>_<span class="o">]</span> -&gt;
+<span class="ln"> 5</span>        <span class="k">case</span> dict:find<span class="o">({</span>RevStart, PrevRev<span class="o">}</span>, LeafRevsDict<span class="o">)</span> of
+<span class="ln"> 6</span>        <span class="o">{</span>ok, <span class="o">{</span>Deleted, DiskSp, DiskRevs<span class="o">}}</span> -&gt;
+<span class="ln"> 7</span>            <span class="k">case</span> couch_doc:has_stubs<span class="o">(</span>Doc<span class="o">)</span> of
+<span class="ln"> 8</span>            <span class="nb">true</span> -&gt;
+<span class="ln"> 9</span>                <span class="nv">DiskDoc</span> <span class="o">=</span> make_doc<span class="o">(</span>Db, Id, Deleted, DiskSp, DiskRevs<span class="o">)</span>,
+<span class="ln">10</span>                <span class="nv">Doc2</span> <span class="o">=</span> couch_doc:merge_stubs<span class="o">(</span>Doc, DiskDoc<span class="o">)</span>,
+<span class="ln">11</span>                <span class="o">{</span>validate_doc_update<span class="o">(</span>Db, Doc2, fun<span class="o">()</span> -&gt; DiskDoc end<span class="o">)</span>, Doc2<span class="o">}</span><span class="p">;</span>
+<span class="ln">12</span>            <span class="nb">false</span> -&gt;
+<span class="ln">13</span>                <span class="nv">LoadDiskDoc</span> <span class="o">=</span> fun<span class="o">()</span> -&gt; make_doc<span class="o">(</span>Db,Id,Deleted,DiskSp,DiskRevs<span class="o">)</span> end,
+<span class="ln">14</span>                <span class="o">{</span>validate_doc_update<span class="o">(</span>Db, Doc, LoadDiskDoc<span class="o">)</span>, Doc<span class="o">}</span>
+<span class="ln">15</span>            end<span class="p">;</span>
+<span class="ln">16</span>        error when AllowConflict -&gt;
+<span class="ln">17</span>            couch_doc:merge_stubs<span class="o">(</span>Doc, <span class="c1">#doc{}), % will generate error if
+</span><span class="ln">18</span><span class="c1"></span>                                                        % there are stubs
+<span class="ln">19</span>            <span class="o">{</span>validate_doc_update<span class="o">(</span>Db, Doc, fun<span class="o">()</span> -&gt; nil end<span class="o">)</span>, Doc<span class="o">}</span><span class="p">;</span>
+<span class="ln">20</span>        error -&gt;
+<span class="ln">21</span>            <span class="o">{</span>conflict, Doc<span class="o">}</span>
+<span class="ln">22</span>        end<span class="p">;</span>
+<span class="ln">23</span>    <span class="o">[]</span> -&gt;
+<span class="ln">24</span>        % new doc, and we have existing revs.
+<span class="ln">25</span>        % reuse existing deleted doc
+<span class="ln">26</span>        <span class="k">if</span> OldFullDocInfo#full_doc_info.deleted orelse AllowConflict -&gt;
+<span class="ln">27</span>            <span class="o">{</span>validate_doc_update<span class="o">(</span>Db, Doc, fun<span class="o">()</span> -&gt; nil end<span class="o">)</span>, Doc<span class="o">}</span><span class="p">;</span>
+<span class="ln">28</span>        <span class="nb">true</span> -&gt;
+<span class="ln">29</span>            <span class="o">{</span>conflict, Doc<span class="o">}</span>
+<span class="ln">30</span>        end
+<span class="ln">31</span>    end.</code></pre></div></p>
+
+<p><code>Doc</code>から<code>Revs</code>を取り出し、要素が1つ以上設定されているかによって処理を分けています。<code>Revs</code>に要素が1つ以上設定されている場合は、その先頭の要素を<code>PrevRev</code>にバインドし、<code>LeafRevsDict</code>を<code>{RevStart, PrevRev}</code>で検索します。<code>{RevStart, PrevRev}</code>は、<code>{Pos, RevId(KeyId)}</code>なので、更新対象の<code>Doc</code>が<code>OldFullDocInfo</code>のleafに含まれているかどうかチェックしているようです。含まれていれば先程と同様に<code>couch_doc:has_stubs/1</code>を呼び出し、必要があれば<code>couch_doc:merge_stubs/2</code>を呼び出してアタッチメントをマージした上で、<code>validate_doc_update/3</code>の結果を返すようになっています。</p>
+
+<h2 id="couch-db-validate-doc-update-3">couch_db:validate_doc_update/3</h2>
+
+<p><code>couch_db:validate_doc_update/3</code>を見てみます。</p>
+
+<p>couch_db.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>validate_doc_update<span class="o">(</span><span class="c1">#db{}=Db, #doc{id= &lt;&lt;&#34;_design/&#34;,_/binary&gt;&gt;}, _GetDiskDocFun) -&gt;
+</span><span class="ln"> 2</span><span class="c1"></span>    catch check_is_admin<span class="o">(</span>Db<span class="o">)</span><span class="p">;</span>
+<span class="ln"> 3</span>validate_doc_update<span class="o">(</span><span class="c1">#db{validate_doc_funs=[]}, _Doc, _GetDiskDocFun) -&gt;
+</span><span class="ln"> 4</span><span class="c1"></span>    ok<span class="p">;</span>
+<span class="ln"> 5</span>validate_doc_update<span class="o">(</span>_Db, <span class="c1">#doc{id= &lt;&lt;&#34;_local/&#34;,_/binary&gt;&gt;}, _GetDiskDocFun) -&gt;
+</span><span class="ln"> 6</span><span class="c1"></span>    ok<span class="p">;</span>
+<span class="ln"> 7</span>validate_doc_update<span class="o">(</span>Db, Doc, GetDiskDocFun<span class="o">)</span> -&gt;
+<span class="ln"> 8</span>    <span class="nv">DiskDoc</span> <span class="o">=</span> GetDiskDocFun<span class="o">()</span>,
+<span class="ln"> 9</span>    <span class="nv">JsonCtx</span> <span class="o">=</span> couch_util:json_user_ctx<span class="o">(</span>Db<span class="o">)</span>,
+<span class="ln">10</span>    <span class="nv">SecObj</span> <span class="o">=</span> get_security<span class="o">(</span>Db<span class="o">)</span>,
+<span class="ln">11</span>    try <span class="o">[</span><span class="k">case</span> Fun<span class="o">(</span>Doc, DiskDoc, JsonCtx, SecObj<span class="o">)</span> of
+<span class="ln">12</span>            ok -&gt; ok<span class="p">;</span>
+<span class="ln">13</span>            Error -&gt; throw<span class="o">(</span>Error<span class="o">)</span>
+<span class="ln">14</span>        end <span class="o">||</span> Fun &lt;- Db#db.validate_doc_funs<span class="o">]</span>,
+<span class="ln">15</span>        ok
+<span class="ln">16</span>    catch
+<span class="ln">17</span>        throw:Error -&gt;
+<span class="ln">18</span>            Error
+<span class="ln">19</span>    end.</code></pre></div></p>
+
+<p>更新対象の<code>Doc</code>が<code>DesignDoc</code>の場合はadminかどうかチェックしているようです。<code>#db.validate_doc_funs</code>にvalidation用の関数が設定されていない場合、または<code>Doc#doc.id</code>がlocalのものであればvalidationは実施されません。</p>
+
+<p>上記以外の場合、まず<code>GetDiskDocFuns</code>を実行して<code>DiskDoc</code>を取得します。この<code>GetDiskDocFuns</code>は<a href="http://masayuki038.github.io/blog/2014/06/21/couchdb-code-reading5/#couchdbmakedoc5">以前みたように</a>データファイルからDocのデータを取得する関数です。<code>DiskDoc</code>は<code>OldFullDocInfo</code>に保存されているポインタから取得したドキュメントデータなので、更新ドキュメントの一つ前のバージョンのドキュメントデータになります。</p>
+
+<p><code>JsonCtx</code>及び<code>SecObj</code>を取得し、<code>Db#db.validate_doc_funs</code>に設定されているvalidation関数に対して<code>(Doc, DiskDoc, JsonCtx, SecObj)</code>を渡してvalidationを実行し、すべてOKだった場合は<code>ok</code>が、そうでない場合はvalidation関数が返す<code>Error</code>で返るようになっています。</p>
+
+<p>ちなみに<code>validate_update_doc</code>という関数名は、「<a href="http://masayuki038.github.io/blog/2014/06/21/couchdb-code-reading5/#couchdocgetvalidatedocfun1">CouchDB Source Code Reading Part5#couchdocgetvalidatedocfun1</a>」で触れてますが、あちらは<code>couch_query_servers</code>モジュールで定義されている同名の関数で、恐らく同じようなことをやっているのだと思います。</p>
+
+<h2 id="strip-out-any-empty-buckets">strip out any empty buckets</h2>
+
+<p><code>couch_db:validate_doc_update/3</code>を使ってドキュメントのvalidationを行い、<code>DocBucket</code>毎に<code>{PreppedBucket, AccErrors3}</code>に分けられます。<code>PreppedBucket</code>はvalidationした結果OKだったドキュメントのリスト、<code>AccErrros</code>はNGだったドキュメントのリストです。<code>DocBuckets</code>リストにあるすべての<code>DocBucket</code>に対してこれらの分類が終わった後、<code>couch_db:update_docs/4</code>では以下のようなコードを通ります。</p>
+
+<p>couch_db.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>% strip out any empty buckets
+<span class="ln">2</span><span class="nv">DocBuckets2</span> <span class="o">=</span> <span class="o">[</span>Bucket <span class="o">||</span> <span class="o">[</span>_<span class="p">|</span>_<span class="o">]</span> <span class="o">=</span> Bucket &lt;- DocBucketsPrepped<span class="o">]</span><span class="p">;</span>                                                                                      </code></pre></div></p>
+
+<p>コメントを見ると、空Bucketを取り除く、という意図に読めるのですが、このコードの意味が良く分からなかったので、ここだけ試してみました。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>Eshell V5.10.3  <span class="o">(</span>abort with ^G<span class="o">)</span>
+<span class="ln"> 2</span><span class="m">1</span>&gt; <span class="nv">A</span><span class="o">=[</span><span class="m">1</span>,<span class="o">[</span><span class="m">2</span>,3<span class="o">]</span>,4<span class="o">]</span>.
+<span class="ln"> 3</span><span class="o">[</span><span class="m">1</span>,<span class="o">[</span><span class="m">2</span>,3<span class="o">]</span>,4<span class="o">]</span>
+<span class="ln"> 4</span><span class="m">2</span>&gt; <span class="nv">B</span><span class="o">=[</span>X <span class="o">||</span> <span class="o">[</span>_<span class="p">|</span>_<span class="o">]=</span>X &lt;- A<span class="o">]</span>.
+<span class="ln"> 5</span><span class="o">[[</span><span class="m">2</span>,3<span class="o">]]</span>
+<span class="ln"> 6</span><span class="m">3</span>&gt; B.
+<span class="ln"> 7</span><span class="o">[[</span><span class="m">2</span>,3<span class="o">]]</span>
+<span class="ln"> 8</span><span class="m">4</span>&gt; <span class="nv">A2</span><span class="o">=[</span><span class="m">1</span>,<span class="o">[</span><span class="m">2</span><span class="o">]</span>,3,4<span class="o">]</span>.
+<span class="ln"> 9</span><span class="o">[</span><span class="m">1</span>,<span class="o">[</span><span class="m">2</span><span class="o">]</span>,3,4<span class="o">]</span>
+<span class="ln">10</span><span class="m">5</span>&gt; <span class="nv">B2</span><span class="o">=[</span>X <span class="o">||</span> <span class="o">[</span>_<span class="p">|</span>_<span class="o">]=</span>X &lt;- A2<span class="o">]</span>.
+<span class="ln">11</span><span class="o">[[</span><span class="m">2</span><span class="o">]]</span>
+<span class="ln">12</span><span class="m">6</span>&gt; <span class="nv">A3</span><span class="o">=[[</span><span class="m">1</span><span class="o">]</span>,<span class="o">[]</span>,<span class="o">[</span><span class="m">3</span><span class="o">]</span>,<span class="o">[</span><span class="m">4</span><span class="o">]]</span>.
+<span class="ln">13</span><span class="o">[[</span><span class="m">1</span><span class="o">]</span>,<span class="o">[]</span>,<span class="o">[</span><span class="m">3</span><span class="o">]</span>,<span class="o">[</span><span class="m">4</span><span class="o">]]</span>
+<span class="ln">14</span><span class="m">7</span>&gt; <span class="nv">B3</span><span class="o">=[</span>X <span class="o">||</span> <span class="o">[</span>_<span class="p">|</span>_<span class="o">]=</span>X &lt;- A3<span class="o">]</span>.
+<span class="ln">15</span><span class="o">[[</span><span class="m">1</span><span class="o">]</span>,<span class="o">[</span><span class="m">3</span><span class="o">]</span>,<span class="o">[</span><span class="m">4</span><span class="o">]]</span></code></pre></div>
+
+<p><code>A</code>と<code>B</code>の結果を見ると、リストの中のリスト(<code>[2,3]</code>)がピックアップされているのが分かります。また、<code>A2</code>と<code>B2</code>の結果から、リストの中のリストの要素数は1でも問題ないことが分かります。そして<code>A3</code>と<code>B3</code>の結果から、リストの中のリストの要素数が0のものは取り除かれているのが分かります。これらの結果から、コメントにあるように空Bucketを取り除く、という意図であることが分かりました。</p>
+
+<p>validationを実行した結果、<code>DocBucket</code>の中のすべての<code>Doc</code>がOK、もしくはすべての<code>Doc</code>がNGだった場合、もう一方のバケットは空になる為、それを取り除く意図なのだと思います。<code>A</code>から<code>1</code>と<code>4</code>が除去されて<code>B</code>に格納される部分について、<code>X</code>が<code>1</code>や<code>4</code>の場合、パターンマッチのところで数値とリストで型が合わないのでエラーになるのかと思ったのですが、<code>1</code>と<code>4</code>が自動的に除去されるのがちょっと意外でした。リスト内包表記は、パターンマッチしないものは結果リストに含まれない仕様なんですね。</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>ドキュメント更新前のvalidationの呼び出し部分を見てきました。データ構造を組み替えたり、<code>DiskDoc</code>が入ってくるなど複雑で読みにくい感じがします。また、リスト内包表記は、パターンマッチしないものはエラーにならず結果のリストに含まれない、ということを初めて知りました。</p>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        This post was published <strong>1296</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2018 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>

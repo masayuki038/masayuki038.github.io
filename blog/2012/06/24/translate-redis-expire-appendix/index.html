@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Translating &#39;Appendix: Redis expires&#39; in Japanese</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="The behaviour of key expiration in Redis Redisのkeyのexpirationを理解する為に、以下のページの「Appendix: Redis expires」を和訳してみました" />
+
+  
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@masayuki" />
+    <meta name="twitter:title" content="Translating &#39;Appendix: Redis expires&#39; in Japanese" />
+    <meta name="twitter:description" content="The behaviour of key expiration in Redis Redisのkeyのexpirationを理解する為に、以下のページの「Appendix: Redis expires」を和訳してみました" />
+    <meta name="twitter:image" content="/img/avatar.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Translating &#39;Appendix: Redis expires&#39; in Japanese" />
+  <meta property="og:description" content="The behaviour of key expiration in Redis Redisのkeyのexpirationを理解する為に、以下のページの「Appendix: Redis expires」を和訳してみました" />
+  <meta property="og:url" content="/blog/2012/06/24/translate-redis-expire-appendix/" />
+  <meta property="og:image" content="/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.32" />
+
+
+<link rel="canonical" href="/blog/2012/06/24/translate-redis-expire-appendix/" />
+<link rel="alternative" href="/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="/css/bundle.css" />
+<link rel="stylesheet" href="/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://s.gravatar.com/avatar/4b97fb839e6040cfb353bd667ac93e54?s=80" alt="Avatar">
+  
+  <h2 class="title">act-act</h2>
+  
+  <p class="subtitle"></p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Translating &#39;Appendix: Redis expires&#39; in Japanese</h1>
+      <p class="post-meta">@Masayuki Takahashi · Jun 24, 2012 · 4 min read</p>
+    </header>
+    <article class="post-content">
+
+<h1 id="the-behaviour-of-key-expiration-in-redis">The behaviour of key expiration in Redis</h1>
+
+<p>Redisのkeyのexpirationを理解する為に、以下のページの「Appendix: Redis expires」を和訳してみました。</p>
+
+<p><a href="http://redis.io/commands/expire">EXPIRE - Redis</a></p>
+
+<p>間違い等あればtwitter(@masayuki)に連絡をください。</p>
+
+<h2 id="keys-with-an-expire">Keys with an expire</h2>
+
+<p>通常、Redisのkeyは生存期間を持たない。ユーザがDELコマンドを使って明示的に削除しない限り、keyは存在し続ける。
+EXPIRE等のコマンドは、本来のkeyのメモリ消費量に少し上乗せする形で、keyに有効期限をつけることができる。keyに有効期限が設定されると、Redisは一定時間経過したkeyを削除するようになる。
+keyの生存期間はEXPIREやPERSISTコマンドによって更新または削除される。</p>
+
+<h2 id="expire-accuracy">Expire accuracy</h2>
+
+<p>Redis2.4における有効期限は少し正確性に欠け、また有効期限は秒単位の指定となっていた。
+Redis2.6より、有効期限の精度はミリ秒単位となっている。</p>
+
+<h2 id="expires-and-persistence">Expires and persistence</h2>
+
+<p>keyの有効期限は、絶対時刻(Unixタイムスタンプ)として保存される。これはRedisのインスタンスがアクティブではない場合でも時間が経過することを意味する。
+有効期限をうまく機能させる為にコンピュータの時間を安定に保たなければならない。時刻同期の取れていない2つのコンピュータの間でRDBファイルを移動すると、(ロード時にすべてのKeyが有効期限切れになってしまうような)おかしな現象が起こるだろう。
+稼働中のインスタンスは常にコンピュータ時間をチェックするので、あるkeyの生存期間を1000秒に設定し、コンピュータ時間を2000秒進めると、そのkeyは即座に有効期限切れになってしまうだろう。</p>
+
+<h2 id="how-redis-expires-keys">How Redis expires keys</h2>
+
+<p>Redisのkeyが有効期限切れと見なされるには2つの方式: passive wayとactive wayがある。
+クライアントがkeyにアクセスした際に有効期限を過ぎていれば、その時に有効期限切れとされる(active way)。
+もちろん、再びアクセスされることない有効期限を過ぎたkeyがあるので、これは十分ではない。これらのkeyは有効期限切れとされるべきなので、Redisは定期的にランダムにいくつかのkeyをテストし、有効期限切れとする。有効期限切れのkeyは全てkeyspaceから削除される(passive way)。</p>
+
+<p>具体的に言うと、Redisは毎秒10回、以下のことを行っている。</p>
+
+<ol>
+<li>有効期限が設定されているkeyからランダムに100個のkeyをテストする</li>
+<li>有効期限切れのkeyが見つかったらすべて削除する</li>
+<li>25個以上のkeyが期限切れとなった場合、再びステップ1から開始する</li>
+</ol>
+
+<p>これはちょっとした確率論のアルゴリズムで、基本的な仮定は私たちのサンプルはkeyspace全体を表しており、有効期限切れとなるkeyが全体の25%未満になるまでこの操作を継続して実行する。
+これは、メモリを消費している期限切れのkeyの最大量は、いかなる瞬間においても、1秒あたりの書き込み操作の最大数を4で割った値に等しいことを意味する。</p>
+
+<h2 id="how-expires-are-handled-in-the-replication-link-and-aof-file">How expires are handled in the replication link and AOF file</h2>
+
+<p>一貫性を損なわず正しい操作を行うために、keyが期限切れとなった場合、DEL(keyを削除する操作)はAOFファイルと接続されている全てのスレーブに対し一括で行われる。keyを期限切れにする処理はマスターのインスタンスで行われ、一貫性を損なうことはない。
+しかしながら、マスターに接続しているスレーブが個々にkeyを期限切れにしないので(マスターからのDELを待つことを除く)、スレーブではデータセットにkeyが期限切れのままで存在している状態となる。そしてスレーブがマスターに昇格すると、マスターとしてkeyを期限切れにすることができる。</p>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        This post was published <strong>2051</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2018 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>

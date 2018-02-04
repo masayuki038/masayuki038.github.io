@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Java NIO I/O Multiplexing</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="Introduction たまたま仕事でnioを使っているコードを読む機会があり、それをキッカケにnioのI/O多重化を試してみました。 Single Process, Single Thread, I/O Multiplexing 「シングルプロセ" />
+
+  
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@masayuki" />
+    <meta name="twitter:title" content="Java NIO I/O Multiplexing" />
+    <meta name="twitter:description" content="Introduction たまたま仕事でnioを使っているコードを読む機会があり、それをキッカケにnioのI/O多重化を試してみました。 Single Process, Single Thread, I/O Multiplexing 「シングルプロセ" />
+    <meta name="twitter:image" content="/img/avatar.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Java NIO I/O Multiplexing" />
+  <meta property="og:description" content="Introduction たまたま仕事でnioを使っているコードを読む機会があり、それをキッカケにnioのI/O多重化を試してみました。 Single Process, Single Thread, I/O Multiplexing 「シングルプロセ" />
+  <meta property="og:url" content="/blog/2012/04/22/nio-multiplexing/" />
+  <meta property="og:image" content="/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.32" />
+
+
+<link rel="canonical" href="/blog/2012/04/22/nio-multiplexing/" />
+<link rel="alternative" href="/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="/css/bundle.css" />
+<link rel="stylesheet" href="/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://s.gravatar.com/avatar/4b97fb839e6040cfb353bd667ac93e54?s=80" alt="Avatar">
+  
+  <h2 class="title">act-act</h2>
+  
+  <p class="subtitle"></p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Java NIO I/O Multiplexing</h1>
+      <p class="post-meta">@Masayuki Takahashi · Apr 22, 2012 · 8 min read</p>
+    </header>
+    <article class="post-content">
+
+<h1 id="introduction">Introduction</h1>
+
+<p>たまたま仕事でnioを使っているコードを読む機会があり、それをキッカケにnioのI/O多重化を試してみました。</p>
+
+<h1 id="single-process-single-thread-i-o-multiplexing">Single Process, Single Thread, I/O Multiplexing</h1>
+
+<p>「シングルプロセス、シングルスレッドで多重化」について、以下のページにて説明されていました。</p>
+
+<p><a href="http://www.infra.jp/programming/network_programming_3.html">インフラ技術の実験室 - Linuxネットワークプログラミング(シングルプロセス、シングルスレッドで多重化)</a></p>
+
+<p>このページを読んで、I/0多重化によってaccept/recvを複数待ち受けることにより、シングルスレッドでも複数のリクエストに応答できると理解しました。</p>
+
+<h1 id="java-nio-i-o-multiplexing">Java NIO I/O Multiplexing</h1>
+
+<p>次に、nioでI/O多重化を実現する方法を調べてみました。</p>
+
+<p><a href="http://itpro.nikkeibp.co.jp/article/COLUMN/20060515/237871/">「New I/Oで高速な入出力」第6回　ノンブロッキングI/Oを使ってみる：ITpro</a></p>
+
+<p>nioにおけるI/O多重化はSelectableChannel/Selector/SelectionKeyを使って実現できることが分かり、これらを用いてecho serverを書いてみました。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln"> 1</span><span class="kn">package</span> <span class="nn">net.wrap_trap.example.nio</span><span class="o">;</span>
+<span class="ln"> 2</span>
+<span class="ln"> 3</span><span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+<span class="ln"> 4</span><span class="kn">import</span> <span class="nn">java.net.InetSocketAddress</span><span class="o">;</span>
+<span class="ln"> 5</span><span class="kn">import</span> <span class="nn">java.nio.ByteBuffer</span><span class="o">;</span>
+<span class="ln"> 6</span><span class="kn">import</span> <span class="nn">java.nio.channels.SelectionKey</span><span class="o">;</span>
+<span class="ln"> 7</span><span class="kn">import</span> <span class="nn">java.nio.channels.Selector</span><span class="o">;</span>
+<span class="ln"> 8</span><span class="kn">import</span> <span class="nn">java.nio.channels.ServerSocketChannel</span><span class="o">;</span>
+<span class="ln"> 9</span><span class="kn">import</span> <span class="nn">java.nio.channels.SocketChannel</span><span class="o">;</span>
+<span class="ln">10</span><span class="kn">import</span> <span class="nn">java.util.Iterator</span><span class="o">;</span>
+<span class="ln">11</span><span class="kn">import</span> <span class="nn">java.util.Set</span><span class="o">;</span>
+<span class="ln">12</span>
+<span class="ln">13</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">EchoServer</span> <span class="o">{</span>
+<span class="ln">14</span>
+<span class="ln">15</span>    <span class="kd">private</span> <span class="n">ServerSocketChannel</span> <span class="n">serverChannel</span><span class="o">;</span>
+<span class="ln">16</span>    <span class="kd">private</span> <span class="n">Selector</span> <span class="n">selector</span><span class="o">;</span>
+<span class="ln">17</span>
+<span class="ln">18</span>    <span class="kd">public</span> <span class="nf">EchoServer</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+<span class="ln">19</span>        <span class="n">serverChannel</span> <span class="o">=</span> <span class="n">ServerSocketChannel</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
+<span class="ln">20</span>        <span class="n">serverChannel</span><span class="o">.</span><span class="na">socket</span><span class="o">().</span><span class="na">setReuseAddress</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+<span class="ln">21</span>        <span class="n">serverChannel</span><span class="o">.</span><span class="na">socket</span><span class="o">().</span><span class="na">bind</span><span class="o">(</span><span class="k">new</span> <span class="n">InetSocketAddress</span><span class="o">(</span><span class="n">8000</span><span class="o">));</span>
+<span class="ln">22</span>
+<span class="ln">23</span>        <span class="n">serverChannel</span><span class="o">.</span><span class="na">configureBlocking</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+<span class="ln">24</span>        <span class="n">selector</span> <span class="o">=</span> <span class="n">Selector</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
+<span class="ln">25</span>        <span class="n">serverChannel</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">selector</span><span class="o">,</span> <span class="n">SelectionKey</span><span class="o">.</span><span class="na">OP_ACCEPT</span><span class="o">);</span>
+<span class="ln">26</span>    <span class="o">}</span>
+<span class="ln">27</span>
+<span class="ln">28</span>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">start</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+<span class="ln">29</span>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;start&#34;</span><span class="o">);</span>
+<span class="ln">30</span>        <span class="k">try</span> <span class="o">{</span>
+<span class="ln">31</span>            <span class="k">while</span> <span class="o">(</span><span class="n">selector</span><span class="o">.</span><span class="na">select</span><span class="o">()</span> <span class="o">&gt;</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">32</span>                <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;select loop&#34;</span><span class="o">);</span>
+<span class="ln">33</span>                <span class="n">Set</span><span class="o">&lt;</span><span class="n">SelectionKey</span><span class="o">&gt;</span> <span class="n">keys</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="na">selectedKeys</span><span class="o">();</span>
+<span class="ln">34</span>                <span class="k">for</span> <span class="o">(</span><span class="n">Iterator</span><span class="o">&lt;</span><span class="n">SelectionKey</span><span class="o">&gt;</span> <span class="n">it</span> <span class="o">=</span> <span class="n">keys</span><span class="o">.</span><span class="na">iterator</span><span class="o">();</span> <span class="n">it</span><span class="o">.</span><span class="na">hasNext</span><span class="o">();)</span> <span class="o">{</span>
+<span class="ln">35</span>                    <span class="n">SelectionKey</span> <span class="n">key</span> <span class="o">=</span> <span class="n">it</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+<span class="ln">36</span>                    <span class="n">it</span><span class="o">.</span><span class="na">remove</span><span class="o">();</span>
+<span class="ln">37</span>
+<span class="ln">38</span>                    <span class="k">if</span> <span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">isAcceptable</span><span class="o">())</span> <span class="o">{</span>
+<span class="ln">39</span>                        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;accept&#34;</span><span class="o">);</span>
+<span class="ln">40</span>                        <span class="n">SocketChannel</span> <span class="n">channel</span> <span class="o">=</span> <span class="n">serverChannel</span><span class="o">.</span><span class="na">accept</span><span class="o">();</span>
+<span class="ln">41</span>                        <span class="n">channel</span><span class="o">.</span><span class="na">configureBlocking</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+<span class="ln">42</span>                        <span class="n">channel</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">selector</span><span class="o">(),</span> <span class="n">SelectionKey</span><span class="o">.</span><span class="na">OP_READ</span><span class="o">);</span>
+<span class="ln">43</span>                    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+<span class="ln">44</span>                        <span class="n">SocketChannel</span> <span class="n">channel</span> <span class="o">=</span> <span class="o">(</span><span class="n">SocketChannel</span><span class="o">)</span> <span class="n">key</span><span class="o">.</span><span class="na">channel</span><span class="o">();</span>
+<span class="ln">45</span>                        <span class="k">if</span> <span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">isReadable</span><span class="o">())</span> <span class="o">{</span>
+<span class="ln">46</span>                            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;read&#34;</span><span class="o">);</span>
+<span class="ln">47</span>                            <span class="n">ByteBuffer</span> <span class="n">buffer</span> <span class="o">=</span> <span class="n">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="n">4096</span><span class="o">);</span>
+<span class="ln">48</span>                            <span class="n">channel</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">buffer</span><span class="o">);</span>
+<span class="ln">49</span>                            <span class="n">buffer</span><span class="o">.</span><span class="na">flip</span><span class="o">();</span>
+<span class="ln">50</span>                            <span class="n">channel</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">buffer</span><span class="o">);</span>
+<span class="ln">51</span>                        <span class="o">}</span>
+<span class="ln">52</span>                    <span class="o">}</span>
+<span class="ln">53</span>                <span class="o">}</span>
+<span class="ln">54</span>            <span class="o">}</span>
+<span class="ln">55</span>        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+<span class="ln">56</span>            <span class="k">for</span> <span class="o">(</span><span class="n">SelectionKey</span> <span class="n">key</span> <span class="o">:</span> <span class="n">selector</span><span class="o">.</span><span class="na">keys</span><span class="o">())</span> <span class="o">{</span>
+<span class="ln">57</span>                <span class="k">try</span> <span class="o">{</span>
+<span class="ln">58</span>                    <span class="n">key</span><span class="o">.</span><span class="na">channel</span><span class="o">().</span><span class="na">close</span><span class="o">();</span>
+<span class="ln">59</span>                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">ignore</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">60</span>                    <span class="n">ignore</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+<span class="ln">61</span>                <span class="o">}</span>
+<span class="ln">62</span>            <span class="o">}</span>
+<span class="ln">63</span>        <span class="o">}</span>
+<span class="ln">64</span>    <span class="o">}</span>
+<span class="ln">65</span>
+<span class="ln">66</span>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+<span class="ln">67</span>        <span class="n">EchoServer</span> <span class="n">echoServer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">EchoServer</span><span class="o">();</span>
+<span class="ln">68</span>        <span class="n">echoServer</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+<span class="ln">69</span>    <span class="o">}</span>
+<span class="ln">70</span><span class="o">}</span></code></pre></div>
+
+<p>クライアントは以下のコードです。</p>
+
+<p><div class="highlight"><pre class="chroma"><code class="language-ruby" data-lang="ruby"><span class="ln"> 1</span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="ln"> 2</span>
+<span class="ln"> 3</span><span class="nb">require</span> <span class="s1">&#39;socket&#39;</span>
+<span class="ln"> 4</span>
+<span class="ln"> 5</span><span class="n">s</span> <span class="o">=</span> <span class="no">Socket</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">Socket</span><span class="o">::</span><span class="no">AF_INET</span><span class="p">,</span> <span class="no">Socket</span><span class="o">::</span><span class="no">SOCK_STREAM</span><span class="p">,</span> <span class="mi">0</span><span class="o"></span><span class="p">)</span>
+<span class="ln"> 6</span><span class="n">sockaddr</span> <span class="o">=</span> <span class="no">Socket</span><span class="o">.</span><span class="n">sockaddr_in</span><span class="p">(</span><span class="mi">8000</span><span class="o"></span><span class="p">,</span> <span class="s1">&#39;127.0.0.1&#39;</span><span class="p">)</span>
+<span class="ln"> 7</span><span class="n">s</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">sockaddr</span><span class="p">)</span>
+<span class="ln"> 8</span><span class="n">s</span><span class="o">.</span><span class="n">write</span> <span class="s2">&#34;Hello,&#34;</span>
+<span class="ln"> 9</span><span class="nb">puts</span> <span class="s2">&#34;Received </span><span class="si">#{</span><span class="n">s</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="o"></span><span class="p">)</span><span class="si">}</span><span class="s2">&#34;</span>
+<span class="ln">10</span><span class="n">s</span><span class="o">.</span><span class="n">write</span> <span class="s2">&#34;world.&#34;</span>
+<span class="ln">11</span><span class="nb">puts</span> <span class="s2">&#34;Received </span><span class="si">#{</span><span class="n">s</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="o"></span><span class="p">)</span><span class="si">}</span><span class="s2">&#34;</span>
+<span class="ln">12</span>
+<span class="ln">13</span><span class="n">s</span><span class="o">.</span><span class="n">close</span></code></pre></div></p>
+
+<h1 id="run">Run</h1>
+
+<p>client.rbを実行すると以下のように返ってきます。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">C:<span class="se">\U</span>sers<span class="se">\m</span>asayuki<span class="se">\w</span>orkspace<span class="se">\n</span>io-example&gt;c:<span class="se">\R</span>uby<span class="se">\R</span>uby-1.9.3<span class="se">\b</span>in<span class="se">\r</span>uby client.rb
+Received Hello,
+Received world.</code></pre></div>
+
+<p>クライアントの方は期待通りの結果でしたが、サーバ側の標準出力にはずっと文字が出続けてしまいます。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="k">select</span> loop
+<span class="nb">read</span>
+<span class="k">select</span> loop
+<span class="nb">read</span>
+<span class="k">select</span> loop
+<span class="nb">read</span>
+<span class="k">select</span> loop
+<span class="nb">read</span>
+<span class="k">select</span> loop
+<span class="nb">read</span>
+<span class="k">select</span> loop
+<span class="nb">read</span>
+<span class="k">select</span> loop
+read</code></pre></div>
+
+<p>どうもbusy loopになっているようです。
+Windows nativeの実装の問題かと考え、Linuxで同じコードを実行したものの、やはりbusy loopになってしまいます。</p>
+
+<h1 id="why-do-the-busy-loop-occur">Why do the busy loop occur?</h1>
+
+<p>readに関する期待していた振る舞いは以下でした。</p>
+
+<ol>
+<li>SocketChannel#acceptしたchannelに対し、OP_READを指定してSelectorに登録</li>
+<li>Selector#select()を呼び出してクライアントからのsend(コード上ではs.write)を待つ(blocking)</li>
+<li>クライアントでsendするとSelector#select()から処理が戻る</li>
+<li>selectorからreadableなSelectionKeyを取り出して、sendされた内容を取得</li>
+</ol>
+
+<p>2.の処理で、何故OP_READで登録したchannelがSelector#selectでブロッキングされないのかが理解できませんでした。サーバの出力内容を見る限り、OP_ACCEPTで登録した方はブロッキングされているように見えます。</p>
+
+<h1 id="when-do-the-busy-loop-start">When do the busy loop start?</h1>
+
+<p>サーバから見ると、accept後にOP_READで登録した後、すぐにbusy loopになっているように見えます。それを確認する為、クライアント側のコードでconnect後に数秒待つようにし、その間のサーバ側の状態を確認することにしました。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-ruby" data-lang="ruby"><span class="n">s</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">sockaddr</span><span class="p">)</span>
+<span class="nb">sleep</span> <span class="mi">20</span> <span class="o"></span><span class="c1"># when do the busy loop start?</span>
+<span class="n">s</span><span class="o">.</span><span class="n">write</span> <span class="s2">&#34;Hello,&#34;</span></code></pre></div>
+
+<p>すると、クライアント側でsleepしてる間、サーバ側の出力は以下となっていました。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">start
+<span class="k">select</span> loop
+accept</code></pre></div>
+
+<p>クライアントのsleepが終わった後、サーバ側でread loopが始まったことから、クライアントから最初のsendが来るまでの間はブロックできていることになります。つまり、クライアントが側の最初のsendに対してサーバ側でreadするところから、OP_READの状態がずっと続いてしまってます。</p>
+
+<p>クライアントへのレスポンスを返した後、SocketChannel#close()で閉じ、またクライアントも1回のやり取りでsocketを閉じてしまえば問題はないのですが、今回の例にあるように、1本の接続で複数回やり取りを行うことができなくなってしまいます。</p>
+
+<p>この例では1回のsendの終わりを明示的に示すものが無いので、サーバ側でsendの終わりを知ることができないのですが、仮にsendの終端を定義したとしても、「次のクライアントからのsendまで待つ」ということができない限りこのbusy loopの事象は解決できません。</p>
+
+<p>もちろんread時にバッファに読み込んだサイズが0以下であればちょっとsleepする、というやり方でもbusy loopは回避できますが、そもそもSelectorにOP_READを監視させている意味が無くなってしまいます。</p>
+
+<h1 id="cancel-and-re-register-op-read-flag">Cancel and Re-register OP_READ flag</h1>
+
+<p>最初のsendまではブロックされていることから、Selectorに登録しているOP_READの監視を一旦リセットできれば良いのではないかと考えました。そこで、サーバ側でクライアントに応答を返した後、SelectionKey#cancel()を一旦行い、Selectorに対するOP_READの監視を解除した後、再びSocketChannel#register(&hellip;, SelectionKey.OP_READ)を呼び出すようにしてみました。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln"> 1</span><span class="k">if</span> <span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">isReadable</span><span class="o">())</span> <span class="o">{</span>
+<span class="ln"> 2</span>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;read&#34;</span><span class="o">);</span>
+<span class="ln"> 3</span>    <span class="n">ByteBuffer</span> <span class="n">buffer</span> <span class="o">=</span> <span class="n">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="n">4096</span><span class="o">);</span>
+<span class="ln"> 4</span>    <span class="n">channel</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">buffer</span><span class="o">);</span>
+<span class="ln"> 5</span>    <span class="n">buffer</span><span class="o">.</span><span class="na">flip</span><span class="o">();</span>
+<span class="ln"> 6</span>    <span class="n">channel</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">buffer</span><span class="o">);</span>
+<span class="ln"> 7</span>    <span class="n">Selector</span> <span class="n">selector</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="na">selector</span><span class="o">();</span>
+<span class="ln"> 8</span>    <span class="n">key</span><span class="o">.</span><span class="na">cancel</span><span class="o">();</span>
+<span class="ln"> 9</span>    <span class="n">channel</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">selector</span><span class="o">,</span> <span class="n">SelectionKey</span><span class="o">.</span><span class="na">OP_READ</span><span class="o">);</span>
+<span class="ln">10</span><span class="o">}</span></code></pre></div>
+
+<p>しかし、このコードを実行するとクライアントからの最初のsendの契機で以下の例外が発生します。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">Exception in thread <span class="s2">&#34;main&#34;</span> java.nio.channels.CancelledKeyException
+        at sun.nio.ch.SelectionKeyImpl.ensureValid<span class="o">(</span>Unknown Source<span class="o">)</span>
+        at sun.nio.ch.SelectionKeyImpl.interestOps<span class="o">(</span>Unknown Source<span class="o">)</span>
+        at java.nio.channels.spi.AbstractSelectableChannel.register<span class="o">(</span>Unknown Source<span class="o">)</span>
+        at java.nio.channels.SelectableChannel.register<span class="o">(</span>Unknown Source<span class="o">)</span>
+        at net.wrap_trap.example.nio.EchoServer.start<span class="o">(</span>EchoServer.java:53<span class="o">)</span>
+        at net.wrap_trap.example.nio.EchoServer.main<span class="o">(</span>EchoServer.java:71<span class="o">)</span></code></pre></div>
+
+<p>なお、上記コードの最後のSocketChannel#registerの呼び出しをコメントアウトすると、OP_READの監視が解かれます。それ以降、クライアント側でsendしても、Selector#selectのブロッキングが解除されません。</p>
+
+<h2 id="set-op-write-flag">Set OP_WRITE flag</h2>
+
+<p>行き詰ったのでググったところ、dWに以下のような記述がありました。</p>
+
+<p><a href="http://www.ibm.com/developerworks/jp/java/library/j-perf03174/index.html#IDA4ITKG">パフォーマンスの目: NIOでMegaJogosを強化する</a></p>
+
+<blockquote>
+<p>実はコードの中に、NIOセレクタを使った事がない人には分かりにくい、ちょっとしたバグがあるのです。セレクタへのコールは常に即時に返るのですが、読むべきデータが無く、また受け付けるべき接続も無いので、このコールは単純にselect()コールにループして戻り、これでCPU使用率が100%になってしまうのです。面白い事に、I/OサービスのスレッドをループするとCPUを完全使用してしまうように見えるのですが、他のスレッドは必要と思われるだけ、いくらでもプロセッサー・サイクルが得られるので、目立つようなパフォーマンス低下を引き起こす事はないのです。</p>
+</blockquote>
+
+<p>これを見る限り、busy loopによるCPU使用率の高騰は問題ではないようです。しかし、この後以下のように続いています。</p>
+
+<blockquote>
+<p>ここでの鍵は、ソケットをWRITEモードで登録するのは、実際に書くべきデータがある場合に限定すべきだということです。書き込みのプロセスは部分的に成功しているだけかも知れないので、読み込みよりもやや複雑です。部分的に成功している場合にはソケットをWRITEモードで登録しておき、そのソケット・チャネルが書き込みできるようになる度に、さらに多くのデータを書き込むようにします。このように、やや複雑な手続きになってしまうのはソケットを多重化する欠点の一つです。長所としては当然ながら、複数ソケットを処理するのに必要なスレッドが少なくてすみ、つまりはサーバーがよりスケーラブルになるのです。スレッドが少なくなればVMが管理するスレッドも少なくなり、コンテキスト・スイッチも減り、メモリ使用も減るのです。
+話をコードに戻すと、ソケットをREADモードでのみ登録すべきなのです：channel.register(selector, SelectionKey.OP_READ)。予期した通り、この修正を加えるとCPU利用率が大幅に減りました。これでMegaJogos は、何千ものスレッドを使う代わりに1つのスレッドだけで全ゲーム・プレーヤーにサービスすることができるようになったのです。</p>
+</blockquote>
+
+<p>ということで、書き込む際にSelectionKeyにOP_WRITEを指定し、書き込みが終わったらOP_READに戻すようにしてみました。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln"> 1</span>    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">isReadable</span><span class="o">())</span> <span class="o">{</span>
+<span class="ln"> 2</span>        <span class="n">SocketChannel</span> <span class="n">channel</span> <span class="o">=</span> <span class="o">(</span><span class="n">SocketChannel</span><span class="o">)</span> <span class="n">key</span><span class="o">.</span><span class="na">channel</span><span class="o">();</span>
+<span class="ln"> 3</span>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;read&#34;</span><span class="o">);</span>
+<span class="ln"> 4</span>        <span class="n">ByteBuffer</span> <span class="n">buffer</span> <span class="o">=</span> <span class="n">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="n">4096</span><span class="o">);</span>
+<span class="ln"> 5</span>        <span class="k">if</span> <span class="o">(</span><span class="n">channel</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">buffer</span><span class="o">)</span> <span class="o">&gt;</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln"> 6</span>            <span class="n">buffer</span><span class="o">.</span><span class="na">flip</span><span class="o">();</span>
+<span class="ln"> 7</span>            <span class="n">buffers</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">buffer</span><span class="o">);</span>
+<span class="ln"> 8</span>            <span class="n">key</span><span class="o">.</span><span class="na">interestOps</span><span class="o">(</span><span class="n">SelectionKey</span><span class="o">.</span><span class="na">OP_WRITE</span><span class="o">);</span>
+<span class="ln"> 9</span>        <span class="o">}</span>
+<span class="ln">10</span>    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">isWritable</span><span class="o">())</span> <span class="o">{</span>
+<span class="ln">11</span>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;write&#34;</span><span class="o">);</span>
+<span class="ln">12</span>        <span class="n">SocketChannel</span> <span class="n">channel</span> <span class="o">=</span> <span class="o">(</span><span class="n">SocketChannel</span><span class="o">)</span> <span class="n">key</span><span class="o">.</span><span class="na">channel</span><span class="o">();</span>
+<span class="ln">13</span>        <span class="k">for</span> <span class="o">(</span><span class="n">ByteBuffer</span> <span class="n">buffer</span> <span class="o">:</span> <span class="n">buffers</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">14</span>            <span class="n">channel</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">buffer</span><span class="o">);</span>
+<span class="ln">15</span>        <span class="o">}</span>
+<span class="ln">16</span>        <span class="n">key</span><span class="o">.</span><span class="na">interestOps</span><span class="o">(</span><span class="n">SelectionKey</span><span class="o">.</span><span class="na">OP_READ</span><span class="o">);</span>
+<span class="ln">17</span>    <span class="o">}</span></code></pre></div>
+
+<p>read/writeの受け渡しにbuffersというインスタンス変数を用いてますが、本来であれば当然NGです。が、取り合えずbusy loopが無くなってCPU使用率が下がるかどうか確認してみましたが、残念ながらbusy loopはこのコードでも起きています。</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>このまま試行錯誤しても解決しそうにないので、nioでI/O多重化を行っているOSSの実装を何か見てみます。</p>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        This post was published <strong>2114</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2018 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Erlang mode and Distel</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="Erlang IDE 前回のポストからかなり時間が経ちましたが、少し時間ができたので、暫くErlangで遊んでみようと思います。 Erlangの開発環境ですが、" />
+
+  
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@masayuki" />
+    <meta name="twitter:title" content="Erlang mode and Distel" />
+    <meta name="twitter:description" content="Erlang IDE 前回のポストからかなり時間が経ちましたが、少し時間ができたので、暫くErlangで遊んでみようと思います。 Erlangの開発環境ですが、" />
+    <meta name="twitter:image" content="/img/avatar.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Erlang mode and Distel" />
+  <meta property="og:description" content="Erlang IDE 前回のポストからかなり時間が経ちましたが、少し時間ができたので、暫くErlangで遊んでみようと思います。 Erlangの開発環境ですが、" />
+  <meta property="og:url" content="/blog/2013/04/18/erlang-mode-and-distel/" />
+  <meta property="og:image" content="/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.32" />
+
+
+<link rel="canonical" href="/blog/2013/04/18/erlang-mode-and-distel/" />
+<link rel="alternative" href="/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="/css/bundle.css" />
+<link rel="stylesheet" href="/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://s.gravatar.com/avatar/4b97fb839e6040cfb353bd667ac93e54?s=80" alt="Avatar">
+  
+  <h2 class="title">act-act</h2>
+  
+  <p class="subtitle"></p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Erlang mode and Distel</h1>
+      <p class="post-meta">@Masayuki Takahashi · Apr 18, 2013 · 4 min read</p>
+    </header>
+    <article class="post-content">
+
+<h1 id="erlang-ide">Erlang IDE</h1>
+
+<p>前回のポストからかなり時間が経ちましたが、少し時間ができたので、暫くErlangで遊んでみようと思います。</p>
+
+<p>Erlangの開発環境ですが、いくつかある中で、Emacsの<a href="http://www.erlang.org/doc/apps/tools/erlang_mode_chapter.html">Erlang mode</a>にするか、Eclipseの<a href="http://erlide.org/">Erlide</a>にするか迷いました。検討した結果、コンパイルの仕方等から覚える為に、今回はErlang modeを使うことにしました。</p>
+
+<h1 id="setting-for-erlang-mode">Setting for Erlang mode</h1>
+
+<p>Erlangをインストール後、.emacsファイルを開き、Erlangのtoolsディレクトリの下の.elファイルを読み込むようにします。</p>
+
+<p>.emacs:
+<div class="highlight"><pre class="chroma"><code class="language-elisp" data-lang="elisp"><span class="ln">1</span><span class="c1">;; erlang-mode                                                                                     </span>
+<span class="ln">2</span><span class="p">(</span><span class="nb">setq</span> <span class="nv">load-path</span> <span class="p">(</span><span class="nf">cons</span>  <span class="s">&#34;/opt/erlang/lib/erlang/lib/tools-2.6.10/emacs&#34;</span>
+<span class="ln">3</span>      <span class="nv">load-path</span><span class="p">))</span>
+<span class="ln">4</span>      <span class="p">(</span><span class="nb">setq</span> <span class="nv">erlang-root-dir</span> <span class="s">&#34;/opt/erlang/otp&#34;</span><span class="p">)</span>
+<span class="ln">5</span>      <span class="p">(</span><span class="nb">setq</span> <span class="nv">exec-path</span> <span class="p">(</span><span class="nf">cons</span> <span class="s">&#34;/opt/erlang/otp/bin&#34;</span> <span class="nv">exec-path</span><span class="p">))</span>
+<span class="ln">6</span>      <span class="p">(</span><span class="nb">require</span> <span class="ss">&#39;erlang-start</span><span class="p">)</span></code></pre></div></p>
+
+<h1 id="compile-and-run-on-erlang-shell">Compile And Run On Erlang Shell</h1>
+
+<p>.emacsへの設定が終わったら、簡単なコードを書いてみます。</p>
+
+<p>test.erl:
+<div class="highlight"><pre class="chroma"><code class="language-elisp" data-lang="elisp"><span class="ln">1</span><span class="nv">-module</span><span class="p">(</span><span class="nv">test</span><span class="p">)</span><span class="o">.</span>
+<span class="ln">2</span><span class="nv">-export</span><span class="p">([</span><span class="nv">hello/1</span><span class="p">])</span><span class="o">.</span>
+<span class="ln">3</span>
+<span class="ln">4</span><span class="nv">hello</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>   <span class="nv">-&gt;</span>
+<span class="ln">5</span>  <span class="nv">io:format</span><span class="p">(</span><span class="s">&#34;argument 1\n&#34;</span><span class="p">)</span><span class="c1">;</span>
+<span class="ln">6</span><span class="nv">hello</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>   <span class="nv">-&gt;</span>
+<span class="ln">7</span>  <span class="nv">io:format</span><span class="p">(</span><span class="s">&#34;argument 2\n&#34;</span><span class="p">)</span><span class="c1">;</span>
+<span class="ln">8</span><span class="nv">hello</span><span class="p">(</span><span class="nv">Msg</span><span class="p">)</span> <span class="nv">-&gt;</span>
+<span class="ln">9</span>  <span class="nv">io:format</span><span class="p">(</span><span class="s">&#34;~p~n&#34;</span><span class="o">,</span> <span class="p">[</span><span class="nv">Msg</span><span class="p">])</span><span class="o">.</span></code></pre></div></p>
+
+<p>C-c C-zでErlang Shellのバッファが起動します。Erlang Shellのバッファに移動して、c(モジュール名).でコンパイルし、コンパイルしたモジュールの関数を呼び出します。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="o">(</span>masayuki@localhost<span class="o">)</span><span class="m">1</span>&gt; c<span class="o">(</span><span class="nb">test</span><span class="o">)</span>.
+<span class="o">{</span>ok,test<span class="o">}</span>
+<span class="o">(</span>masayuki@localhost<span class="o">)</span><span class="m">2</span>&gt; test:hello<span class="o">(</span><span class="m">1</span><span class="o">)</span>.
+argument <span class="m">1</span>
+ok
+<span class="o">(</span>masayuki@localhost<span class="o">)</span><span class="m">3</span>&gt; test:hello<span class="o">(</span><span class="m">2</span><span class="o">)</span>.
+argument <span class="m">2</span>
+ok
+<span class="o">(</span>masayuki@localhost<span class="o">)</span><span class="m">4</span>&gt; test:hello<span class="o">(</span><span class="s2">&#34;foo&#34;</span><span class="o">)</span>.
+<span class="s2">&#34;foo&#34;</span>
+ok</code></pre></div>
+
+<h1 id="distel">Distel</h1>
+
+<p>馴れない言語でコードを書く時には予めデバッガを準備しておきたい方なので、Erlang modeでデバッグする方法を探してみたところ、<a href="https://code.google.com/p/distel/">Distel</a>というErlang modeの拡張ライブラリを見つけました。</p>
+
+<p>DistelはEmacsからErlang nodeに対して対話的に操作する為のインターフェースを提供します。デバッガも、Erlang nodeをデバッグする形になっています。デバッガの他にも、任意の関数の定義にジャンプする等のナビゲーション機能や、プロファイラも使えるようです。</p>
+
+<h1 id="install-distel">Install Distel</h1>
+
+<p>Distelは現在<a href="https://github.com/massemanet/distel">github</a>にあるので、そこから落としてきてインストールします。makeの際にerlを実行するので、予めパスを通しておく必要があります。デフォルトでは/usr/local/share/distelにインストールされます。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">$ <span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:/opt/erlang/bin
+$ make
+$ make -e install</code></pre></div>
+
+<p>インストールが完了したら、.emacsに以下の設定を追加します。</p>
+
+<p>.emacs:
+<div class="highlight"><pre class="chroma"><code class="language-elisp" data-lang="elisp"><span class="ln"> 1</span><span class="c1">;; distel</span>
+<span class="ln"> 2</span><span class="p">(</span><span class="nv">add-to-list</span> <span class="ss">&#39;load-path</span> <span class="s">&#34;/usr/local/share/distel/elisp&#34;</span><span class="p">)</span>
+<span class="ln"> 3</span><span class="p">(</span><span class="nb">require</span> <span class="ss">&#39;distel</span><span class="p">)</span>
+<span class="ln"> 4</span><span class="p">(</span><span class="nv">distel-setup</span><span class="p">)</span>
+<span class="ln"> 5</span>
+<span class="ln"> 6</span><span class="c1">;; Some Erlang customazations</span>
+<span class="ln"> 7</span><span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;erlang-mode-hook</span>
+<span class="ln"> 8</span>  <span class="p">(</span><span class="nb">lambda</span> <span class="p">()</span>
+<span class="ln"> 9</span>    <span class="p">(</span><span class="nb">setq</span> <span class="nv">inferior-erlang-machine-options</span> <span class="o">`</span><span class="p">(</span><span class="s">&#34;-sname&#34;</span> <span class="s">&#34;masayuki&#34;</span><span class="p">))</span>
+<span class="ln">10</span>    <span class="p">(</span><span class="nv">imenu-add-to-menubar</span> <span class="s">&#34;imenu&#34;</span><span class="p">)))</span></code></pre></div></p>
+
+<p>.erlファイルを開いた際に、モードの表示が&rdquo;Erlang EXT&rdquo;になれば準備OKです。</p>
+
+<h2 id="distel-s-debugger">Distel&rsquo;s debugger</h2>
+
+<p>先ほどのtest.erlに対してDistelを使ってデバッグしてみます。デバッガの起動に関しては、以下のページを参考にしました。</p>
+
+<p><a href="http://bc.tech.coop/blog/070528.html">Clementson&rsquo;s Blog: Distel = Emacs erlang-mode++</a></p>
+
+<ol>
+<li>test.erlを開く(emacs test.erl)</li>
+<li>Erlang Shellを起動(C-c C-z)</li>
+<li>接続するErlang nodeを指定(C-c C-d n masauki@localhost)</li>
+<li>Erlang Shell上で、debug_infoを付けてコンパイル</li>
+<li>source bufferに戻り、testモジュールをErlang nodeにロード(C-c C-d L)</li>
+<li>デバッガによる実行中断を可能にする(C-c C-d i)</li>
+<li>source bufferで、止めたい場所にブレークポイントを設定する(C-x space)</li>
+<li>Erlang Shell上で、関数を実行する</li>
+<li>ブレークポイントに到達すると、プロセスリストが表示されるので、デバッグを行うプロセスを選択する</li>
+<li>ブレークポイントを設定した場所で実行が停止し、対話的操作が可能となる</li>
+</ol>
+
+<p>デバッガ起動後に指定可能なコマンドは、<a href="http://bc.tech.coop/blog/070528.html">Clementson&rsquo;s Blog: Distel = Emacs erlang-mode++</a>を参考にしてください。特に、3.で.emacsに&rdquo;-sname&rdquo;を付けて定義したプロセス名@localhostを指定すること、4.で</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">c<span class="o">(</span>test, <span class="o">[</span>debug_info<span class="o">])</span>.</code></pre></div>
+
+<p>を付けてコンパイルすること、6.で実行中断を可能にする必要があるあたりは注意が必要です。</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>今回はErlangの開発環境の構築を行いました。ちょっとしたことをパっと試せる環境が、あるのとないので向かう気持ちも変わるので、Erlang modeとDistelを使い込んでみたいと思います。</p>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        This post was published <strong>1753</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2018 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>
