@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Connecting to Hive from Erlang using Thrift part2</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="Failed to connect Hive Server 前回「thrift_client_util:new/4」で失敗していた件について調べてみたところ、thrift_erlangという" />
+
+  
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@masayuki" />
+    <meta name="twitter:title" content="Connecting to Hive from Erlang using Thrift part2" />
+    <meta name="twitter:description" content="Failed to connect Hive Server 前回「thrift_client_util:new/4」で失敗していた件について調べてみたところ、thrift_erlangという" />
+    <meta name="twitter:image" content="/img/avatar.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Connecting to Hive from Erlang using Thrift part2" />
+  <meta property="og:description" content="Failed to connect Hive Server 前回「thrift_client_util:new/4」で失敗していた件について調べてみたところ、thrift_erlangという" />
+  <meta property="og:url" content="/2013/06/09/thrift-hive-part2/" />
+  <meta property="og:image" content="/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.32" />
+
+
+<link rel="canonical" href="/2013/06/09/thrift-hive-part2/" />
+<link rel="alternative" href="/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="/css/bundle.css" />
+<link rel="stylesheet" href="/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://s.gravatar.com/avatar/4b97fb839e6040cfb353bd667ac93e54?s=80" alt="Avatar">
+  
+  <h2 class="title">act-act</h2>
+  
+  <p class="subtitle"></p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Connecting to Hive from Erlang using Thrift part2</h1>
+      <p class="post-meta">@Masayuki Takahashi · Jun 9, 2013 · 4 min read</p>
+    </header>
+    <article class="post-content">
+
+<h1 id="failed-to-connect-hive-server">Failed to connect Hive Server</h1>
+
+<p>前回「thrift_client_util:new/4」で失敗していた件について調べてみたところ、<a href="https://github.com/lpgauth/thrift-erlang">thrift_erlang</a>というモジュールがdepsフォルダ下に残っていた為に発生していました。</p>
+
+<p>当初、thriftのライブラリモジュールとして、<a href="https://github.com/xslogic/thrift_erl">thrift_erl</a>と<a href="https://github.com/lpgauth/thrift-erlang">thrift_erlang</a>のどちらを使用するべきか調べていたのですが、その時きちんとクリーンアップしなかった為に残ってしまっていたようです。</p>
+
+<p>最終的にthrift_erlを使うことにしたので、thrift_erlangを取り除いて再度試したところ、以下のエラーが発生していました。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">$ rebar eunit -v <span class="nv">suites</span><span class="o">=</span>thrift_hive_tests <span class="nv">skip_deps</span><span class="o">=</span><span class="nb">true</span> <span class="nv">tests</span><span class="o">=</span>fetchOne_test_
+WARN:  Ignoring sub_dirs <span class="k">for</span> /home/masayuki/work/erlang/thrift-hive/deps/thrift_erl
+<span class="o">==</span>&gt; rel <span class="o">(</span>eunit<span class="o">)</span>
+<span class="o">==</span>&gt; thrift-hive <span class="o">(</span>eunit<span class="o">)</span>
+Compiled src/thrift_hive.erl
+NOTICE: Using experimental option <span class="s1">&#39;tests&#39;</span>
+    Running <span class="nb">test</span> <span class="k">function</span><span class="o">(</span>s<span class="o">)</span>:
+      thrift_hive_tests:fetchOne_test_/0
+<span class="o">========================</span> <span class="nv">EUnit</span> <span class="o">========================</span>
+thrift_hive_tests:6: fetchOne_test_...*failed*
+in <span class="k">function</span> thrift_hive:function_info/2
+  called as function_info<span class="o">(</span>execute,params_type<span class="o">)</span>
+in call from thrift_client:send_function_call/3 <span class="o">(</span>src/thrift_client.erl, line <span class="m">70</span><span class="o">)</span>
+in call from thrift_client:call/3 <span class="o">(</span>src/thrift_client.erl, line <span class="m">40</span><span class="o">)</span>
+in call from thrift_hive:fetch_one/0 <span class="o">(</span>src/thrift_hive.erl, line <span class="m">10</span><span class="o">)</span>
+in call from thrift_hive_tests:<span class="s1">&#39;-fetchOne_test_/0-fun-0-&#39;</span>/1 <span class="o">(</span>test/thrift_hive_tests.erl, line <span class="m">8</span><span class="o">)</span>
+**error:undef
+
+
+<span class="o">=======================================================</span>
+  Failed: <span class="m">1</span>.  Skipped: <span class="m">0</span>.  Passed: <span class="m">0</span>.
+ERROR: One or more eunit tests failed.
+ERROR: eunit failed <span class="k">while</span> processing /home/masayuki/work/erlang/thrift-hive: rebar_abort</code></pre></div>
+
+<p>コネクションを接続した後、HQLを発行するところでエラーとなっているようです。これはどうしても理由が分からず、thrift_erlのコードを読んでいったところ、以下のコードに答えがありました。</p>
+
+<p>deps/thrift_erl/src/thrift_client.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>%%--------------------------------------------------------------------                            
+<span class="ln"> 2</span>%%% Internal functions                                                                            
+<span class="ln"> 3</span>%%--------------------------------------------------------------------                            
+<span class="ln"> 4</span>-spec send_function_call<span class="o">(</span><span class="c1">#tclient{}, atom(), list()) -&gt; {#tclient{}, ok | {error, any()}}.
+</span><span class="ln"> 5</span><span class="c1"></span>send_function_call<span class="o">(</span><span class="nv">Client</span> <span class="o">=</span> <span class="c1">#tclient{protocol = Proto0,
+</span><span class="ln"> 6</span><span class="c1"></span>                                     <span class="nv">service</span>  <span class="o">=</span> Service,
+<span class="ln"> 7</span>                                     <span class="nv">seqid</span>    <span class="o">=</span> SeqId<span class="o">}</span>,
+<span class="ln"> 8</span>                   Function,
+<span class="ln"> 9</span>                   Args<span class="o">)</span> -&gt;
+<span class="ln">10</span>    <span class="nv">Params</span> <span class="o">=</span> Service:function_info<span class="o">(</span>Function, params_type<span class="o">)</span>,</code></pre></div></p>
+
+<p>一番下の行の「Service」は「thrift_client_util:new/4」で第3引数に渡しているモジュール名です。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">thrift_client_util:new<span class="o">(</span><span class="s2">&#34;127.0.0.1&#34;</span>, <span class="m">10000</span>, thrift_hive, <span class="o">[])</span>.</code></pre></div>
+
+<p>この第3引数に指定したモジュール名を使って.thriftのインターフェースの情報を取得するようになっていました。この値はてっきり呼び出し側のモジュール名を指定するものと思い&rdquo;thrift_hive&rdquo;を指定していましたが、thriftコマンドで生成されたコードのモジュール名&rdquo;thriftHive_thrift&rdquo;を指定するのが正しいことが分かりました。この部分を修正したところ、このエラーは出なくなりました。</p>
+
+<h1 id="read-timed-out-when-executing-query">Read Timed out when executing query</h1>
+
+<p>先に進めると、今度はHQLを発行した後に制御が戻ってこなくなりました。指定しているHQLはhiveコマンドで実行すると結果が返ってくるので、何故Hive Severで応答が止まってしまうのか調べてみたところ、hive.logに以下のようなエラーが出ていました。</p>
+
+<p>hive.log:
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="n">2013</span><span class="o">-</span><span class="n">06</span><span class="o">-</span><span class="n">08</span> <span class="nl">08:53:</span><span class="n">45</span><span class="o">,</span><span class="n">863</span> <span class="n">ERROR</span> <span class="n">server</span><span class="o">.</span><span class="na">TThreadPoolServer</span> <span class="o">(</span><span class="n">TThreadPoolServer</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">run</span><span class="o">(</span><span class="n">259</span><span class="o">))</span> <span class="o">-</span> <span class="n">Error</span> <span class="n">occurred</span> <span class="n">during</span> <span class="n">processing</span> <span class="n">of</span> <span class="n">message</span><span class="o">.</span>
+<span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">RuntimeException</span><span class="o">:</span> <span class="n">javax</span><span class="o">.</span><span class="na">jdo</span><span class="o">.</span><span class="na">JDOFatalDataStoreException</span><span class="o">:</span> <span class="n">Cannot</span> <span class="n">get</span> <span class="n">a</span> <span class="n">connection</span><span class="o">,</span> <span class="n">pool</span> <span class="n">error</span> <span class="n">Could</span> <span class="n">not</span> <span class="n">create</span> <span class="n">a</span> <span class="n">validated</span> <span class="n">object</span><span class="o">,</span> <span class="nl">cause:</span> <span class="n">A</span> <span class="n">read</span><span class="o">-</span><span class="n">only</span> <span class="n">user</span> <span class="n">or</span> <span class="n">a</span> <span class="n">user</span> <span class="n">in</span> <span class="n">a</span> <span class="n">read</span><span class="o">-</span><span class="n">only</span> <span class="n">database</span> <span class="n">is</span> <span class="n">not</span> <span class="n">permitted</span> <span class="n">to</span> <span class="n">disable</span> <span class="n">read</span><span class="o">-</span><span class="n">only</span> <span class="n">mode</span> <span class="n">on</span> <span class="n">a</span> <span class="n">connection</span><span class="o">.</span><span class="nl">
+</span><span class="nl">NestedThrowables:</span>
+<span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">commons</span><span class="o">.</span><span class="na">dbcp</span><span class="o">.</span><span class="na">SQLNestedException</span><span class="o">:</span> <span class="n">Cannot</span> <span class="n">get</span> <span class="n">a</span> <span class="n">connection</span><span class="o">,</span> <span class="n">pool</span> <span class="n">error</span> <span class="n">Could</span> <span class="n">not</span> <span class="n">create</span> <span class="n">a</span> <span class="n">validated</span> <span class="n">object</span><span class="o">,</span> <span class="nl">cause:</span> <span class="n">A</span> <span class="n">read</span><span class="o">-</span><span class="n">only</span> <span class="n">user</span> <span class="n">or</span> <span class="n">a</span> <span class="n">user</span> <span class="n">in</span> <span class="n">a</span> <span class="n">read</span><span class="o">-</span><span class="n">only</span> <span class="n">database</span> <span class="n">is</span> <span class="n">not</span> <span class="n">permitted</span> <span class="n">to</span> <span class="n">disable</span> <span class="n">read</span><span class="o">-</span><span class="n">only</span> <span class="n">mode</span> <span class="n">on</span> <span class="n">a</span> <span class="n">connection</span><span class="o">.</span>
+        <span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">hadoop</span><span class="o">.</span><span class="na">hive</span><span class="o">.</span><span class="na">service</span><span class="o">.</span><span class="na">HiveServer$ThriftHiveProcessorFactory</span><span class="o">.</span><span class="na">getProcessor</span><span class="o">(</span><span class="n">HiveServer</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">512</span><span class="o">)</span>
+        <span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">thrift</span><span class="o">.</span><span class="na">server</span><span class="o">.</span><span class="na">TThreadPoolServer$WorkerProcess</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="n">TThreadPoolServer</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">246</span><span class="o">)</span>
+        <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">util</span><span class="o">.</span><span class="na">concurrent</span><span class="o">.</span><span class="na">ThreadPoolExecutor$Worker</span><span class="o">.</span><span class="na">runTask</span><span class="o">(</span><span class="n">ThreadPoolExecutor</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">895</span><span class="o">)</span>
+        <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">util</span><span class="o">.</span><span class="na">concurrent</span><span class="o">.</span><span class="na">ThreadPoolExecutor$Worker</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="n">ThreadPoolExecutor</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">918</span><span class="o">)</span>
+        <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Thread</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="n">Thread</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">662</span><span class="o">)</span>
+<span class="n">Caused</span> <span class="nl">by:</span> <span class="n">javax</span><span class="o">.</span><span class="na">jdo</span><span class="o">.</span><span class="na">JDOFatalDataStoreException</span><span class="o">:</span> <span class="n">Cannot</span> <span class="n">get</span> <span class="n">a</span> <span class="n">connection</span><span class="o">,</span> <span class="n">pool</span> <span class="n">error</span> <span class="n">Could</span> <span class="n">not</span> <span class="n">create</span> <span class="n">a</span> <span class="n">validated</span> <span class="n">object</span><span class="o">,</span> <span class="nl">cause:</span> <span class="n">A</span> <span class="n">read</span><span class="o">-</span><span class="n">only</span> <span class="n">user</span> <span class="n">or</span> <span class="n">a</span> <span class="n">user</span> <span class="n">in</span> <span class="n">a</span> <span class="n">read</span><span class="o">-</span><span class="n">only</span> <span class="n">database</span> <span class="n">is</span> <span class="n">not</span> <span class="n">permitted</span> <span class="n">to</span> <span class="n">disable</span> <span class="n">read</span><span class="o">-</span><span class="n">only</span> <span class="n">mode</span> <span class="n">on</span> <span class="n">a</span> <span class="n">connection</span><span class="o">.</span><span class="nl">
+</span><span class="nl">NestedThrowables:</span>
+<span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">commons</span><span class="o">.</span><span class="na">dbcp</span><span class="o">.</span><span class="na">SQLNestedException</span><span class="o">:</span> <span class="n">Cannot</span> <span class="n">get</span> <span class="n">a</span> <span class="n">connection</span><span class="o">,</span> <span class="n">pool</span> <span class="n">error</span> <span class="n">Could</span> <span class="n">not</span> <span class="n">create</span> <span class="n">a</span> <span class="n">validated</span> <span class="n">object</span><span class="o">,</span> <span class="nl">cause:</span> <span class="n">A</span> <span class="n">read</span><span class="o">-</span><span class="n">only</span> <span class="n">user</span> <span class="n">or</span> <span class="n">a</span> <span class="n">user</span> <span class="n">in</span> <span class="n">a</span> <span class="n">read</span><span class="o">-</span><span class="n">only</span> <span class="n">database</span> <span class="n">is</span> <span class="n">not</span> <span class="n">permitted</span> <span class="n">to</span> <span class="n">disable</span> <span class="n">read</span><span class="o">-</span><span class="n">only</span> <span class="n">mode</span> <span class="n">on</span> <span class="n">a</span> <span class="n">connection</span><span class="o">.</span>
+        <span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="na">datanucleus</span><span class="o">.</span><span class="na">jdo</span><span class="o">.</span><span class="na">NucleusJDOHelper</span><span class="o">.</span><span class="na">getJDOExceptionForNucleusException</span><span class="o">(</span><span class="n">NucleusJDOHelper</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">298</span><span class="o">)</span>
+        <span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="na">datanucleus</span><span class="o">.</span><span class="na">jdo</span><span class="o">.</span><span class="na">JDOPersistenceManagerFactory</span><span class="o">.</span><span class="na">freezeConfiguration</span><span class="o">(</span><span class="n">JDOPersistenceManagerFactory</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">601</span><span class="o">)</span></code></pre></div></p>
+
+<p>エラーメッセージを指定してググってみたところ、HiveのMetadata storeに使用しているderbyのデータファイルに対して権限が足りてない、ということだったので、オーナーを変更しました。</p>
+
+<p><div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">chown -R hive:hive /var/lib/hive/metastore</code></pre></div></p>
+
+<p>これでようやくHiveの結果を取得することができました。</p>
+
+<h1 id="getting-results">Getting Results</h1>
+
+<p>HQLの実行結果はバイナリなので、binary_to_listを使って文字列に変換して扱うようにしています。</p>
+
+<p>thrift_hive.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>-module<span class="o">(</span>thrift_hive<span class="o">)</span>.
+<span class="ln"> 2</span>
+<span class="ln"> 3</span>-include<span class="o">(</span><span class="s2">&#34;hive_service_types.hrl&#34;</span><span class="o">)</span>.
+<span class="ln"> 4</span>-include<span class="o">(</span><span class="s2">&#34;thriftHive_thrift.hrl&#34;</span><span class="o">)</span>.
+<span class="ln"> 5</span>
+<span class="ln"> 6</span>-export<span class="o">([</span>fetch_one/1, fetch_all/1<span class="o">])</span>.
+<span class="ln"> 7</span>
+<span class="ln"> 8</span>fetch_one<span class="o">(</span>Hql<span class="o">)</span> -&gt;
+<span class="ln"> 9</span>    <span class="o">{</span>ok, C0<span class="o">}</span> <span class="o">=</span> get_connection<span class="o">()</span>,
+<span class="ln">10</span>    <span class="o">{</span>C1, <span class="o">{</span>ok, _<span class="o">}}</span> <span class="o">=</span> thrift_client:call<span class="o">(</span>C0, execute, <span class="o">[</span>Hql<span class="o">])</span>,
+<span class="ln">11</span>    <span class="o">{</span>_, <span class="o">{</span>ok, R2<span class="o">}}</span> <span class="o">=</span> thrift_client:call<span class="o">(</span>C1, fetchOne, <span class="o">[])</span>,
+<span class="ln">12</span>    <span class="nv">Ret</span> <span class="o">=</span> binary_to_list<span class="o">(</span>R2<span class="o">)</span>,
+<span class="ln">13</span>    <span class="o">{</span>ok, Ret<span class="o">}</span>.
+<span class="ln">14</span>
+<span class="ln">15</span>fetch_all<span class="o">(</span>Hql<span class="o">)</span> -&gt;
+<span class="ln">16</span>    <span class="o">{</span>ok, C0<span class="o">}</span> <span class="o">=</span> get_connection<span class="o">()</span>,
+<span class="ln">17</span>    <span class="o">{</span>C1, <span class="o">{</span>ok, _<span class="o">}}</span> <span class="o">=</span> thrift_client:call<span class="o">(</span>C0, execute, <span class="o">[</span>Hql<span class="o">])</span>,
+<span class="ln">18</span>    <span class="o">{</span>_, <span class="o">{</span>ok, R2<span class="o">}}</span> <span class="o">=</span> thrift_client:call<span class="o">(</span>C1, fetchAll, <span class="o">[])</span>,
+<span class="ln">19</span>    <span class="nv">Ret</span> <span class="o">=</span> lists:map<span class="o">(</span>fun<span class="o">(</span>N<span class="o">)</span> -&gt; binary_to_list<span class="o">(</span>N<span class="o">)</span> end, R2<span class="o">)</span>,
+<span class="ln">20</span>    <span class="o">{</span>ok, Ret<span class="o">}</span>.
+<span class="ln">21</span>
+<span class="ln">22</span>get_connection<span class="o">()</span> -&gt;
+<span class="ln">23</span>    thrift_client_util:new<span class="o">(</span><span class="s2">&#34;127.0.0.1&#34;</span>, <span class="m">10000</span>, thriftHive_thrift, <span class="o">[])</span>.</code></pre></div></p>
+
+<p>実行を確認する為のテストコードは以下となります。</p>
+
+<p>thrift_hive_tests.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>-module<span class="o">(</span>thrift_hive_tests<span class="o">)</span>.
+<span class="ln"> 2</span>-include_lib<span class="o">(</span><span class="s2">&#34;eunit/include/eunit.hrl&#34;</span><span class="o">)</span>.
+<span class="ln"> 3</span>
+<span class="ln"> 4</span>fetchOne_test_<span class="o">()</span> -&gt;
+<span class="ln"> 5</span>    <span class="o">{</span>timeout, <span class="m">1200</span>,
+<span class="ln"> 6</span>    ?_assertEqual<span class="o">(</span>
+<span class="ln"> 7</span>        <span class="o">{</span>ok, <span class="s2">&#34;a\t 1&#34;</span><span class="o">}</span>,
+<span class="ln"> 8</span>        begin thrift_hive:fetch_one<span class="o">(</span><span class="s2">&#34;select * from test&#34;</span><span class="o">)</span> end
+<span class="ln"> 9</span>    <span class="o">)}</span>.
+<span class="ln">10</span>
+<span class="ln">11</span>fetchAll_test_<span class="o">()</span> -&gt;
+<span class="ln">12</span>    <span class="o">{</span>timeout, <span class="m">1200</span>,
+<span class="ln">13</span>    fun<span class="o">()</span> -&gt;
+<span class="ln">14</span>        <span class="o">{</span>ok, Lst<span class="o">}</span> <span class="o">=</span> thrift_hive:fetch_all<span class="o">(</span><span class="s2">&#34;select * from test&#34;</span><span class="o">)</span>,
+<span class="ln">15</span>        ?assertEqual<span class="o">([</span><span class="s2">&#34;a\t 1&#34;</span>, <span class="s2">&#34;b\t 2&#34;</span>, <span class="s2">&#34;c\t 3&#34;</span>, <span class="s2">&#34;d\t 1&#34;</span>, <span class="s2">&#34;e\t 2&#34;</span>, <span class="s2">&#34;f\t 3&#34;</span>, <span class="s2">&#34;a\t 4&#34;</span>, <span class="s2">&#34;b\t 5&#34;</span><span class="o">]</span>, Lst<span class="o">)</span>
+<span class="ln">16</span>    end<span class="o">}</span>.</code></pre></div></p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p><a href="https://github.com/xslogic/thrift_erl">thrift_erl</a>を使い、Erlangのコードからthrift経由でHiveに接続し、HQLの結果を取得することができました。まだエラーが出た際の扱いとか色々ありますが、そのあたりは追々見ていきます。</p>
+
+<p>今回初めてErlangを使ってみましたが、初心者から見てちょっと難しく感じられるのは、エラー時の出力内容から原因を特定するところ。もう少し色々と出力されると助かるのですが、それは仕方ないのかな。デバッグマクロをうまく使えばもっと早く原因を見つけられたかもしれません。</p>
+
+<p>また、何か関数を呼び出した際、その戻り値の型が分からなくて困ることがよくあります。呼び出す関数のコードがあれば追えますが、無い場合はどうするんだろう。関数を定義している1行上に「-spec」を用いてインターフェースを記述するのが一般的なようですが、</p>
+
+<p>deps/thrift_erl/src/thrift_client.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>-spec receive_function_result<span class="o">(</span><span class="c1">#tclient{}, atom()) -&gt; {#tclient{}, {ok, any()} | {error, any()}}.
+</span><span class="ln">2</span><span class="c1"></span>receive_function_result<span class="o">(</span><span class="nv">Client</span> <span class="o">=</span> #tclient<span class="o">{</span><span class="nv">service</span> <span class="o">=</span> Service<span class="o">}</span>, Function<span class="o">)</span> -&gt;</code></pre></div></p>
+
+<p>このようにany()を使われてしまうと動かしてみないことには分からないような。</p>
+
+<p>しかし、少しErlangのコードが読めるようになってきたので、暫くはErlangで遊びながらこのような疑問点への解を見つけていこうと思います。</p>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        This post was published <strong>1701</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2018 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>

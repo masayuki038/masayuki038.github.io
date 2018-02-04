@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>CouchDB Source Code Reading part5</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="couch_db:open_doc_int/3 前回はcouch_db_updater:refresh_validate_doc_funs/1を読んでいく中でDesignDocsを取得す" />
+
+  
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@masayuki" />
+    <meta name="twitter:title" content="CouchDB Source Code Reading part5" />
+    <meta name="twitter:description" content="couch_db:open_doc_int/3 前回はcouch_db_updater:refresh_validate_doc_funs/1を読んでいく中でDesignDocsを取得す" />
+    <meta name="twitter:image" content="/img/avatar.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="CouchDB Source Code Reading part5" />
+  <meta property="og:description" content="couch_db:open_doc_int/3 前回はcouch_db_updater:refresh_validate_doc_funs/1を読んでいく中でDesignDocsを取得す" />
+  <meta property="og:url" content="/2014/06/21/couchdb-code-reading5/" />
+  <meta property="og:image" content="/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.32" />
+
+
+<link rel="canonical" href="/2014/06/21/couchdb-code-reading5/" />
+<link rel="alternative" href="/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="/css/bundle.css" />
+<link rel="stylesheet" href="/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://s.gravatar.com/avatar/4b97fb839e6040cfb353bd667ac93e54?s=80" alt="Avatar">
+  
+  <h2 class="title">act-act</h2>
+  
+  <p class="subtitle"></p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">CouchDB Source Code Reading part5</h1>
+      <p class="post-meta">@Masayuki Takahashi · Jun 21, 2014 · 7 min read</p>
+    </header>
+    <article class="post-content">
+
+<h2 id="couch-db-open-doc-int-3">couch_db:open_doc_int/3</h2>
+
+<p>前回は<code>couch_db_updater:refresh_validate_doc_funs/1</code>を読んでいく中で<code>DesignDocs</code>を取得するシーケンスを追っていきました。今回はそこからの続き。</p>
+
+<p>couch_db_updater.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>refresh_validate_doc_funs<span class="o">(</span>Db0<span class="o">)</span> -&gt;
+<span class="ln"> 2</span>    <span class="nv">Db</span> <span class="o">=</span> Db0#db<span class="o">{</span><span class="nv">user_ctx</span> <span class="o">=</span> <span class="c1">#user_ctx{roles=[&lt;&lt;&#34;_admin&#34;&gt;&gt;]}},
+</span><span class="ln"> 3</span><span class="c1"></span>    <span class="nv">DesignDocs</span> <span class="o">=</span> couch_db:get_design_docs<span class="o">(</span>Db<span class="o">)</span>,
+<span class="ln"> 4</span>    <span class="nv">ProcessDocFuns</span> <span class="o">=</span> lists:flatmap<span class="o">(</span>
+<span class="ln"> 5</span>        fun<span class="o">(</span>DesignDocInfo<span class="o">)</span> -&gt;
+<span class="ln"> 6</span>            <span class="o">{</span>ok, DesignDoc<span class="o">}</span> <span class="o">=</span> couch_db:open_doc_int<span class="o">(</span>
+<span class="ln"> 7</span>                Db, DesignDocInfo, <span class="o">[</span>ejson_body<span class="o">])</span>,
+<span class="ln"> 8</span>            <span class="k">case</span> couch_doc:get_validate_doc_fun<span class="o">(</span>DesignDoc<span class="o">)</span> of
+<span class="ln"> 9</span>            nil -&gt; <span class="o">[]</span><span class="p">;</span>
+<span class="ln">10</span>            Fun -&gt; <span class="o">[</span>Fun<span class="o">]</span>
+<span class="ln">11</span>            end
+<span class="ln">12</span>        end, DesignDocs<span class="o">)</span>,
+<span class="ln">13</span>    Db0#db<span class="o">{</span><span class="nv">validate_doc_funs</span><span class="o">=</span>ProcessDocFuns<span class="o">}</span>.</code></pre></div></p>
+
+<p><code>DesignDocs</code>を取得した後、<code>lists:flatmap/2</code>を使って<code>DesignDocs</code>の各要素から関数のリストを取得しています。<code>lists:flatmap/2</code>は文字通りmapした結果をflattenしてくれる関数です。以下のような動きをします。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span><span class="m">1</span>&gt; lists:flatmap<span class="o">(</span>fun<span class="o">(</span>E<span class="o">)</span> -&gt; <span class="o">[</span>E, E*2<span class="o">]</span> end, <span class="o">[</span><span class="m">1</span>, <span class="m">2</span>, <span class="m">3</span><span class="o">])</span>.
+<span class="ln">2</span><span class="o">[</span><span class="m">1</span>,2,2,4,3,6<span class="o">]</span></code></pre></div>
+
+<p><code>Fun</code>が単体の関数か、関数のリストが返る、ということですかね。</p>
+
+<h2 id="couch-db-open-doc-int-3-1">couch_db:open_doc_int/3</h2>
+
+<p>まずは<code>couch_db:open_doc_int/3</code>を見てみます。</p>
+
+<p>couch_db.erl</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>-
+<span class="ln"> 2</span>open_doc_int<span class="o">(</span>Db, &lt;&lt;?LOCAL_DOC_PREFIX, _/binary&gt;&gt; <span class="o">=</span> Id, Options<span class="o">)</span> -&gt;
+<span class="ln"> 3</span>    <span class="k">case</span> couch_btree:lookup<span class="o">(</span>local_btree<span class="o">(</span>Db<span class="o">)</span>, <span class="o">[</span>Id<span class="o">])</span> of
+<span class="ln"> 4</span>    <span class="o">[{</span>ok, <span class="o">{</span>_, <span class="o">{</span>Rev, BodyData<span class="o">}}}]</span> -&gt;
+<span class="ln"> 5</span>        <span class="nv">Doc</span> <span class="o">=</span> <span class="c1">#doc{id=Id, revs={0, [?l2b(integer_to_list(Rev))]}, body=BodyData},
+</span><span class="ln"> 6</span><span class="c1"></span>        apply_open_options<span class="o">({</span>ok, Doc<span class="o">}</span>, Options<span class="o">)</span><span class="p">;</span>
+<span class="ln"> 7</span>    <span class="o">[</span>not_found<span class="o">]</span> -&gt;
+<span class="ln"> 8</span>        <span class="o">{</span>not_found, missing<span class="o">}</span>
+<span class="ln"> 9</span>    end<span class="p">;</span>
+<span class="ln">10</span>open_doc_int<span class="o">(</span>Db, <span class="c1">#doc_info{id=Id,revs=[RevInfo|_]}=DocInfo, Options) -&gt;
+</span><span class="ln">11</span><span class="c1"></span>    <span class="c1">#rev_info{deleted=IsDeleted,rev={Pos,RevId},body_sp=Bp} = RevInfo,
+</span><span class="ln">12</span><span class="c1"></span>    <span class="nv">Doc</span> <span class="o">=</span> make_doc<span class="o">(</span>Db, Id, IsDeleted, Bp, <span class="o">{</span>Pos,<span class="o">[</span>RevId<span class="o">]})</span>,
+<span class="ln">13</span>    apply_open_options<span class="o">(</span>
+<span class="ln">14</span>       <span class="o">{</span>ok, Doc#doc<span class="o">{</span><span class="nv">meta</span><span class="o">=</span>doc_meta_info<span class="o">(</span>DocInfo, <span class="o">[]</span>, Options<span class="o">)}}</span>, Options<span class="o">)</span><span class="p">;</span>
+<span class="ln">15</span>open_doc_int<span class="o">(</span>Db, <span class="c1">#full_doc_info{id=Id,rev_tree=RevTree}=FullDocInfo, Options) -&gt;
+</span><span class="ln">16</span><span class="c1"></span>    <span class="c1">#doc_info{revs=[#rev_info{deleted=IsDeleted,rev=Rev,body_sp=Bp}|_]} =
+</span><span class="ln">17</span><span class="c1"></span>        <span class="nv">DocInfo</span> <span class="o">=</span> couch_doc:to_doc_info<span class="o">(</span>FullDocInfo<span class="o">)</span>,
+<span class="ln">18</span>    <span class="o">{[{</span>_, RevPath<span class="o">}]</span>, <span class="o">[]}</span> <span class="o">=</span> couch_key_tree:get<span class="o">(</span>RevTree, <span class="o">[</span>Rev<span class="o">])</span>,
+<span class="ln">19</span>    <span class="nv">Doc</span> <span class="o">=</span> make_doc<span class="o">(</span>Db, Id, IsDeleted, Bp, RevPath<span class="o">)</span>,
+<span class="ln">20</span>    apply_open_options<span class="o">(</span>
+<span class="ln">21</span>        <span class="o">{</span>ok, Doc#doc<span class="o">{</span><span class="nv">meta</span><span class="o">=</span>doc_meta_info<span class="o">(</span>DocInfo, RevTree, Options<span class="o">)}}</span>, Options<span class="o">)</span><span class="p">;</span>
+<span class="ln">22</span>open_doc_int<span class="o">(</span>Db, Id, Options<span class="o">)</span> -&gt;
+<span class="ln">23</span>    <span class="k">case</span> get_full_doc_info<span class="o">(</span>Db, Id<span class="o">)</span> of
+<span class="ln">24</span>    <span class="o">{</span>ok, FullDocInfo<span class="o">}</span> -&gt;
+<span class="ln">25</span>        open_doc_int<span class="o">(</span>Db, FullDocInfo, Options<span class="o">)</span><span class="p">;</span>
+<span class="ln">26</span>    not_found -&gt;
+<span class="ln">27</span>        <span class="o">{</span>not_found, missing<span class="o">}</span></code></pre></div>
+
+<p>引数に指定される<code>DesignDocs</code>の各要素は<code>#full_doc_info</code>なので、上から3つ目の関数にマッチするはずです。その<code>#full_doc_info</code>を<code>couch_doc:to_doc_info/1</code>で<code>#doc_info</code>に変換し、<code>#full_doc_info.rev_tree</code>から<code>#doc_info.revs</code>の先頭の<code>rev</code>にマッチする要素を取得しています。</p>
+
+<h2 id="couch-key-tree-get-2">couch_key_tree:get/2</h2>
+
+<p><code>rev</code>にマッチする要素の取得まわりを実行しているる関数<code>couch_key_tree:get/2</code>を見てみます。</p>
+
+<p>couch_key_tree.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>get<span class="o">(</span>Tree, KeysToGet<span class="o">)</span> -&gt;
+<span class="ln"> 2</span>    <span class="o">{</span>KeyPaths, KeysNotFound<span class="o">}</span> <span class="o">=</span> get_full_key_paths<span class="o">(</span>Tree, KeysToGet<span class="o">)</span>,
+<span class="ln"> 3</span>    <span class="nv">FixedResults</span> <span class="o">=</span> <span class="o">[</span> <span class="o">{</span>Value, <span class="o">{</span>Pos, <span class="o">[</span>Key0 <span class="o">||</span> <span class="o">{</span>Key0, _<span class="o">}</span> &lt;- Path<span class="o">]}}</span> <span class="o">||</span> <span class="o">{</span>Pos, <span class="o">[{</span>_Key, Value<span class="o">}</span><span class="p">|</span>_<span class="o">]=</span>Path<span class="o">}</span> &lt;- KeyPaths<span class="o">]</span>,
+<span class="ln"> 4</span>    <span class="o">{</span>FixedResults, KeysNotFound<span class="o">}</span>.
+<span class="ln"> 5</span>
+<span class="ln"> 6</span>get_full_key_paths<span class="o">(</span>Tree, Keys<span class="o">)</span> -&gt;
+<span class="ln"> 7</span>    get_full_key_paths<span class="o">(</span>Tree, Keys, <span class="o">[])</span>.
+<span class="ln"> 8</span>
+<span class="ln"> 9</span>get_full_key_paths<span class="o">(</span>_, <span class="o">[]</span>, Acc<span class="o">)</span> -&gt;
+<span class="ln">10</span>    <span class="o">{</span>Acc, <span class="o">[]}</span><span class="p">;</span>
+<span class="ln">11</span>get_full_key_paths<span class="o">([]</span>, Keys, Acc<span class="o">)</span> -&gt;
+<span class="ln">12</span>    <span class="o">{</span>Acc, Keys<span class="o">}</span><span class="p">;</span>
+<span class="ln">13</span>get_full_key_paths<span class="o">([{</span>Pos, Tree<span class="o">}</span><span class="p">|</span>Rest<span class="o">]</span>, Keys, Acc<span class="o">)</span> -&gt;
+<span class="ln">14</span>    <span class="o">{</span>Gotten, RemainingKeys<span class="o">}</span> <span class="o">=</span> get_full_key_paths<span class="o">(</span>Pos, <span class="o">[</span>Tree<span class="o">]</span>, Keys, <span class="o">[])</span>,
+<span class="ln">15</span>    get_full_key_paths<span class="o">(</span>Rest, RemainingKeys, Gotten ++ Acc<span class="o">)</span>.
+<span class="ln">16</span>
+<span class="ln">17</span>get_full_key_paths<span class="o">(</span>_Pos, _Tree, <span class="o">[]</span>, _KeyPathAcc<span class="o">)</span> -&gt;
+<span class="ln">18</span>    <span class="o">{[]</span>, <span class="o">[]}</span><span class="p">;</span>
+<span class="ln">19</span>get_full_key_paths<span class="o">(</span>_Pos, <span class="o">[]</span>, KeysToGet, _KeyPathAcc<span class="o">)</span> -&gt;
+<span class="ln">20</span>    <span class="o">{[]</span>, KeysToGet<span class="o">}</span><span class="p">;</span>
+<span class="ln">21</span>get_full_key_paths<span class="o">(</span>Pos, <span class="o">[{</span>KeyId, Value, SubTree<span class="o">}</span> <span class="p">|</span> RestTree<span class="o">]</span>, KeysToGet, KeyPathAcc<span class="o">)</span> -&gt;
+<span class="ln">22</span>    <span class="nv">KeysToGet2</span> <span class="o">=</span> KeysToGet -- <span class="o">[{</span>Pos, KeyId<span class="o">}]</span>,
+<span class="ln">23</span>    <span class="nv">CurrentNodeResult</span> <span class="o">=</span>
+<span class="ln">24</span>    <span class="k">case</span> length<span class="o">(</span>KeysToGet2<span class="o">)</span> <span class="o">=</span>:<span class="o">=</span> length<span class="o">(</span>KeysToGet<span class="o">)</span> of
+<span class="ln">25</span>    <span class="nb">true</span> -&gt; % not in the key list.
+<span class="ln">26</span>        <span class="o">[]</span><span class="p">;</span>
+<span class="ln">27</span>    <span class="nb">false</span> -&gt; % this node is the key list. <span class="k">return</span> it
+<span class="ln">28</span>        <span class="o">[{</span>Pos, <span class="o">[{</span>KeyId, Value<span class="o">}</span> <span class="p">|</span> KeyPathAcc<span class="o">]}]</span>
+<span class="ln">29</span>    end,
+<span class="ln">30</span>    <span class="o">{</span>KeysGotten, KeysRemaining<span class="o">}</span> <span class="o">=</span> get_full_key_paths<span class="o">(</span>Pos + <span class="m">1</span>, SubTree, KeysToGet2, <span class="o">[{</span>KeyId, Value<span class="o">}</span> <span class="p">|</span> KeyPathAcc<span class="o">])</span>,
+<span class="ln">31</span>    <span class="o">{</span>KeysGotten2, KeysRemaining2<span class="o">}</span> <span class="o">=</span> get_full_key_paths<span class="o">(</span>Pos, RestTree, KeysRemaining, KeyPathAcc<span class="o">)</span>,
+<span class="ln">32</span>    <span class="o">{</span>CurrentNodeResult ++ KeysGotten ++ KeysGotten2, KeysRemaining2<span class="o">}</span>.</code></pre></div></p>
+
+<p>指定された</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">KeyToGet<span class="o">([{</span>Pos, KeyId<span class="o">}</span>,...<span class="o">])</span><span class="sb">`</span></code></pre></div>
+
+<p>に合致する<code>Value</code>を取得しています。<code>SubTree</code>も再帰的に探しに行っているのですが、その際に<code>KeyPathAcc</code>にはParentTreeでKeyが合致した時の結果を含めています。その為、<code>FixedResult</code>の</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="o">[</span> <span class="o">{</span>Value, <span class="o">{</span>Pos, <span class="o">[</span>Key,...<span class="o">]}}</span>, ... <span class="o">]</span></code></pre></div>
+
+<p>で一つの<code>Value</code>に複数の<code>Key</code>が関連付けられているのは、<code>KeyToGet</code>に合致した<code>Value</code>の<code>Key</code>だけでなく、ParentTreeのKeyを含んでいることになります。この複数のKeyが<code>Value</code>のノードのパスを表しています。</p>
+
+<h2 id="couch-db-make-doc-5">couch_db:make_doc/5</h2>
+
+<p><code>couch_db:open_doc_int/1</code>に戻って、前記の内容から、<code>RevPath</code>は</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="o">{</span>Pos, <span class="o">[</span>Key, ...<span class="o">]}</span></code></pre></div>
+
+<p>になるはずです。この<code>RevPath</code>を指定して呼び出している<code>make_doc/5</code>を見てみます。</p>
+
+<p>couch_db.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>read_doc<span class="o">(</span><span class="c1">#db{fd=Fd}, Pos) -&gt;
+</span><span class="ln"> 2</span><span class="c1"></span>    couch_file:pread_term<span class="o">(</span>Fd, Pos<span class="o">)</span>.
+<span class="ln"> 3</span>
+<span class="ln"> 4</span>make_doc<span class="o">(</span><span class="c1">#db{updater_fd = Fd} = Db, Id, Deleted, Bp, RevisionPath) -&gt;
+</span><span class="ln"> 5</span><span class="c1"></span>    <span class="o">{</span>BodyData, Atts<span class="o">}</span> <span class="o">=</span>
+<span class="ln"> 6</span>    <span class="k">case</span> Bp of
+<span class="ln"> 7</span>    nil -&gt;
+<span class="ln"> 8</span>        <span class="o">{[]</span>, <span class="o">[]}</span><span class="p">;</span>
+<span class="ln"> 9</span>    _ -&gt;
+<span class="ln">10</span>        <span class="o">{</span>ok, <span class="o">{</span>BodyData0, Atts00<span class="o">}}</span> <span class="o">=</span> read_doc<span class="o">(</span>Db, Bp<span class="o">)</span>,
+<span class="ln">11</span>        <span class="nv">Atts0</span> <span class="o">=</span> <span class="k">case</span> Atts00 of
+<span class="ln">12</span>        _ when is_binary<span class="o">(</span>Atts00<span class="o">)</span> -&gt;
+<span class="ln">13</span>            couch_compress:decompress<span class="o">(</span>Atts00<span class="o">)</span><span class="p">;</span>
+<span class="ln">14</span>        _ when is_list<span class="o">(</span>Atts00<span class="o">)</span> -&gt;
+<span class="ln">15</span>            % pre <span class="m">1</span>.2 format
+<span class="ln">16</span>            Atts00
+<span class="ln">17</span>        end,
+<span class="ln">18</span>        <span class="o">{</span>BodyData0,
+<span class="ln">19</span>            lists:map<span class="o">(</span>
+<span class="ln">20</span>                fun<span class="o">({</span>Name,Type,Sp,AttLen,DiskLen,RevPos,Md5,Enc<span class="o">})</span> -&gt;
+<span class="ln">21</span>                    <span class="c1">#att{name=Name,
+</span><span class="ln">22</span><span class="c1"></span>                        <span class="nv">type</span><span class="o">=</span>Type,
+<span class="ln">23</span>                        <span class="nv">att_len</span><span class="o">=</span>AttLen,
+<span class="ln">24</span>                        <span class="nv">disk_len</span><span class="o">=</span>DiskLen,
+<span class="ln">25</span>                        <span class="nv">md5</span><span class="o">=</span>Md5,
+<span class="ln">26</span>                        <span class="nv">revpos</span><span class="o">=</span>RevPos,
+<span class="ln">27</span>                        <span class="nv">data</span><span class="o">={</span>Fd,Sp<span class="o">}</span>,
+<span class="ln">28</span>                        <span class="nv">encoding</span><span class="o">=</span>
+<span class="ln">29</span>                            <span class="k">case</span> Enc of
+<span class="ln">30</span>                            <span class="nb">true</span> -&gt;
+<span class="ln">31</span>                                % <span class="m">0110</span> UPGRADE CODE
+<span class="ln">32</span>                                gzip<span class="p">;</span>
+<span class="ln">33</span>                            <span class="nb">false</span> -&gt;
+<span class="ln">34</span>                                % <span class="m">0110</span> UPGRADE CODE
+<span class="ln">35</span>                                identity<span class="p">;</span>
+<span class="ln">36</span>                            _ -&gt;
+<span class="ln">37</span>                                Enc
+<span class="ln">38</span>                            end
+<span class="ln">39</span>                    <span class="o">}</span><span class="p">;</span>
+<span class="ln">40</span>                <span class="o">({</span>Name,Type,Sp,AttLen,RevPos,Md5<span class="o">})</span> -&gt;
+<span class="ln">41</span>                    <span class="c1">#att{name=Name,
+</span><span class="ln">42</span><span class="c1"></span>                        <span class="nv">type</span><span class="o">=</span>Type,
+<span class="ln">43</span>                        <span class="nv">att_len</span><span class="o">=</span>AttLen,
+<span class="ln">44</span>                        <span class="nv">disk_len</span><span class="o">=</span>DiskLen,
+<span class="ln">45</span>                        <span class="nv">md5</span><span class="o">=</span>Md5,
+<span class="ln">46</span>                        <span class="nv">revpos</span><span class="o">=</span>RevPos,
+<span class="ln">47</span>                        <span class="nv">data</span><span class="o">={</span>Fd,Sp<span class="o">}</span>,
+<span class="ln">48</span>                        <span class="nv">encoding</span><span class="o">=</span>
+<span class="ln">49</span>                            <span class="k">case</span> Enc of
+<span class="ln">50</span>                            <span class="nb">true</span> -&gt;
+<span class="ln">51</span>                                % <span class="m">0110</span> UPGRADE CODE
+<span class="ln">52</span>                                gzip<span class="p">;</span>
+<span class="ln">53</span>                            <span class="nb">false</span> -&gt;
+<span class="ln">54</span>                                % <span class="m">0110</span> UPGRADE CODE
+<span class="ln">55</span>                                identity<span class="p">;</span>
+<span class="ln">56</span>                            _ -&gt;
+<span class="ln">57</span>                                Enc
+<span class="ln">58</span>                            end
+<span class="ln">59</span>                    <span class="o">}</span><span class="p">;</span>
+<span class="ln">60</span>                <span class="o">({</span>Name,Type,Sp,AttLen,RevPos,Md5<span class="o">})</span> -&gt;
+<span class="ln">61</span>                    <span class="c1">#att{name=Name,
+</span><span class="ln">62</span><span class="c1"></span>                        <span class="nv">type</span><span class="o">=</span>Type,
+<span class="ln">63</span>                        <span class="nv">att_len</span><span class="o">=</span>AttLen,
+<span class="ln">64</span>                        <span class="nv">disk_len</span><span class="o">=</span>AttLen,
+<span class="ln">65</span>                        <span class="nv">md5</span><span class="o">=</span>Md5,
+<span class="ln">66</span>                        <span class="nv">revpos</span><span class="o">=</span>RevPos,
+<span class="ln">67</span>                        <span class="nv">data</span><span class="o">={</span>Fd,Sp<span class="o">}}</span><span class="p">;</span>
+<span class="ln">68</span>                <span class="o">({</span>Name,<span class="o">{</span>Type,Sp,AttLen<span class="o">}})</span> -&gt;
+<span class="ln">69</span>                    <span class="c1">#att{name=Name,
+</span><span class="ln">70</span><span class="c1"></span>                        <span class="nv">type</span><span class="o">=</span>Type,
+<span class="ln">71</span>                        <span class="nv">att_len</span><span class="o">=</span>AttLen,
+<span class="ln">72</span>                        <span class="nv">disk_len</span><span class="o">=</span>AttLen,
+<span class="ln">73</span>                        <span class="nv">md5</span><span class="o">=</span> &lt;&lt;&gt;&gt;,
+<span class="ln">74</span>                        <span class="nv">revpos</span><span class="o">=</span><span class="m">0</span>,
+<span class="ln">75</span>                        <span class="nv">data</span><span class="o">={</span>Fd,Sp<span class="o">}}</span>
+<span class="ln">76</span>                end, Atts0<span class="o">)}</span>
+<span class="ln">77</span>    end,
+<span class="ln">78</span>    <span class="nv">Doc</span> <span class="o">=</span> <span class="c1">#doc{
+</span><span class="ln">79</span><span class="c1"></span>        <span class="nv">id</span> <span class="o">=</span> Id,
+<span class="ln">80</span>        <span class="nv">revs</span> <span class="o">=</span> RevisionPath,
+<span class="ln">81</span>        <span class="nv">body</span> <span class="o">=</span> BodyData,
+<span class="ln">82</span>        <span class="nv">atts</span> <span class="o">=</span> Atts,
+<span class="ln">83</span>        <span class="nv">deleted</span> <span class="o">=</span> Deleted
+<span class="ln">84</span>    <span class="o">}</span>,
+<span class="ln">85</span>    after_doc_read<span class="o">(</span>Db, Doc<span class="o">)</span>.</code></pre></div></p>
+
+<p>かなり長いのですが、変換後の<code>#doc_info.revs</code>の先頭要素の<code>BodyPointer</code>を指定して<code>read_doc/2</code>を呼び出してデータファイルから<code>{BodyData, Atts}</code>を取得し、<code>#doc</code>に入れて返しています。これまで<code>#full_doc_info.rev_tree</code>に保存されているValueは実値ではなくポインタを保持しているだけでしたが、この関数を呼び出すことによって実値をデータファイルから取り出していることになります。<code>lists:map/2</code>の関数で複数のパターンが用意されているのは、恐らくバージョンによって保持している属性情報の内容が異なるからでしょう。</p>
+
+<p>そのまま<code>after_doc_read/2</code>を見てみます。</p>
+
+<p>couch_db.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>after_doc_read<span class="o">(</span><span class="c1">#db{after_doc_read = nil}, Doc) -&gt;
+</span><span class="ln">2</span><span class="c1"></span>    Doc<span class="p">;</span>
+<span class="ln">3</span>after_doc_read<span class="o">(</span><span class="c1">#db{after_doc_read = Fun} = Db, Doc) -&gt;
+</span><span class="ln">4</span><span class="c1"></span>    Fun<span class="o">(</span>couch_doc:with_ejson_body<span class="o">(</span>Doc<span class="o">)</span>, Db<span class="o">)</span>.</code></pre></div></p>
+
+<p><code>#db.after_doc_read</code>に関数が設定されていれば、その関数を実行するようになっています。そのまま<code>couch_doc:with_ejson_body/1</code>を読んでみます。</p>
+
+<p>couch_doc.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>with_ejson_body<span class="o">(</span><span class="c1">#doc{body = Body} = Doc) when is_binary(Body) -&gt;
+</span><span class="ln">2</span><span class="c1"></span>    Doc#doc<span class="o">{</span><span class="nv">body</span> <span class="o">=</span> couch_compress:decompress<span class="o">(</span>Body<span class="o">)}</span><span class="p">;</span>
+<span class="ln">3</span>with_ejson_body<span class="o">(</span><span class="c1">#doc{body = {_}} = Doc) -&gt;
+</span><span class="ln">4</span><span class="c1"></span>    Doc.</code></pre></div></p>
+
+<p><code>#doc.body</code>がbinaryであればdecompressしていました。</p>
+
+<p><code>couch_db:open_doc_int/3</code>に戻って、<code>doc_meta_info/3</code>ですが、<code>Options</code>に指定されているのが</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="o">[</span>ejson_body<span class="o">]</span></code></pre></div>
+
+<p>だけなので</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="o">[]</span></code></pre></div>
+
+<p>が返ります(コードは省略します)。次に<code>apply_open_options/2</code>を読んでみます。</p>
+
+<p>couch_db.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>apply_open_options<span class="o">({</span>ok, Doc<span class="o">}</span>,Options<span class="o">)</span> -&gt;
+<span class="ln"> 2</span>    apply_open_options2<span class="o">(</span>Doc,Options<span class="o">)</span><span class="p">;</span>
+<span class="ln"> 3</span>apply_open_options<span class="o">(</span>Else,_Options<span class="o">)</span> -&gt;
+<span class="ln"> 4</span>    Else.
+<span class="ln"> 5</span>
+<span class="ln"> 6</span>apply_open_options2<span class="o">(</span>Doc,<span class="o">[])</span> -&gt;
+<span class="ln"> 7</span>    <span class="o">{</span>ok, Doc<span class="o">}</span><span class="p">;</span>
+<span class="ln"> 8</span>apply_open_options2<span class="o">(</span><span class="c1">#doc{atts=Atts,revs=Revs}=Doc,
+</span><span class="ln"> 9</span><span class="c1"></span>        <span class="o">[{</span>atts_since, PossibleAncestors<span class="o">}</span><span class="p">|</span>Rest<span class="o">])</span> -&gt;
+<span class="ln">10</span>    <span class="nv">RevPos</span> <span class="o">=</span> find_ancestor_rev_pos<span class="o">(</span>Revs, PossibleAncestors<span class="o">)</span>,
+<span class="ln">11</span>    apply_open_options2<span class="o">(</span>Doc#doc<span class="o">{</span><span class="nv">atts</span><span class="o">=[</span>A#att<span class="o">{</span><span class="nv">data</span><span class="o">=</span>
+<span class="ln">12</span>        <span class="k">if</span> AttPos&gt;RevPos -&gt; Data<span class="p">;</span> <span class="nb">true</span> -&gt; stub end<span class="o">}</span>
+<span class="ln">13</span>        <span class="o">||</span> <span class="c1">#att{revpos=AttPos,data=Data}=A &lt;- Atts]}, Rest);
+</span><span class="ln">14</span><span class="c1"></span>apply_open_options2<span class="o">(</span>Doc, <span class="o">[</span>ejson_body <span class="p">|</span> Rest<span class="o">])</span> -&gt;
+<span class="ln">15</span>    apply_open_options2<span class="o">(</span>couch_doc:with_ejson_body<span class="o">(</span>Doc<span class="o">)</span>, Rest<span class="o">)</span><span class="p">;</span>
+<span class="ln">16</span>apply_open_options2<span class="o">(</span>Doc,<span class="o">[</span>_<span class="p">|</span>Rest<span class="o">])</span> -&gt;
+<span class="ln">17</span>    apply_open_options2<span class="o">(</span>Doc,Rest<span class="o">)</span>.</code></pre></div></p>
+
+<p><code>Options</code>が</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="o">[</span>ejson_body<span class="o">]</span></code></pre></div>
+
+<p>なので、<code>couch_doc:with_ejson_body/1</code>を呼び出して適宜decompressして終了です。以上で<code>couch_db:open_doc_int/3</code>は終わりです。</p>
+
+<h2 id="couch-doc-get-validate-doc-fun-1">couch_doc:get_validate_doc_fun/1</h2>
+
+<p><code>couch_db_updater:refresh_validate_doc_funs/1</code>に戻り、<code>couch_doc:get_validate_doc_fun/1</code>を見てみます。</p>
+
+<p>couch_doc.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>get_validate_doc_fun<span class="o">(</span><span class="c1">#doc{body={Props}}=DDoc) -&gt;
+</span><span class="ln">2</span><span class="c1"></span>    <span class="k">case</span> couch_util:get_value<span class="o">(</span>&lt;&lt;<span class="s2">&#34;validate_doc_update&#34;</span>&gt;&gt;, Props<span class="o">)</span> of
+<span class="ln">3</span>    undefined -&gt;
+<span class="ln">4</span>        nil<span class="p">;</span>
+<span class="ln">5</span>    _Else -&gt;
+<span class="ln">6</span>        fun<span class="o">(</span>EditDoc, DiskDoc, Ctx, SecObj<span class="o">)</span> -&gt;
+<span class="ln">7</span>            couch_query_servers:validate_doc_update<span class="o">(</span>DDoc, EditDoc, DiskDoc, Ctx, SecObj<span class="o">)</span>
+<span class="ln">8</span>        end
+<span class="ln">9</span>    end.</code></pre></div></p>
+
+<p><code>#doc.body</code>の<code>{Props}</code>に<code>&lt;&lt;&quot;validate_doc_update&quot;&gt;&gt;</code>が設定されているかどうか見ています。<code>Props</code>の構造がすなわち<code>#doc.body</code>の構造となるので、<code>couch_util:get_value/2</code>を読んでみます。</p>
+
+<p>couch_util.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>get_value<span class="o">(</span>Key, List<span class="o">)</span> -&gt;
+<span class="ln"> 2</span>    get_value<span class="o">(</span>Key, List, undefined<span class="o">)</span>.
+<span class="ln"> 3</span>
+<span class="ln"> 4</span>get_value<span class="o">(</span>Key, List, Default<span class="o">)</span> -&gt;
+<span class="ln"> 5</span>    <span class="k">case</span> lists:keysearch<span class="o">(</span>Key, <span class="m">1</span>, List<span class="o">)</span> of
+<span class="ln"> 6</span>    <span class="o">{</span>value, <span class="o">{</span>Key,Value<span class="o">}}</span> -&gt;
+<span class="ln"> 7</span>        Value<span class="p">;</span>
+<span class="ln"> 8</span>    <span class="nb">false</span> -&gt;
+<span class="ln"> 9</span>        Default
+<span class="ln">10</span>    end.</code></pre></div></p>
+
+<p><code>lists/keysearch/3</code>を使って値を取っています。Erlangの<a href="http://www.erlang.org/doc/man/lists.html">STDLIB Reference Manual</a>を見ると、<code>lists:keysearch/3</code>の第三引数は<code>TupleList</code>となっているので、タプルのリストが<code>#doc.body</code>に設定されていることになります。</p>
+
+<p>そのまま<code>couch_query_servers:validate_doc_update/5</code>を見てみます。</p>
+
+<p>couch_query_servers.erl:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>% use the <span class="k">function</span> stored in ddoc.validate_doc_update to <span class="nb">test</span> an update.
+<span class="ln"> 2</span>validate_doc_update<span class="o">(</span>DDoc, EditDoc, DiskDoc, Ctx, SecObj<span class="o">)</span> -&gt;
+<span class="ln"> 3</span>    <span class="nv">JsonEditDoc</span> <span class="o">=</span> couch_doc:to_json_obj<span class="o">(</span>EditDoc, <span class="o">[</span>revs<span class="o">])</span>,
+<span class="ln"> 4</span>    <span class="nv">JsonDiskDoc</span> <span class="o">=</span> json_doc<span class="o">(</span>DiskDoc<span class="o">)</span>,
+<span class="ln"> 5</span>    <span class="k">case</span> ddoc_prompt<span class="o">(</span>DDoc, <span class="o">[</span>&lt;&lt;<span class="s2">&#34;validate_doc_update&#34;</span>&gt;&gt;<span class="o">]</span>, <span class="o">[</span>JsonEditDoc, JsonDiskDoc, Ctx, SecObj<span class="o">])</span> of
+<span class="ln"> 6</span>        <span class="m">1</span> -&gt;
+<span class="ln"> 7</span>            ok<span class="p">;</span>
+<span class="ln"> 8</span>        <span class="o">{[{</span>&lt;&lt;<span class="s2">&#34;forbidden&#34;</span>&gt;&gt;, Message<span class="o">}]}</span> -&gt;
+<span class="ln"> 9</span>            throw<span class="o">({</span>forbidden, Message<span class="o">})</span><span class="p">;</span>
+<span class="ln">10</span>        <span class="o">{[{</span>&lt;&lt;<span class="s2">&#34;unauthorized&#34;</span>&gt;&gt;, Message<span class="o">}]}</span> -&gt;
+<span class="ln">11</span>            throw<span class="o">({</span>unauthorized, Message<span class="o">})</span>
+<span class="ln">12</span>    end.</code></pre></div></p>
+
+<p><code>EditDoc</code>や<code>DiskDoc</code>とか良く分かりませんが、<code>&lt;&lt;&quot;forbidden&quot;&gt;&gt;</code>や<code>&lt;&lt;&quot;unauthorized&quot;&gt;&gt;</code>とあることから、ドキュメントの権限まわりのチェックを行う関数のようです。</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>今回は<code>couch_db_updater:refresh_validate_doc_funs/1</code>を読んでいく中で、<code>#full_doc_info</code> -&gt; <code>#doc_info</code> -&gt; <code>#doc</code>の取得の流れを見てきました。<code>#doc_info</code>と<code>#doc</code>の違いが分かりました。</p>
+
+<p>そして、<code>DesignDoc</code>の中に<code>&lt;&lt;&quot;validate_doc_update&quot;&gt;&gt;</code>が設定されているかどうかでドキュメントのvalidation関数を設定していることから、<code>DesignDoc</code>はドキュメントに関するメタ情報のようなものなのではないかと思います。</p>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        This post was published <strong>1324</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2018 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>

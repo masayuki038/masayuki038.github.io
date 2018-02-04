@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Development Environment For Rails4 With Docker And Ansible</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="DockerとAnsibleを使ってRails4の開発環境を作ってみました。 Environment ruby2.1.0 rails4 emacs24 ruby-mode rinari rhtml Docker Dockerfileにはsshdでログインできる" />
+
+  
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@masayuki" />
+    <meta name="twitter:title" content="Development Environment For Rails4 With Docker And Ansible" />
+    <meta name="twitter:description" content="DockerとAnsibleを使ってRails4の開発環境を作ってみました。 Environment ruby2.1.0 rails4 emacs24 ruby-mode rinari rhtml Docker Dockerfileにはsshdでログインできる" />
+    <meta name="twitter:image" content="/img/avatar.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Development Environment For Rails4 With Docker And Ansible" />
+  <meta property="og:description" content="DockerとAnsibleを使ってRails4の開発環境を作ってみました。 Environment ruby2.1.0 rails4 emacs24 ruby-mode rinari rhtml Docker Dockerfileにはsshdでログインできる" />
+  <meta property="og:url" content="/2014/02/22/devenv-rails4-with-docker-ansible/" />
+  <meta property="og:image" content="/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.32" />
+
+
+<link rel="canonical" href="/2014/02/22/devenv-rails4-with-docker-ansible/" />
+<link rel="alternative" href="/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="/css/bundle.css" />
+<link rel="stylesheet" href="/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://s.gravatar.com/avatar/4b97fb839e6040cfb353bd667ac93e54?s=80" alt="Avatar">
+  
+  <h2 class="title">act-act</h2>
+  
+  <p class="subtitle"></p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Development Environment For Rails4 With Docker And Ansible</h1>
+      <p class="post-meta">@Masayuki Takahashi · Feb 22, 2014 · 4 min read</p>
+    </header>
+    <article class="post-content">
+
+<p>DockerとAnsibleを使ってRails4の開発環境を作ってみました。</p>
+
+<h1 id="environment">Environment</h1>
+
+<ul>
+<li>ruby2.1.0</li>
+<li>rails4</li>
+<li>emacs24
+
+<ul>
+<li>ruby-mode</li>
+<li>rinari</li>
+<li>rhtml</li>
+</ul></li>
+</ul>
+
+<h1 id="docker">Docker</h1>
+
+<p>Dockerfileにはsshdでログインできる程度の下地を作るところまでを書いています。</p>
+
+<p>Dockerfile:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>FROM ubuntu
+<span class="ln"> 2</span>
+<span class="ln"> 3</span>ADD sources.list /etc/apt/
+<span class="ln"> 4</span>RUN apt-get update
+<span class="ln"> 5</span>RUN apt-get install -y vim
+<span class="ln"> 6</span>RUN apt-get install -y openssh-server
+<span class="ln"> 7</span>RUN apt-get install -y sudo
+<span class="ln"> 8</span>RUN <span class="nb">echo</span> <span class="s2">&#34;masayuki    ALL=(ALL)       NOPASSWD:ALL&#34;</span> &gt;&gt; /etc/sudoers
+<span class="ln"> 9</span>RUN mkdir /var/run/sshd
+<span class="ln">10</span>RUN /usr/sbin/sshd
+<span class="ln">11</span>RUN <span class="nb">echo</span> <span class="s2">&#34; IdentityFile ~/.ssh/id_rsa&#34;</span> &gt;&gt; /etc/ssh/ssh_config
+<span class="ln">12</span>RUN groupadd dev
+<span class="ln">13</span>RUN useradd -g dev -m -s /bin/bash masayuki
+<span class="ln">14</span>ADD .ssh /home/masayuki/.ssh</code></pre></div></p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>$ sudo docker build .
+<span class="ln">2</span>$ sudo docker ps -a
+<span class="ln">3</span><span class="o">(</span>Check your CONTAINER ID<span class="o">)</span>
+<span class="ln">4</span>$ sudo docker commit 87ba0c2400d4 base/sshd</code></pre></div>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>$ sudo docker run -d -p <span class="m">127</span>.0.0.1:8024:22 base/sshd /usr/sbin/sshd -D
+<span class="ln">2</span>aa1f9a2f8b12258ef825566fb8c904053f4fa060dc816cff7bceae8f3eca604f</code></pre></div>
+
+<h1 id="ansible">Ansible</h1>
+
+<h3 id="basis">Basis</h3>
+
+<p>まず、作成したDockerコンテナに対してプロビジョニングする為の準備を行います。</p>
+
+<p>/etc/hosts:
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text"><span class="ln">1</span>127.0.0.1       rails4-dev</code></pre></div></p>
+
+<p>rails4-dev_hosts:
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text"><span class="ln">1</span>[rails4-dev]
+<span class="ln">2</span>rails4-dev ansible_ssh_port=8024</code></pre></div></p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text"><span class="ln">1</span>- hosts: rails4-dev
+<span class="ln">2</span>  sudo: yes
+<span class="ln">3</span>  roles:
+<span class="ln">4</span>    - common
+<span class="ln">5</span>    - rails4-dev</code></pre></div>
+
+<p>aptモジュールが使えるように、roles/common/tasks/main.ymlでpython-aptをインストールします。</p>
+
+<p>roles/common/tasks/main.yml:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>- name: be sure python-apt is installed
+<span class="ln">2</span>  shell: apt-get install python-apt -y
+<span class="ln">3</span>  tags: ansible</code></pre></div></p>
+
+<h3 id="files">Files</h3>
+
+<p>アップロードするファイルは以下の5点です。</p>
+
+<h4 id="for-github">for github</h4>
+
+<p>fils/ssh_configはsshの設定です。</p>
+
+<p>roles/rails4-dev/files/ssh_config:
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>Host github.com
+<span class="ln"> 2</span> StrictHostKeyChecking no
+<span class="ln"> 3</span> User git
+<span class="ln"> 4</span> HostName       github.com
+<span class="ln"> 5</span> IdentityFile   ~/.ssh_github/github_id_rsa
+<span class="ln"> 6</span> StrictHostKeyChecking no
+<span class="ln"> 7</span>
+<span class="ln"> 8</span>Host bitbucket.org
+<span class="ln"> 9</span> StrictHostKeyChecking no
+<span class="ln">10</span> User git
+<span class="ln">11</span> Hostname bitbucket.org
+<span class="ln">12</span> PreferredAuthentications publickey
+<span class="ln">13</span> IdentityFile ~/.ssh/github_id_rsa</code></pre></div></p>
+
+<p>sshの鍵もアップしておきます。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>masayuki@www2267uo:~/work/sites/wrap-trap.net/ansible$ tar tvfz roles/rails4-dev/files/ssh_github.tar.gz
+<span class="ln">2</span>drwxrwxr-x masayuki/masayuki <span class="m">0</span> <span class="m">2013</span>-12-03 <span class="m">21</span>:49 .ssh_github/
+<span class="ln">3</span>-rw-rw-r-- masayuki/masayuki <span class="m">606</span> <span class="m">2012</span>-04-04 <span class="m">23</span>:33 .ssh_github/github_id_rsa</code></pre></div>
+
+<h4 id="for-el-files">for .el files</h4>
+
+<p>.emacs.d/initsの下に置く.elファイルです。まずはruby-modeの.elファイル。</p>
+
+<p>roles/rails4-dev/files/emacs/inits/80-ruby.el:
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text"><span class="ln"> 1</span>;; ruby-mode
+<span class="ln"> 2</span>
+<span class="ln"> 3</span>(add-to-list &#39;load-path &#34;~/.emacs.d/ruby-mode&#34;)
+<span class="ln"> 4</span>(autoload &#39;ruby-mode &#34;ruby-mode&#34; &#34;Mode for editing ruby source files&#34; t)
+<span class="ln"> 5</span>(setq auto-mode-alist (cons &#39;(&#34;\\.rb$&#34; . ruby-mode) auto-mode-alist))
+<span class="ln"> 6</span>(setq interpreter-mode-alist (append &#39;((&#34;ruby&#34; . ruby-mode)) interpreter-mode-alist))
+<span class="ln"> 7</span>(autoload &#39;run-ruby &#34;inf-ruby&#34; &#34;Run an inferior Ruby process&#34;)
+<span class="ln"> 8</span>(autoload &#39;inf-ruby-keys &#34;inf-ruby&#34; &#34;Set local key defs for inf-ruby in ruby-mode&#34;)
+<span class="ln"> 9</span>(add-hook &#39;ruby-mode-hook &#39;(lambda () (inf-ruby-keys)))
+<span class="ln">10</span>
+<span class="ln">11</span>;; ruby-electric.el --- electric editing commands for ruby files
+<span class="ln">12</span>(require &#39;ruby-electric)
+<span class="ln">13</span>(add-hook &#39;ruby-mode-hook &#39;(lambda () (ruby-electric-mode t)))
+<span class="ln">14</span>
+<span class="ln">15</span>;; set ruby-mode indent
+<span class="ln">16</span>(setq ruby-indent-level 2)
+<span class="ln">17</span>(setq ruby-indent-tabs-mode nil)</code></pre></div></p>
+
+<p>今回はrinariを使ってみることにしました。</p>
+
+<p>roles/rails4-dev/files/emacs/inits/90-rinari.el:
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text"><span class="ln">1</span>;; Interactively Do Things (highly recommended, but not strictly required)
+<span class="ln">2</span>(require &#39;ido)
+<span class="ln">3</span>(ido-mode t)
+<span class="ln">4</span>;; Rinari
+<span class="ln">5</span>(add-to-list &#39;load-path &#34;~/.emacs.d/rinari&#34;)
+<span class="ln">6</span>(require &#39;rinari)</code></pre></div></p>
+
+<p>そしてrhtmlの.elファイル。</p>
+
+<p>roles/rails4-dev/files/emacs/inits/90-rhtml.el:
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text"><span class="ln">1</span>;;; rhtml-mode
+<span class="ln">2</span>(add-to-list &#39;load-path &#34;~/.emacs.d/rhtml&#34;)
+<span class="ln">3</span>(require &#39;rhtml-mode)
+<span class="ln">4</span>(add-hook &#39;rhtml-mode-hook
+<span class="ln">5</span>    (lambda () (rinari-launch)))</code></pre></div></p>
+
+<h3 id="tasks">Tasks</h3>
+
+<p>タスクファイルは以下のようになっています。</p>
+
+<p>roles/rails4-dev/tasks/main.yml:
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text"><span class="ln">1</span>- include: github.yml
+<span class="ln">2</span>- include: rails4.yml
+<span class="ln">3</span>- include: emacs.yml</code></pre></div></p>
+
+<p>tasks/github.ymlは、githubへアクセスする為の設定です。</p>
+
+<p>roles/rails4-dev/tasks/github.yml:
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text"><span class="ln"> 1</span>- name: be sure .ssh/config installed
+<span class="ln"> 2</span>  copy: src=roles/octopress/files/ssh_config dest=/home/masayuki/.ssh/config
+<span class="ln"> 3</span>
+<span class="ln"> 4</span>- name: be sure .ssh_github installed
+<span class="ln"> 5</span>  copy: src=roles/octopress/files/ssh_github.tar.gz dest=/home/masayuki/
+<span class="ln"> 6</span>
+<span class="ln"> 7</span>- name: unarchive .ssh_config
+<span class="ln"> 8</span>  shell: tar xvfz /home/masayuki/ssh_github.tar.gz -C /home/masayuki creates=/home/masayuki/.ssh_github
+<span class="ln"> 9</span>
+<span class="ln">10</span>- name: chmod 400 .ssh_github/github_id_rsa
+<span class="ln">11</span>  shell: chmod 400 /home/masayuki/.ssh_github/github_id_rsa
+<span class="ln">12</span>
+<span class="ln">13</span>- name: be sure git is installed
+<span class="ln">14</span>  apt: pkg=git state=installed</code></pre></div></p>
+
+<p>tasks/rails.ymlは、ruby2.1とrails4をインストールします。</p>
+
+<p>roles/rails4-dev/tasks/rail.yml:
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text"><span class="ln"> 1</span>- name: be sure ja_JP.UTF-8 enabled
+<span class="ln"> 2</span>  shell: locale-gen ja_JP.UTF-8
+<span class="ln"> 3</span>
+<span class="ln"> 4</span>- name: be sure locale updated
+<span class="ln"> 5</span>  shell: update-locale LANG=ja_JP.UTF-8
+<span class="ln"> 6</span>
+<span class="ln"> 7</span>- name: be sure python-sofrware-properties is installed
+<span class="ln"> 8</span>  apt: pkg=python-software-properties state=installed
+<span class="ln"> 9</span>
+<span class="ln">10</span>- name: add repository for ruby2.1
+<span class="ln">11</span>  apt_repository: repo=&#39;ppa:brightbox/ruby-ng&#39;
+<span class="ln">12</span>
+<span class="ln">13</span>- name: be sure ruby-2.1 is installed
+<span class="ln">14</span>  apt: update_cache=yes pkg=ruby2.1 state=installed
+<span class="ln">15</span>
+<span class="ln">16</span>- name: be sure ruby-2.1-dev is installed
+<span class="ln">17</span>  apt: pkg=ruby2.1-dev state=installed
+<span class="ln">18</span>
+<span class="ln">19</span>- name: be sure gcc is installed
+<span class="ln">20</span>  apt: pkg=gcc state=installed
+<span class="ln">21</span>
+<span class="ln">22</span>- name: be sure make is installed
+<span class="ln">23</span>  apt: pkg=make state=installed
+<span class="ln">24</span>
+<span class="ln">25</span>- name: be sure bundler is installed
+<span class="ln">26</span>  gem: name=bundler user_install=no state=present
+<span class="ln">27</span>
+<span class="ln">28</span>- name: be sure tmp dir is created
+<span class="ln">29</span>  shell: mkdir rails
+<span class="ln">30</span>
+<span class="ln">31</span>- name: be sure &#39;bundle init&#39; is executed
+<span class="ln">32</span>  shell: bundle init chdir=&#34;rails&#34;
+<span class="ln">33</span>
+<span class="ln">34</span>- name: be sure gem repos is added in Gemfile
+<span class="ln">35</span>  shell: echo &#39;source &#34;https://rubygems.org&#34;&#39; &gt; Gemfile chdir=&#34;rails&#34;
+<span class="ln">36</span>
+<span class="ln">37</span>- name: be sure gem &#34;rails&#34; is added in Gemfile
+<span class="ln">38</span>  shell: echo &#39;gem &#34;rails&#34;, &#34;&gt;= 4.0.0&#34;&#39; &gt;&gt; Gemfile chdir=&#34;rails&#34;
+<span class="ln">39</span>
+<span class="ln">40</span>- name: be sure rails4 is installed
+<span class="ln">41</span>  shell: bundle install --path=vendor/bundle chdir=&#34;rails&#34;</code></pre></div></p>
+
+<p>tasks/emacs.ymlはEmacsやRuby/Railsまわりの.elファイルをインストールします。</p>
+
+<p>roles/rails4-dev/tasks/emacs.yml:
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text"><span class="ln"> 1</span>- name: be sure python-software-properties is installed
+<span class="ln"> 2</span>  apt: pkg=python-software-properties state=installed
+<span class="ln"> 3</span>  tags: emacs
+<span class="ln"> 4</span>
+<span class="ln"> 5</span>- name: add repository for emacs24
+<span class="ln"> 6</span>  apt_repository: repo=&#39;ppa:cassou/emacs&#39;
+<span class="ln"> 7</span>  tags: emacs
+<span class="ln"> 8</span>
+<span class="ln"> 9</span>- name: be sure emacs installed
+<span class="ln">10</span>  apt: update-cache=true pkg=$item state=installed
+<span class="ln">11</span>  with_items:
+<span class="ln">12</span>    - emacs24
+<span class="ln">13</span>    - emacs24-el
+<span class="ln">14</span>  tags: emacs
+<span class="ln">15</span>
+<span class="ln">16</span>- name: be sure tmp dir is removed if exists
+<span class="ln">17</span>  shell: rm -rf /home/{{user}}/tmp removes=&#34;/home/{{user}}/tmp&#34;
+<span class="ln">18</span>  tags: emacs
+<span class="ln">19</span>
+<span class="ln">20</span>- name: be sure dot.file cloned
+<span class="ln">21</span>  git: repo=https://github.com/{{user}}038/dotfiles.git dest=/home/{{user}}/tmp
+<span class="ln">22</span>  tags: emacs
+<span class="ln">23</span>
+<span class="ln">24</span>- name: be sure moved from /home/{{user}}/tmp/.emacs.d to /home/{{user}}/.emacs.d
+<span class="ln">25</span>  shell: mv /home/{{user}}/tmp/.emacs.d /home/{{user}}/ creates=/home/{{user}}/.emacs.d
+<span class="ln">26</span>  tags: emacs
+<span class="ln">27</span>
+<span class="ln">28</span>- name: be sure /home/{{user}}/tmp removed
+<span class="ln">29</span>  shell: rm -rf /home/{{user}}/tmp
+<span class="ln">30</span>  tags: emacs
+<span class="ln">31</span>
+<span class="ln">32</span>- name: be sure init-loader is cloned
+<span class="ln">33</span>  git: repo=https://github.com/emacs-jp/init-loader.git dest=/home/{{user}}/tmp
+<span class="ln">34</span>  tags: emacs
+<span class="ln">35</span>
+<span class="ln">36</span>- name: be sure moved from /home/{{user}}/tmp/init-loader.el to /home/{{user}}/.emacs.d/init
+<span class="ln">37</span>  shell: mv /home/{{user}}/tmp/init-loader.el /usr/share/emacs24/site-lisp/ creates=/usr/share/emacs24/site-lisp/init-loader.el
+<span class="ln">38</span>  tags: emacs
+<span class="ln">39</span>
+<span class="ln">40</span>- name: be sure /home/{{user}}/tmp removed
+<span class="ln">41</span>  shell: rm -rf /home/{{user}}/tmp
+<span class="ln">42</span>  tags: emacs
+<span class="ln">43</span>
+<span class="ln">44</span>- name: be sure 80-ruby.el copied
+<span class="ln">45</span>  copy: src=roles/rails4-dev/files/emacs/inits/80-ruby.el dest=/home/{{user}}/.emacs.d/inits
+<span class="ln">46</span>  tags: emacs
+<span class="ln">47</span>
+<span class="ln">48</span>- name: be sure 90-rinari.el copied
+<span class="ln">49</span>  copy: src=roles/rails4-dev/files/emacs/inits/90-rinari.el dest=/home/{{user}}/.emacs.d/inits
+<span class="ln">50</span>  tags: emacs
+<span class="ln">51</span>
+<span class="ln">52</span>- name: be sure 90-rhtml.el copied
+<span class="ln">53</span>  copy: src=roles/rails4-dev/files/emacs/inits/90-rhtml.el dest=/home/{{user}}/.emacs.d/inits
+<span class="ln">54</span>  tags: emacs
+<span class="ln">55</span>
+<span class="ln">56</span>- name: be sure ruby-2.1.0 source code is downloaded
+<span class="ln">57</span>  get_url: url=&#39;{{ruby_url}}&#39; dest=/usr/local/src
+<span class="ln">58</span>  tags: emacs
+<span class="ln">59</span>
+<span class="ln">60</span>- name: be sure ruby-2.1.0
+<span class="ln">61</span>  shell: tar xvfz /usr/local/src/ruby-{{ruby_version}}.tar.gz -C /usr/local/src creates=/usr/local/arc/ruby-{{ruby_version}}
+<span class="ln">62</span>  tags: emacs
+<span class="ln">63</span>
+<span class="ln">64</span>- name: be sure ruby-mode.el is copied
+<span class="ln">65</span>  shell: find /usr/local/src/ruby-{{ruby_version}} -name &#39;*.el&#39; -exec cp {} /usr/share/emacs/site-lisp \;
+<span class="ln">66</span>  tags: emacs
+<span class="ln">67</span>
+<span class="ln">68</span>- name: be sure rinari is cloned
+<span class="ln">69</span>  git: repo=https://github.com/eschulte/rinari.git dest=/home/{{user}}/.emacs.d/rinari
+<span class="ln">70</span>  tags: emacs
+<span class="ln">71</span>
+<span class="ln">72</span>- name: be sure &#39;git submodule init&#39; is executed
+<span class="ln">73</span>  shell: git submodule init chdir=/home/{{user}}/.emacs.d/rinari
+<span class="ln">74</span>  tags: emacs
+<span class="ln">75</span>
+<span class="ln">76</span>- name: be sure &#39;git submodule update&#39; is executed
+<span class="ln">77</span>  shell: git submodule update chdir=/home/{{user}}/.emacs.d/rinari
+<span class="ln">78</span>  tags: emacs
+<span class="ln">79</span>
+<span class="ln">80</span>- name: be sure rhtml is cloned
+<span class="ln">81</span>  git: repo=https://github.com/eschulte/rhtml.git dest=/home/{{user}}/.emacs.d/rhtml
+<span class="ln">82</span>  tags: emacs
+<span class="ln">83</span>
+<span class="ln">84</span>- name: be sure an owner of /home/masayuki/.emacs.d is user.group
+<span class="ln">85</span>  shell: chown -R {{user}}:{{group}} /home/{{user}}/.emacs.d
+<span class="ln">86</span>  tags: emacs</code></pre></div></p>
+
+<p>emacsだけtagsが付いているのは、一番最後に調整した為です。</p>
+
+<h3 id="vars">Vars</h3>
+
+<p>roles/rails4-dev/vars/main.yml:
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text"><span class="ln">1</span>ruby_version: &#39;2.1.0&#39;
+<span class="ln">2</span>ruby_url: &#39;http://cache.ruby-lang.org/pub/ruby/2.1/ruby-2.1.0.tar.gz&#39;
+<span class="ln">3</span>user: masayuki
+<span class="ln">4</span>group: dev</code></pre></div></p>
+
+<h3 id="execution">Execution</h3>
+
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>$ ansible-playbook -i rails4-dev_hosts rails4-dev.yml</code></pre></div>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>DockerとAnsibleを使ってRails4の環境を作ってみました。これでまた環境を間違って壊しても大丈夫。</p>
+
+<h1 id="update">Update</h1>
+
+<ul>
+<li>bundle installするrailsのフォルダ名をtmp→railsに変更</li>
+<li>bundle installする際に&ndash;path=vendor/bundleを指定するようにした</li>
+</ul>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        This post was published <strong>1443</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2018 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>
