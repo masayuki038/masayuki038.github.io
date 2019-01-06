@@ -21,6 +21,15 @@
     </item>
     
     <item>
+      <title>Calcite</title>
+      <link>/categories/calcite/</link>
+      <pubDate>Sun, 06 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/calcite/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Couchdb</title>
       <link>/categories/couchdb/</link>
       <pubDate>Sun, 17 Aug 2014 00:00:00 +0000</pubDate>
@@ -143,6 +152,15 @@
       <pubDate>Wed, 04 May 2016 14:24:20 +0000</pubDate>
       
       <guid>/categories/octopress/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Paper</title>
+      <link>/categories/paper/</link>
+      <pubDate>Sun, 06 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/paper/</guid>
       <description></description>
     </item>
     

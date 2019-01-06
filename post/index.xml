@@ -6,10 +6,19 @@
     <description>Recent content in Posts on act-act</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja</language>
-    <lastBuildDate>Sat, 17 Jun 2017 12:57:35 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 06 Jan 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>『Efficient Data Transfer Mechanisms on Analytics Data Processing System』を読んだ</title>
+      <link>/blog/2019/01/06/efficent-data-transper-mechanisms/</link>
+      <pubDate>Sun, 06 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/2019/01/06/efficent-data-transper-mechanisms/</guid>
+      <description>元々、Calcite の Adapter を書いている中で、それぞれのRelNode(Scan / Filter / Aggregation &amp;hellip;) の結果(タプル)の生成と、それに使用されるメモリ量が気</description>
+    </item>
     
     <item>
       <title>Serialize/Deserialize With Apache Arrow</title>
