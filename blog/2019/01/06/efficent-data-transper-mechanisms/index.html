@@ -16,21 +16,21 @@
 
   
   <meta name="author" content="Masayuki Takahashi" />
-  <meta name="description" content="元々、Calcite の Adapter を書いている中で、それぞれのRelNode(Scan / Filter / Aggregation &amp;hellip;) の結果(タプル)の生成と、それに使用されるメモリ量が気" />
+  <meta name="description" content="Calcite の Adapter を書いている中で、それぞれのRelNode(Scan/Filter/Aggregation &amp;hellip;) の結果(タプル)の生成と、それに使用される" />
 
   
   
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:site" content="@masayuki" />
     <meta name="twitter:title" content="『Efficient Data Transfer Mechanisms on Analytics Data Processing System』を読んだ" />
-    <meta name="twitter:description" content="元々、Calcite の Adapter を書いている中で、それぞれのRelNode(Scan / Filter / Aggregation &amp;hellip;) の結果(タプル)の生成と、それに使用されるメモリ量が気" />
+    <meta name="twitter:description" content="Calcite の Adapter を書いている中で、それぞれのRelNode(Scan/Filter/Aggregation &amp;hellip;) の結果(タプル)の生成と、それに使用される" />
     <meta name="twitter:image" content="/img/avatar.jpg" />
   
 
   
   <meta property="og:type" content="article" />
   <meta property="og:title" content="『Efficient Data Transfer Mechanisms on Analytics Data Processing System』を読んだ" />
-  <meta property="og:description" content="元々、Calcite の Adapter を書いている中で、それぞれのRelNode(Scan / Filter / Aggregation &amp;hellip;) の結果(タプル)の生成と、それに使用されるメモリ量が気" />
+  <meta property="og:description" content="Calcite の Adapter を書いている中で、それぞれのRelNode(Scan/Filter/Aggregation &amp;hellip;) の結果(タプル)の生成と、それに使用される" />
   <meta property="og:url" content="/blog/2019/01/06/efficent-data-transper-mechanisms/" />
   <meta property="og:image" content="/img/avatar.jpg" />
 
@@ -209,9 +209,9 @@
     </header>
     <article class="post-content">
 
-<p>元々、Calcite の Adapter を書いている中で、それぞれの<code>RelNode</code>(Scan / Filter / Aggregation &hellip;) の結果(タプル)の生成と、それに使用されるメモリ量が気になっていた。</p>
+<p><a href="https://calcite.apache.org/">Calcite</a> の Adapter を書いている中で、それぞれの<code>RelNode</code>(Scan/Filter/Aggregation &hellip;) の結果(タプル)の生成と、それに使用されるメモリ量が気になっていた。</p>
 
-<p>別の件で調べていた時にこの Paper を見つけ、<a href="https://getpocket.com">Pocket</a>に入れっぱなしにしていたので、読んでみた。</p>
+<p>別の件で調べていた時にこの Paper を見つけ、<a href="https://getpocket.com">Pocket</a> に入れっぱなしにしていたので読んでみた。日本語の論文なので読むのが楽で良い。</p>
 
 <ul>
 <li><a href="https://ipsj.ixsq.nii.ac.jp/ej/?action=repository_uri&amp;item_id=102358&amp;file_id=1&amp;file_no=1">分析用データ処理系における効率的なデータ配送機構</a></li>
@@ -221,19 +221,21 @@
 
 <p>この Paper で扱われている問題領域は、分析データ処理時に発生する「メモリ枯渇」と「タプル複製のコスト」の2点。</p>
 
-<p>「タプル複製のコスト」に関しては Filter を実装する時に色々と調べた結果、filter の結果をタプルとして表現するのではなく、filter されたレコードのID をベクターとして保持する方式を見つけ、実装でもそれを採用している。</p>
+<p>「タプル複製のコスト」に関しては Filter を実装する時に色々と調べた。その結果、Filter の結果をタプルとして生成するのではなく、Filter されたレコードのID をベクターとして保持する方式を見つけ、実装でもそれを採用している。</p>
 
-<p>Aggregation は入力と出力でタプルの形が異なるので、Aggregation の計算処理が終わった時点で結果をタプルとして生成している。Filter のように上手いやり方が無いか知りたい。</p>
+<p>Aggregation は入力と出力でタプルの形が異なるので、Aggregation の計算処理が終わった時点で結果をタプルとして生成している。Aggregation の結果セットが大きいと大量のタプルが生成されるので、Filter のように上手いやり方が無いか知りたい。</p>
 
-<h1 id="solutioon">Solutioon</h1>
+<h1 id="solution">Solution</h1>
 
-<p>メモリ枯渇に関する対応は、演算子ごとに使用するメモリ量を見積って出力量を制限する、というもの。1つの演算子を複数のイテレーションに分割することができれば、ストレージに Spill するよりも良いのかも。(1つの演算子を複数のイテレーションに分ける、という話はこの Paper には載ってません。念の為)</p>
+<p>メモリ枯渇に関する対応は、演算子ごとに使用するメモリ量を見積って出力量を制限する、というもの。1つの演算子の処理を複数のイテレーションに分割することができれば、ストレージに Spill するよりも良いのかも。(1つの演算子を複数のイテレーションに分ける、という話はこの Paper には載ってません。念の為)</p>
 
 <p>「タプル複製のコスト」も説明されているが、子演算子が親演算子にタプルを渡す際に、それぞれに対して複製せずに同じデータを参照しろ、参照カウンタを使え、というごもっともな意見が記載されているので割愛。</p>
 
 <h1 id="conclusion">Conclusion</h1>
 
-<p>メモリ枯渇に関しては、演算処理を分割して出力するタプルの量を制限する、というのは一つの方法だと思った。ただ、Scan や Filter は処理してすぐに出力できるのに対して、Aggregation は 集約毎の計算が終わるまで計算中の状態を保持しておく必要がある。その為、仮に演算処理をイテレーションに分割したとしても、次の処理に出力するまでに時間がかかる。入力データが予め集約単位で纏まっていており、その単位で処理できればメモリの使用効率は良くなるはずだが、その纏めるコストもあるのでどちらが良いか。このあたりも調べてみたい。</p>
+<p>メモリ枯渇に関しては、演算処理を分割して出力するタプルの量を制限する、というのは一つの方法だと思った。ただ、Scan や Filter は処理してすぐに出力できるのに対して、Aggregation は 集約単位毎の計算が終わるまで計算中の状態を保持しておく必要がある。その為、仮に演算処理をイテレーションに分割したとしても、次の処理に出力するまでに時間がかかるので、別の対応が必要になる。</p>
+
+<p>Aggregation に限って言えば、入力データが予め集約単位で纏まっていており、その単位で処理できればメモリの使用効率は良くなるはずだが、その纏めるコストもあるのでどちらが良いか。このあたりも調べてみたい。</p>
 </article>
     <footer class="post-footer">
       
