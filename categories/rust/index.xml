@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Rust on act-act</title>
+    <link>/categories/rust/</link>
+    <description>Recent content in Rust on act-act</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja</language>
+    <lastBuildDate>Sun, 13 Jan 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/rust/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Rust で書かれた Query Engine のコードを眺めた</title>
+      <link>/blog/2019/01/13/data-fusion/</link>
+      <pubDate>Sun, 13 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/2019/01/13/data-fusion/</guid>
+      <description>dev@arrow.apache.org を見てたら、Rust で Query Engine を書いている話が出ていた。これは Apache Arrow の Commiter である Andy Grove が作っている DataFusion というプロジェクト。 https://github.com/andygrove/datafusion The current code supports single-threaded execution of limited SQL queries (projection, selection, and</description>
+    </item>
+    
+  </channel>
+</rss>

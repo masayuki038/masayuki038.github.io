@@ -205,6 +205,19 @@
       
         <article class="post-entry">
   <header class="post-header">
+    <h3 class="post-title"><a href="/blog/2014/07/27/couchdb-code-reading9/" class="post-link">CouchDB Source Code Reading part9</a></h3>
+    <p class="post-meta">@Masayuki Takahashi · Jul 27, 2014 · 12 min read</p>
+  </header>
+  
+  <p class="post-summary">couch_db:update_doc/4 引き続きcouch_db:update_docs/4を。 couch_db.erl: 1 if (AllOrNothing) and (PreCommitFailures /= []) -&gt; 2 {aborted, 3 lists:foldl(fun({#doc{id=Id,revs=Revs}, Ref},Acc) -&gt; 4 case lists:keyfind(Ref,1,PreCommitFailures) of 5 {Ref, Error} -&gt; 6 case Revs of 7 {Pos, [RevId|_]} -&gt; 8 [{{Id,{Pos, RevId}}, Error} | Acc]; 9 {0, []} -&gt;</p>
+  <footer class="post-footer">
+    <a class="read-more" href="/blog/2014/07/27/couchdb-code-reading9/">Read More →</a>
+  </footer>
+</article>
+
+      
+        <article class="post-entry">
+  <header class="post-header">
     <h3 class="post-title"><a href="/blog/2014/07/19/couchdb-code-reading8/" class="post-link">CouchDB Source Code Reading part8</a></h3>
     <p class="post-meta">@Masayuki Takahashi · Jul 19, 2014 · 9 min read</p>
   </header>
@@ -316,19 +329,6 @@
   <p class="post-summary">DockerとAnsibleを使ってRails4の開発環境を作ってみました。 Environment ruby2.1.0 rails4 emacs24 ruby-mode rinari rhtml Docker Dockerfileにはsshdでログインできる</p>
   <footer class="post-footer">
     <a class="read-more" href="/blog/2014/02/22/devenv-rails4-with-docker-ansible/">Read More →</a>
-  </footer>
-</article>
-
-      
-        <article class="post-entry">
-  <header class="post-header">
-    <h3 class="post-title"><a href="/blog/2014/01/19/serf-code-reading2/" class="post-link">Serf Source Code Reading part2</a></h3>
-    <p class="post-meta">@Masayuki Takahashi · Jan 19, 2014 · 7 min read</p>
-  </header>
-  
-  <p class="post-summary">前回のmemberlistに続き、今回はserfのコードを読んでみました。 Serf Summery serfは、memberlistを利用してクラスタ内のノードの</p>
-  <footer class="post-footer">
-    <a class="read-more" href="/blog/2014/01/19/serf-code-reading2/">Read More →</a>
   </footer>
 </article>
 
