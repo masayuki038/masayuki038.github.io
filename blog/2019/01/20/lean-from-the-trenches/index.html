@@ -5,7 +5,7 @@
   <meta charset="utf-8" />
 
   
-  <title>Java Benchmark Framework</title>
+  <title>『リーン開発の現場』を読んだ</title>
 
   
   
@@ -16,22 +16,22 @@
 
   
   <meta name="author" content="Masayuki Takahashi" />
-  <meta name="description" content="FileStoredMapはJava Heapを使わない代わりに動作が重いので、Berkeley DB Java Edition(以下BDB)と速度比較を数" />
+  <meta name="description" content="昨年から Scrum 開発のプロジェクトに参加している。その中で色々と思うことがあり、他のプロジェクトでの採用事例や実際に行われているプラクティスを知り" />
 
   
   
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:site" content="@masayuki" />
-    <meta name="twitter:title" content="Java Benchmark Framework" />
-    <meta name="twitter:description" content="FileStoredMapはJava Heapを使わない代わりに動作が重いので、Berkeley DB Java Edition(以下BDB)と速度比較を数" />
+    <meta name="twitter:title" content="『リーン開発の現場』を読んだ" />
+    <meta name="twitter:description" content="昨年から Scrum 開発のプロジェクトに参加している。その中で色々と思うことがあり、他のプロジェクトでの採用事例や実際に行われているプラクティスを知り" />
     <meta name="twitter:image" content="/img/avatar.jpg" />
   
 
   
   <meta property="og:type" content="article" />
-  <meta property="og:title" content="Java Benchmark Framework" />
-  <meta property="og:description" content="FileStoredMapはJava Heapを使わない代わりに動作が重いので、Berkeley DB Java Edition(以下BDB)と速度比較を数" />
-  <meta property="og:url" content="/blog/2012/04/15/file-stored-map-bench2/" />
+  <meta property="og:title" content="『リーン開発の現場』を読んだ" />
+  <meta property="og:description" content="昨年から Scrum 開発のプロジェクトに参加している。その中で色々と思うことがあり、他のプロジェクトでの採用事例や実際に行われているプラクティスを知り" />
+  <meta property="og:url" content="/blog/2019/01/20/lean-from-the-trenches/" />
   <meta property="og:image" content="/img/avatar.jpg" />
 
 
@@ -40,7 +40,7 @@
 <meta name="generator" content="Hugo 0.32" />
 
 
-<link rel="canonical" href="/blog/2012/04/15/file-stored-map-bench2/" />
+<link rel="canonical" href="/blog/2019/01/20/lean-from-the-trenches/" />
 <link rel="alternative" href="/index.xml" title="act-act" type="application/atom+xml" />
 
 
@@ -204,36 +204,49 @@
 
   <section class="main post-detail">
     <header class="post-header">
-      <h1 class="post-title">Java Benchmark Framework</h1>
-      <p class="post-meta">@Masayuki Takahashi · Apr 15, 2012 · 1 min read</p>
+      <h1 class="post-title">『リーン開発の現場』を読んだ</h1>
+      <p class="post-meta">@Masayuki Takahashi · Jan 13, 2019 · 2 min read</p>
     </header>
-    <article class="post-content"><p>FileStoredMapはJava Heapを使わない代わりに動作が重いので、Berkeley DB Java Edition(以下BDB)と速度比較を数週間前に行いました。その際、BDBのreadがあまりにも重く、比較自体が意味を成さないと考え、改めて計測しなおしてみました。</p>
+    <article class="post-content">
 
-<p>今回計測するにあたり、以下のページのライブラリを使ってベンチマーク用のモジュールを作成しました。</p>
+<p>昨年から Scrum 開発のプロジェクトに参加している。その中で色々と思うことがあり、他のプロジェクトでの採用事例や実際に行われているプラクティスを知りたくて、読んでみた。</p>
 
-<p><a href="http://www.ellipticgroup.com/html/benchmarkingArticle.html">Java benchmarking article: http://www.ellipticgroup.com/html/benchmarkingArticle.html</a></p>
+<p>『リーン開発の現場 カンバンによる大規模プロジェクトの運営』
+<a href="https://www.amazon.co.jp/dp/B01IGW5IIW/">https://www.amazon.co.jp/dp/B01IGW5IIW/</a></p>
 
-<p>このライブラリは、ウォームアップや、JITコンパイルの具合が変わった際に自動的に計測をしなおす等の機能が含まれています。</p>
+<p>特に参考になった点を取り上げてみる。</p>
 
-<p>結果は以下のページに載せています。</p>
+<h1 id="チームのサイズとデイリーミーティング">チームのサイズとデイリーミーティング</h1>
 
-<p><a href="http://masayuki038.github.com/FileStoredMap">masayuki038.github.com/masayuki038/FileStoredMap</a></p>
+<p>「プロジェクトメンバーが30人から60人に拡大していくにつれて」とあり、かなり大きいプロジェクトであることが分かる。当初は要求分析、機能開発、システムテストと3チームに分けていた、ということだったが、コミュニケーション等の問題から、最終的には職能横断型チームを
+作った、とのこと。</p>
 
-<p>やはりBDBのreadの値が大分変わりました。ざっと10倍程違います。</p>
+<p>デイリーミーティングは最初に職能横断型チーム単位で行い、次に職能毎に集まって状況を同期し、最後にクロスチームがプロジェクト同期ミーティングを行う、という3段階。これはミーティングが多くて大変そうだが、メンバが増えてくると仕方無いのかな。</p>
 
-<p>FileStoredMapのreadと比較しても大体10倍くらいの開きがあります。まだプロファイリングしてませんが、以下の理由で遅いのではないかと考えています。</p>
+<h1 id="backlogに手を入れる">Backlogに手を入れる</h1>
 
-<ul>
-<li>readした際にデータを必ずdiskから取得している</li>
-<li>BSONフォーマットのバイナリからデシリアライズしている</li>
-</ul>
+<p>スプリント計画ミーティングの中で Backlog の手入れが行われていたが、時間がかかるのでスプリント計画ミーティングの前に時間を取って実施している、という例が出ていた。スプリント計画ミーティングに時間がかかる、というのはすごく分かる。</p>
 
-<p>writeしたオブジェクトをメモリ上にLRUで一定サイズ保持しておけば速くはなると思いますが、極力メモリを使わないことを特徴としていることもあって、そういった実装を行う予定はありません。ただ、どの部分が重いかどうかは確認したいと思います。</p>
+<h1 id="サイクルタイム">サイクルタイム</h1>
+
+<p>「ある作業が完了するまでにかかった時間」をサイクルタイムと呼び、計測する話が出ている。そして機能ごとに平均サイクルタイムを計測したところ、その値は機能の大きさに相関関係がなかった、とのこと。どれくらい作業に集中できているかを示す指標が欲しいと思うことは多いので、この計測は実際にしてみたい。</p>
+
+<h1 id="自動化するテストの選別">自動化するテストの選別</h1>
+
+<p>自動化するテストの選別の仕方について。自動化の難易度や手動テストのコスト等、複数の要素を勘案してそれぞれにポイントをつけ、合計ポイントが多いものから対応していく方法が紹介されている。</p>
+
+<h1 id="因果関係図">因果関係図</h1>
+
+<p>ある課題が最終的にどんな問題になるかを上方向に、またある課題の根本原因は何かを下方向に書いていく因果関係図を作り、課題を分析する。課題について話をすることも多いので、この因果関係図を用いて皆で考えるアプローチはとても良い。早速明日から使ってみよう。</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>Agile 開発というと、そんなにメンバの数が多くないイメージを持っていたが、チームメンバが比較的多い例として参考になる話が多くて良かった。</p>
 </article>
     <footer class="post-footer">
       
       <p class="post-copyright">
-        This post was published <strong>2471</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+        
       </p>
     </footer>
     
