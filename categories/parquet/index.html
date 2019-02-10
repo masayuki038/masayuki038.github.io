@@ -5,7 +5,11 @@
   <meta charset="utf-8" />
 
   
-  <title>ArtifactResolutionException raised</title>
+  <title>
+  Category → parquet
+  
+   | act-act
+</title>
 
   
   
@@ -16,22 +20,20 @@
 
   
   <meta name="author" content="Masayuki Takahashi" />
-  <meta name="description" content="m2eclipseでArtifactResolutionExceptionが出て困った話。 Mavenのリモートリポジトリで管理されていないj" />
+  <meta name="description" content="" />
 
   
-  
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:site" content="@masayuki" />
-    <meta name="twitter:title" content="ArtifactResolutionException raised" />
-    <meta name="twitter:description" content="m2eclipseでArtifactResolutionExceptionが出て困った話。 Mavenのリモートリポジトリで管理されていないj" />
-    <meta name="twitter:image" content="/img/avatar.jpg" />
-  
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@masayuki" />
+  <meta name="twitter:title" content="act-act" />
+  <meta name="twitter:description" content="" />
+  <meta name="twitter:image" content="/img/avatar.jpg" />
 
   
-  <meta property="og:type" content="article" />
-  <meta property="og:title" content="ArtifactResolutionException raised" />
-  <meta property="og:description" content="m2eclipseでArtifactResolutionExceptionが出て困った話。 Mavenのリモートリポジトリで管理されていないj" />
-  <meta property="og:url" content="/blog/2012/04/10/maven-repo-problem/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="act-act" />
+  <meta property="og:description" content="" />
+  <meta property="og:url" content="/categories/parquet/" />
   <meta property="og:image" content="/img/avatar.jpg" />
 
 
@@ -40,7 +42,7 @@
 <meta name="generator" content="Hugo 0.32" />
 
 
-<link rel="canonical" href="/blog/2012/04/10/maven-repo-problem/" />
+<link rel="canonical" href="/categories/parquet/" />
 <link rel="alternative" href="/index.xml" title="act-act" type="application/atom+xml" />
 
 
@@ -104,8 +106,6 @@
     <div class="suspension">
       <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
       
-        
-      
     </div>
     
     
@@ -128,8 +128,6 @@
         <li class="menu-item
             
             
-            
-              is-active
             ">
             <a href="/">Home</a>
           </li>
@@ -202,33 +200,27 @@
   </nav>
 </header>
 
-  <section class="main post-detail">
-    <header class="post-header">
-      <h1 class="post-title">ArtifactResolutionException raised</h1>
-      <p class="post-meta">@Masayuki Takahashi · Apr 10, 2012 · 2 min read</p>
+  <section class="main post-list">
+    <header class="list-header offscreen">
+      <h2 class="list-label">Posts List</h2>
     </header>
-    <article class="post-content"><p>m2eclipseでArtifactResolutionExceptionが出て困った話。</p>
-
-<p>Mavenのリモートリポジトリで管理されていないjarを、ローカルリポジトリに入れて参照することにしたのですが、mvn installは正常に完了したものの、プロジェクトから参照しようとするとArticactResolutionExceptionが発生してしまい、うまく動かないことがありました。</p>
-
-<p>最初はpom.xmlの書き方をミスったかと思いましたが、エラーの内容を良く読むとapacheのstagingリポジトリを参照した際にUnauthorizedであると出力されています。</p>
-
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">ArtifactDescriptorException: Failed to <span class="nb">read</span> artifact descriptor <span class="k">for</span> com.ellipticgroup:bb:jar:20100601: ArtifactResolutionException: Failure to transfer com.ellipticgroup:bb:pom:20100601 from https://repository.apache.org/service/local/staging/deploy/maven2 was cached in the <span class="nb">local</span> repository, resolution will not be reattempted <span class="k">until</span> the update interval of apache/staging has elapsed or updates are forced. Original error: Could not transfer artifact com.ellipticgroup:bb:pom:20100601 from/to apache/staging <span class="o">(</span>https://repository.apache.org/service/local/staging/deploy/maven2<span class="o">)</span>: Access denied to https://repository.apache.org/service/local/staging/deploy/maven2/com/ellipticgroup/bb/20100601/bb-20100601.pom. Error code <span class="m">401</span>, Unauthorized pom.xml /FileStoredMapBenchmark line <span class="m">1</span> Maven Dependency Problem</code></pre></div>
-
-<p>試しにこの「<a href="https://repository.apache.org/service/local/staging/deploy/maven2">apache/staging</a>」のurlにブラウザからアクセスしてみたところ認証ダイアログが出たので、アクセスが制限されているようです。</p>
-
-<p>ローカルリポジトリにinstallしたモジュールを参照する際、何故リモートリポジトリのapache/stagingを参照しているのかという疑問はあるものの、一旦このリポジトリの定義をpom.xmlから外したところ、この例外が出ずローカルリポジトリにinstallしたモジュールも正常に参照できました。</p>
-
-<p>モジュールの参照の解決順序が、リモートリポジトリ→ローカルリポジトリの順なんですかね。アクセスできないリポジトリの定義をpom.xmlに入れておくのは、止めておいた方が良さそうです。</p>
-</article>
-    <footer class="post-footer">
-      
-      <p class="post-copyright">
-        This post was published <strong>2497</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
-      </p>
-    </footer>
+    
     
       
+        <article class="post-entry">
+  <header class="post-header">
+    <h3 class="post-title"><a href="/blog/2019/02/10/parquet-column-index/" class="post-link">Parquet ColumnIndex</a></h3>
+    <p class="post-meta">@Masayuki Takahashi · Feb 10, 2019 · 3 min read</p>
+  </header>
+  
+  <p class="post-summary">もうすぐリリースされる parquet-1.11.0 には、ColumnIndex という機能が追加されています。 ColumnIndex Layout to Support Page Skipping そこで、この ColumnIndex について調べてみました。 これまで</p>
+  <footer class="post-footer">
+    <a class="read-more" href="/blog/2019/02/10/parquet-column-index/">Read More →</a>
+  </footer>
+</article>
+
+      
+    
     
   </section>
   <footer class="site-footer">

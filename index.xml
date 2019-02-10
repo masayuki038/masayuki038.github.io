@@ -6,10 +6,19 @@
     <description>Recent content on act-act</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja</language>
-    <lastBuildDate>Sun, 13 Jan 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 10 Feb 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Parquet ColumnIndex</title>
+      <link>/blog/2019/02/10/parquet-column-index/</link>
+      <pubDate>Sun, 10 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/2019/02/10/parquet-column-index/</guid>
+      <description>もうすぐリリースされる parquet-1.11.0 には、ColumnIndex という機能が追加されています。 ColumnIndex Layout to Support Page Skipping そこで、この ColumnIndex について調べてみました。 これまで</description>
+    </item>
     
     <item>
       <title>Rust で書かれた Query Engine のコードを眺めた</title>

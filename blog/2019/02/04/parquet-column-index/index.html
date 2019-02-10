@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Parquet ColumnIndex</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="もうすぐリリースされる parquet-1.11.0 には、ColumnIndex という機能が追加されています。 「ColumnIndex Layout to Support Page Skipping」 https://github.com/apache/parquet-format/blob/master/PageIndex.md そこで" />
+
+  
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@masayuki" />
+    <meta name="twitter:title" content="Parquet ColumnIndex" />
+    <meta name="twitter:description" content="もうすぐリリースされる parquet-1.11.0 には、ColumnIndex という機能が追加されています。 「ColumnIndex Layout to Support Page Skipping」 https://github.com/apache/parquet-format/blob/master/PageIndex.md そこで" />
+    <meta name="twitter:image" content="/img/avatar.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Parquet ColumnIndex" />
+  <meta property="og:description" content="もうすぐリリースされる parquet-1.11.0 には、ColumnIndex という機能が追加されています。 「ColumnIndex Layout to Support Page Skipping」 https://github.com/apache/parquet-format/blob/master/PageIndex.md そこで" />
+  <meta property="og:url" content="/blog/2019/02/04/parquet-column-index/" />
+  <meta property="og:image" content="/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.32" />
+
+
+<link rel="canonical" href="/blog/2019/02/04/parquet-column-index/" />
+<link rel="alternative" href="/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="/css/bundle.css" />
+<link rel="stylesheet" href="/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://s.gravatar.com/avatar/4b97fb839e6040cfb353bd667ac93e54?s=80" alt="Avatar">
+  
+  <h2 class="title">act-act</h2>
+  
+  <p class="subtitle"></p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Parquet ColumnIndex</h1>
+      <p class="post-meta">@Masayuki Takahashi · Feb 4, 2019 · 3 min read</p>
+    </header>
+    <article class="post-content">
+
+<p>もうすぐリリースされる parquet-1.11.0 には、<a href="https://github.com/apache/parquet-format/blob/master/PageIndex.md">ColumnIndex</a> という機能が追加されています。</p>
+
+<p>「ColumnIndex Layout to Support Page Skipping」</p>
+
+<p><a href="https://github.com/apache/parquet-format/blob/master/PageIndex.md">https://github.com/apache/parquet-format/blob/master/PageIndex.md</a></p>
+
+<p>そこで、この ColumnIndex について調べてみました。</p>
+
+<h2 id="これまでの問題">これまでの問題</h2>
+
+<p>Parquet にはセグメント毎に統計情報として (max, min) の値を持っています。これらの値を持つセグメントは以下の2つです。</p>
+
+<ol>
+<li>ColumnMetaData の ColumnChunks</li>
+<li>各ページ の ヘッダ</li>
+</ol>
+
+<p>1.は Row Group 内の各 Column の統計情報で、Parquet ファイルの Footer にあるメタデータで保持しています。2.は ColumnChunks をさらに分割したページ単位の統計情報で、各ページヘッダで保持しています。</p>
+
+<p>これまでは、2.の統計情報を read する為に、Column の全てのページにアクセスする必要がありました。したがって、ほとんどのデータが Disk から read されることになります。</p>
+
+<h2 id="goal">Goal</h2>
+
+<p>ページ毎に持っている統計情報を Row Group の メタデータに格納したものが ColumnIndex です。Filter を使った Selective な Scan を実行する場合、各ページヘッダの統計情報を read する代わりにこの ColumnIndex を read することにより、読み込むページを決めることができるようになります。また、Row Group の全データを read する場合は、ColumnIndex を read せずに各ページを read します。</p>
+
+<h2 id="効果">効果</h2>
+
+<p>この ColumnIndex によってどのくらいパフォーマンスが改善されるか調べてみたのですが、公式な結果は見つけられませでした。しかし、なぜか StackOverflow にテスト結果がアップされています。</p>
+
+<p><a href="https://stackoverflow.com/a/40714337/1352781">https://stackoverflow.com/a/40714337/1352781</a></p>
+
+<h2 id="計測">計測</h2>
+
+<p><a href="https://github.com/apache/parquet-mr">parquet-mr</a> が提供している API を使って、Parquet ファイル内にあるデータをフィルタして取り出すコードを書いてみました。</p>
+
+<p><a href="https://github.com/masayuki038/parquet-column-index-benchmark">https://github.com/masayuki038/parquet-column-index-benchmark</a></p>
+
+<p>現在の <a href="https://github.com/apache/parquet-mr">parquet-mr</a> の master branch のコードで、ColumnIndex を使うケース (<code>Bench.filteringScanWithColumnIndex</code>) と使わないケース (<code>Bench.filteringScanWithoutColumnIndex</code>) を実行すると、以下のような結果になります。（<code>Score</code> は小さいほど良い性能を表します)</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text"><span class="ln"> 1</span>Result &#34;net.wrap_trap.parquet_column_index_bench.Bench.filteringScanWithoutColumnIndex&#34;:
+<span class="ln"> 2</span>  6591.767 ±(99.9%) 51.250 ms/op [Average]
+<span class="ln"> 3</span>  (min, avg, max) = (6480.563, 6591.767, 6733.789), stdev = 59.020
+<span class="ln"> 4</span>  CI (99.9%): [6540.516, 6643.017] (assumes normal distribution)
+<span class="ln"> 5</span>
+<span class="ln"> 6</span>
+<span class="ln"> 7</span># Run complete. Total time: 00:03:16
+<span class="ln"> 8</span>
+<span class="ln"> 9</span>Benchmark                              Mode  Cnt     Score    Error  Units
+<span class="ln">10</span>Bench.filteringScanWithColumnIndex     avgt   20    88.439 ±  3.803  ms/op
+<span class="ln">11</span>Bench.filteringScanWithoutColumnIndex  avgt   20  6591.767 ± 51.250  ms/op</code></pre></div>
+
+<p>この結果から、ColumnIndex を使うことでかなり性能が向上することが分かります。</p>
+
+<p>比較対象として、ColumnIndex を実装していない <a href="https://github.com/apache/parquet-mr/releases/tag/apache-parquet-1.10.1">parquet-1.10.1</a> (V10) を使って同様の計測を実行してみました。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text"><span class="ln"> 1</span>Result &#34;net.wrap_trap.parquet_column_index_bench.Bench.filteringScanV10&#34;:
+<span class="ln"> 2</span>  6586.017 ±(99.9%) 51.117 ms/op [Average]
+<span class="ln"> 3</span>  (min, avg, max) = (6461.317, 6586.017, 6732.159), stdev = 58.866
+<span class="ln"> 4</span>  CI (99.9%): [6534.900, 6637.134] (assumes normal distribution)
+<span class="ln"> 5</span>
+<span class="ln"> 6</span>
+<span class="ln"> 7</span># Run complete. Total time: 00:02:48
+<span class="ln"> 8</span>
+<span class="ln"> 9</span>Benchmark               Mode  Cnt     Score    Error  Units
+<span class="ln">10</span>Bench.filteringScanV10  avgt   20  6586.017 ± 51.117  ms/op</code></pre></div>
+
+<p>V10 もかなり遅い結果となりました。V10では Page の Statistics を使って不要な page read を抑える実装になっているのではないかと思ったのですが、以下のページを見るとそうではないようです。</p>
+
+<ul>
+<li><a href="https://lists.apache.org/thread.html/1d8f676c488e14fc72ca0d2fddc3b4be5c47021edfb3de4398de4c21@%3Cdev.parquet.apache.org%3E">parquet-mr filter pushdown - Apache Mail Archives</a></li>
+<li><a href="https://groups.google.com/forum/#!topic/presto-users/W7ZKfCEuE9I">Does Presto&rsquo;s parquet reader use page-level statistics to selectively decompress pages? - Google グループ</a></li>
+</ul>
+
+<p>その結果、<code>Bench.filteringScanWithoutColumnIndex</code> と <code>Bench.filteringScanV10</code> の結果がほぼ同じになっています。</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>parquet-1.10 までの <a href="https://github.com/apache/parquet-mr">parquet-mr</a> の API でも、ColumnChunks の統計情報を見ることで、Row Group 単位で skip できるようにはなっていました。</p>
+
+<p>parquet-1.11.0 の新機能である ColumnIndex を使うことにより、Parquet ファイルを Filtering しながら Scan する処理が、従来よりも速くなる可能性があります。ColumnChunks 内に多数のページを持つような場合、より効果が出るはずです。</p>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2019 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>
