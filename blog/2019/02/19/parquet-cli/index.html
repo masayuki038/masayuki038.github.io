@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>parquet-cli-java</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="dev@parquet.apache.org で、parquet-mr の古いモジュールの廃止案が出ています。廃止対象の中には Parquet ファイルの情報を出力する Command Line Tool の parquet-tools も含まれています。 [DISCUSS] Remove old" />
+
+  
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@masayuki" />
+    <meta name="twitter:title" content="parquet-cli-java" />
+    <meta name="twitter:description" content="dev@parquet.apache.org で、parquet-mr の古いモジュールの廃止案が出ています。廃止対象の中には Parquet ファイルの情報を出力する Command Line Tool の parquet-tools も含まれています。 [DISCUSS] Remove old" />
+    <meta name="twitter:image" content="/img/avatar.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="parquet-cli-java" />
+  <meta property="og:description" content="dev@parquet.apache.org で、parquet-mr の古いモジュールの廃止案が出ています。廃止対象の中には Parquet ファイルの情報を出力する Command Line Tool の parquet-tools も含まれています。 [DISCUSS] Remove old" />
+  <meta property="og:url" content="/blog/2019/02/19/parquet-cli/" />
+  <meta property="og:image" content="/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.32" />
+
+
+<link rel="canonical" href="/blog/2019/02/19/parquet-cli/" />
+<link rel="alternative" href="/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="/css/bundle.css" />
+<link rel="stylesheet" href="/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://s.gravatar.com/avatar/4b97fb839e6040cfb353bd667ac93e54?s=80" alt="Avatar">
+  
+  <h2 class="title">act-act</h2>
+  
+  <p class="subtitle"></p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">parquet-cli-java</h1>
+      <p class="post-meta">@Masayuki Takahashi · Feb 19, 2019 · 6 min read</p>
+    </header>
+    <article class="post-content">
+
+<p><a href="https://lists.apache.org/list.html?dev@parquet.apache.org">dev@parquet.apache.org</a> で、<a href="https://github.com/apache/parquet-mr">parquet-mr</a> の古いモジュールの廃止案が出ています。廃止対象の中には Parquet ファイルの情報を出力する Command Line Tool の <a href="https://github.com/apache/parquet-mr/tree/master/parquet-tools">parquet-tools</a> も含まれています。</p>
+
+<ul>
+<li><a href="https://lists.apache.org/thread.html/e14d3e5b917697c60fea7712b490b9e7ba2bca03a611a02ba8868f7d@%3Cdev.parquet.apache.org%3E">[DISCUSS] Remove old modules?</a></li>
+</ul>
+
+<p><a href="https://github.com/apache/parquet-mr/tree/master/parquet-tools">parquet-tools</a> は Parquet ファイルの情報を確認するのに便利だったのですが、<a href="https://github.com/apache/parquet-mr/tree/master/parquet-cli">parquet-cli</a> もあるので 2つ CLI をメンテするのはどうなんだろう？という話になっています。</p>
+
+<p>私は <a href="https://github.com/apache/parquet-mr/tree/master/parquet-cli">parquet-cli</a> は使ったことが無かったので、使い方を調べてみました。(2019/02/17 時点)</p>
+
+<p>なお私が知る限りですが、「parquet-cli」という名前のツールは <a href="https://github.com/apache/parquet-mr">parquet-mr</a> に含まれている Java のツールと、<a href="https://github.com/chhantyal/parquet-cli">chhantyal/parquet-cli</a> にある Python のツールの2種類があります。今回は <a href="https://github.com/apache/parquet-mr">parquet-mr</a> の方を取り上げています。</p>
+
+<h1 id="使い方">使い方</h1>
+
+<p><a href="https://github.com/apache/parquet-mr/tree/master/parquet-cli">parquet-cli</a> を使いたい場合は、github から clone して <a href="https://github.com/apache/parquet-mr">parquet-mr</a> のトップディレクトリで <code>mvn install -DskipTests=true</code> で全モジュールを install するのが簡単です。Linux 環境でのビルドと実行方法は <a href="https://github.com/apache/parquet-mr/blob/master/parquet-cli/README.md">README.md</a> にあります。</p>
+
+<h1 id="command">Command</h1>
+
+<p><a href="https://github.com/apache/parquet-mr/tree/master/parquet-cli">parquet-cli</a> は <a href="https://github.com/apache/parquet-mr/tree/master/parquet-tools">parquet-tools</a> 同様、いくつかのコマンドが用意されています。</p>
+
+<h2 id="meta">meta</h2>
+
+<p>Schema や Row Group 単位の情報を確認することができます。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">$ java -cp target/classes;target/dependency/* org.apache.parquet.cli.Main meta C:\Users\masayuki\Downloads\test. parquet
+
+File path:  C:\Users\masayuki\Downloads\test.parquet
+Created by: parquet-mr version 1.12.0-SNAPSHOT (build 1e62e2e2ca903d4109480bc87ceec1dc954b6c92)
+Properties:
+  writer.model.name: example
+Schema:
+message test {
+  required int32 int32_field;
+  required int64 int64_field;
+  required float float_field;
+  required double double_field;
+  required binary binary_field;
+  required int64 timestamp_field (TIMESTAMP(MILLIS,true));
+}
+
+
+Row group 0:  count: 395  15.87 B records  start: 4  total: 6.120 kB
+--------------------------------------------------------------------------------
+                 type      encodings count     avg size   nulls   min / max
+int32_field      INT32     _   D     395       0.20 B     0       &#34;32&#34; / &#34;426&#34;
+int64_field      INT64     _   D     395       0.20 B     0       &#34;64&#34; / &#34;458&#34;
+float_field      FLOAT     _   _     395       4.13 B     0       &#34;1.0&#34; / &#34;395.0&#34;
+double_field     DOUBLE    _   _     395       8.13 B     0       &#34;2.0&#34; / &#34;396.0&#34;
+binary_field     BINARY    _   D     395       2.98 B     0       &#34;0x6162636465666768696A6B6...&#34; / &#34;0x6162636465666768696A6B6...&#34;
+timestamp_field  INT64     _   D     395       0.23 B     0       &#34;2018-11-04T12:41:15.123+0000&#34; / &#34;2018-11-04T12:47:49.123+0000&#34;
+
+Row group 1:  count: 395  15.92 B records  start: 6271  total: 6.142 kB
+--------------------------------------------------------------------------------
+                 type      encodings count     avg size   nulls   min / max
+int32_field      INT32     _   D     395       0.20 B     0       &#34;427&#34; / &#34;821&#34;
+int64_field      INT64     _   D     395       0.20 B     0       &#34;459&#34; / &#34;853&#34;
+float_field      FLOAT     _   _     395       4.13 B     0       &#34;396.0&#34; / &#34;790.0&#34;
+double_field     DOUBLE    _   _     395       8.13 B     0       &#34;397.0&#34; / &#34;791.0&#34;
+binary_field     BINARY    _   D     395       3.03 B     0       &#34;0x6162636465666768696A6B6...&#34; / &#34;0x6162636465666768696A6B6...&#34;
+timestamp_field  INT64     _   D     395       0.23 B     0       &#34;2018-11-04T12:47:50.123+0000&#34; / &#34;2018-11-04T12:54:24.123+0000&#34;
+
+Row group 2:  count: 234  16.53 B records  start: 12560  total: 3.777 kB
+--------------------------------------------------------------------------------
+                 type      encodings count     avg size   nulls   min / max
+int32_field      INT32     _   D     234       0.17 B     0       &#34;822&#34; / &#34;1055&#34;
+int64_field      INT64     _   D     234       0.31 B     0       &#34;854&#34; / &#34;1087&#34;
+float_field      FLOAT     _   _     234       4.11 B     0       &#34;791.0&#34; / &#34;1024.0&#34;
+double_field     DOUBLE    _   _     234       8.21 B     0       &#34;792.0&#34; / &#34;1025.0&#34;
+binary_field     BINARY    _   D     234       3.38 B     0       &#34;0x6162636465666768696A6B6...&#34; / &#34;0x6162636465666768696A6B6...&#34;
+timestamp_field  INT64     _   D     234       0.35 B     0       &#34;2018-11-04T12:54:25.123+0000&#34; / &#34;2018-11-04T12:58:18.123+0000&#34;</code></pre></div>
+
+<p><code>count</code> はレコードの数です。<code>min</code> と <code>max</code> は Column Chunks の Statistics です。<code>encodeings</code> の欄は2つあり、前者は Compression に関するもので、以下のようになっています。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text"><span class="ln"> 1</span>  public static String shortCodec(CompressionCodecName codec) {
+<span class="ln"> 2</span>    switch (codec) {
+<span class="ln"> 3</span>      case UNCOMPRESSED:
+<span class="ln"> 4</span>        return &#34;_&#34;;
+<span class="ln"> 5</span>      case SNAPPY:
+<span class="ln"> 6</span>        return &#34;S&#34;;
+<span class="ln"> 7</span>      case GZIP:
+<span class="ln"> 8</span>        return &#34;G&#34;;
+<span class="ln"> 9</span>      case LZO:
+<span class="ln">10</span>        return &#34;L&#34;;
+<span class="ln">11</span>      case BROTLI:
+<span class="ln">12</span>        return &#34;B&#34;;
+<span class="ln">13</span>      case LZ4:
+<span class="ln">14</span>        return &#34;4&#34;;
+<span class="ln">15</span>      case ZSTD:
+<span class="ln">16</span>        return &#34;Z&#34;;
+<span class="ln">17</span>      default:
+<span class="ln">18</span>        return &#34;?&#34;;
+<span class="ln">19</span>    }
+<span class="ln">20</span>  }</code></pre></div>
+
+<p>後者は <a href="https://github.com/apache/parquet-format/blob/master/Encodings.md">encoding</a> に関するものです。この出力内容はフォーマットによって少し異なるようですが、概ね Delta 系が <code>D</code>、Dictionary 系が <code>R</code>、Plain が <code>_</code> となります。</p>
+
+<h2 id="pages">pages</h2>
+
+<p>Column Chunks の各ページの情報を出力します。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">$ java -cp target/classes;target/dependency/* org.apache.parquet.cli.Main pages C:\Users\masayuki\Downloads\test.parquet
+
+Column: int32_field
+--------------------------------------------------------------------------------
+  page   type  enc  count   avg size   size       rows     nulls   min / max
+  0-0    data  _ D  300     0.07 B     21 B       300      0
+  0-1    data  _ D  95      0.12 B     11 B       95       0
+  1-0    data  _ D  300     0.07 B     22 B       300      0
+  1-1    data  _ D  95      0.12 B     11 B       95       0
+  2-0    data  _ D  234     0.07 B     17 B       234      0
+
+
+Column: int64_field
+--------------------------------------------------------------------------------
+  page   type  enc  count   avg size   size       rows     nulls   min / max
+  0-0    data  _ D  200     0.09 B     17 B       200      0
+  0-1    data  _ D  195     0.09 B     17 B       195      0
+  1-0    data  _ D  200     0.09 B     17 B       200      0
+  1-1    data  _ D  195     0.09 B     17 B       195      0
+  2-0    data  _ D  200     0.09 B     17 B       200      0
+  2-1    data  _ D  34      0.32 B     11 B       34       0
+
+
+Column: float_field
+--------------------------------------------------------------------------------
+  page   type  enc  count   avg size   size       rows     nulls   min / max
+  0-0    data  _ _  300     4.00 B     1.172 kB   300      0
+  0-1    data  _ _  95      4.00 B     380 B      95       0
+  1-0    data  _ _  300     4.00 B     1.172 kB   300      0
+  1-1    data  _ _  95      4.00 B     380 B      95       0
+  2-0    data  _ _  234     4.00 B     936 B      234      0
+
+
+Column: double_field
+--------------------------------------------------------------------------------
+  page   type  enc  count   avg size   size       rows     nulls   min / max
+  0-0    data  _ _  200     8.00 B     1.563 kB   200      0
+  0-1    data  _ _  195     8.00 B     1.523 kB   195      0
+  1-0    data  _ _  200     8.00 B     1.563 kB   200      0
+  1-1    data  _ _  195     8.00 B     1.523 kB   195      0
+  2-0    data  _ _  200     8.00 B     1.563 kB   200      0
+  2-1    data  _ _  34      8.00 B     272 B      34       0
+
+
+Column: binary_field
+--------------------------------------------------------------------------------
+  page   type  enc  count   avg size   size       rows     nulls   min / max
+  0-0    data  _ D  100     2.75 B     275 B      100      0
+  0-1    data  _ D  100     2.77 B     277 B      100      0
+  0-2    data  _ D  100     2.77 B     277 B      100      0
+  0-3    data  _ D  95      2.61 B     248 B      95       0
+  1-0    data  _ D  100     2.83 B     283 B      100      0
+  1-1    data  _ D  100     2.83 B     283 B      100      0
+  1-2    data  _ D  100     2.83 B     283 B      100      0
+  1-3    data  _ D  95      2.62 B     249 B      95       0
+  2-0    data  _ D  100     2.82 B     282 B      100      0
+  2-1    data  _ D  100     2.82 B     282 B      100      0
+  2-2    data  _ D  34      4.56 B     155 B      34       0
+
+
+Column: timestamp_field
+--------------------------------------------------------------------------------
+  page   type  enc  count   avg size   size       rows     nulls   min / max
+  0-0    data  _ D  200     0.12 B     23 B       200      0
+  0-1    data  _ D  195     0.12 B     23 B       195      0
+  1-0    data  _ D  200     0.12 B     23 B       200      0
+  1-1    data  _ D  195     0.12 B     23 B       195      0
+  2-0    data  _ D  200     0.12 B     23 B       200      0
+  2-1    data  _ D  34      0.47 B     16 B       34       0</code></pre></div>
+
+<p><code>page</code> はページのインデックスで、「(Row Group Index)-(Page Index)」のフォーマットで出力します。<code>type</code> は Data ページの場合は <code>data</code>、Dictionary ページの場合は <code>dict</code> と表示されます。<code>min</code> と <code>max</code> が表示されていないのは、<a href="https://masayuki038.github.io/blog/2019/02/10/parquet-column-index/">前回書いた ColumnIndex</a> の対応で、ページには Statistics を書き込まないようになっている為です。</p>
+
+<h2 id="dictionary">dictionary</h2>
+
+<p>指定した column の dictionary データを表示します。指定した column が dictionary encoding になっている必要があります。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">$ java -cp &#39;target/classes:target/dependency/*&#39; org.apache.parquet.cli.Main dictionary /work/parquet-mr/data/userdata1.parquet -c last_name
+
+Row group 0 dictionary for &#34;last_name&#34;:
+     0: &#34;Jordan&#34;
+     1: &#34;Freeman&#34;
+     2: &#34;Morgan&#34;
+     3: &#34;Riley&#34;
+     4: &#34;Burns&#34;
+     5: &#34;White&#34;
+     6: &#34;Holmes&#34;
+     7: &#34;Howell&#34;
+     8: &#34;Foster&#34;
+     9: &#34;Stewart&#34;
+    10: &#34;Perkins&#34;
+    ...</code></pre></div>
+
+<h2 id="check-stats">check-stats</h2>
+
+<p>これは help コマンドで出力される以下の説明にあるように、<a href="https://issues.apache.org/jira/browse/PARQUET-251">PARQUET-251</a> で対応されている Statistics の不具合を確認するコマンドです。大分前の Issue なので、最近作成した Parquet ファイルに対して使うことは無いと思います。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">    check-stats
+        Check Parquet files for corrupt page and column stats (PARQUET-251)</code></pre></div>
+
+<h2 id="schema">schema</h2>
+
+<p>Parquet ファイルの Schema を表示します。Avro の Schema も表示できます。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">$ java -cp &#39;target/classes:target/dependency/*&#39; org.apache.parquet.cli.Main schema /work/parquet-mr/data/test.parquet
+{
+  &#34;type&#34; : &#34;record&#34;,
+  &#34;name&#34; : &#34;test&#34;,
+  &#34;fields&#34; : [ {
+    &#34;name&#34; : &#34;int32_field&#34;,
+    &#34;type&#34; : &#34;int&#34;
+  }, {
+    &#34;name&#34; : &#34;int64_field&#34;,
+    &#34;type&#34; : &#34;long&#34;
+  }, {
+    &#34;name&#34; : &#34;float_field&#34;,
+    &#34;type&#34; : &#34;float&#34;
+  }, {
+    &#34;name&#34; : &#34;double_field&#34;,
+    &#34;type&#34; : &#34;double&#34;
+  }, {
+    &#34;name&#34; : &#34;binary_field&#34;,
+    &#34;type&#34; : &#34;bytes&#34;
+  }, {
+    &#34;name&#34; : &#34;timestamp_field&#34;,
+    &#34;type&#34; : {
+      &#34;type&#34; : &#34;long&#34;,
+      &#34;logicalType&#34; : &#34;timestamp-millis&#34;
+    }
+  } ]
+}</code></pre></div>
+
+<h2 id="csv-schema">csv-schema</h2>
+
+<p>CSV ファイルのデータを読んで Schema を表示します。以下のような CSV ファイルを用意して、</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">emp_id,dept_id,name,created_at,updated_at
+1,1,&#34;test1&#34;,&#34;2019-02-17 10:00:00&#34;,&#34;2019-02-17 12:00:00&#34;
+2,2,&#34;test2&#34;,&#34;2019-02-17 10:00:00&#34;,&#34;2019-02-17 12:00:00&#34;</code></pre></div>
+
+<p>以下のように実行すると、Schema が出力されます。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">$ java -cp &#39;target/classes:target/dependency/*&#39; org.apache.parquet.cli.Main csv-schema /work/parquet-mr/data/test.csv --record-name Test
+{
+  &#34;type&#34; : &#34;record&#34;,
+  &#34;name&#34; : &#34;Test&#34;,
+  &#34;fields&#34; : [ {
+    &#34;name&#34; : &#34;emp_id&#34;,
+    &#34;type&#34; : [ &#34;null&#34;, &#34;long&#34; ],
+    &#34;doc&#34; : &#34;Type inferred from &#39;1&#39;&#34;,
+    &#34;default&#34; : null
+  }, {
+    &#34;name&#34; : &#34;dept_id&#34;,
+    &#34;type&#34; : [ &#34;null&#34;, &#34;long&#34; ],
+    &#34;doc&#34; : &#34;Type inferred from &#39;1&#39;&#34;,
+    &#34;default&#34; : null
+  }, {
+    &#34;name&#34; : &#34;name&#34;,
+    &#34;type&#34; : [ &#34;null&#34;, &#34;string&#34; ],
+    &#34;doc&#34; : &#34;Type inferred from &#39;test1&#39;&#34;,
+    &#34;default&#34; : null
+  }, {
+    &#34;name&#34; : &#34;created_at&#34;,
+    &#34;type&#34; : [ &#34;null&#34;, &#34;string&#34; ],
+    &#34;doc&#34; : &#34;Type inferred from &#39;2019-02-17 10:00:00&#39;&#34;,
+    &#34;default&#34; : null
+  }, {
+    &#34;name&#34; : &#34;updated_at&#34;,
+    &#34;type&#34; : [ &#34;null&#34;, &#34;string&#34; ],
+    &#34;doc&#34; : &#34;Type inferred from &#39;2019-02-17 12:00:00\&#34; &#39;&#34;,
+    &#34;default&#34; : null
+  } ]
+}</code></pre></div>
+
+<h2 id="convert-csv">convert-csv</h2>
+
+<p>CSV ファイルを Parquet フォーマットのファイルに変換します。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">$ java -cp &#39;target/classes:target/dependency/*&#39; org.apache.parquet.cli.Main convert-csv ../data/test.csv -o ../data/test-csv.parquet
+$ java -cp &#39;target/classes:target/dependency/*&#39; org.apache.parquet.cli.Main head -n 10 ../data/test-csv.parquet
+{&#34;emp_id&#34;: 1, &#34;dept_id&#34;: 1, &#34;name&#34;: &#34;test1&#34;, &#34;created_at&#34;: &#34;2019-02-17 10:00:00&#34;, &#34;updated_at&#34;: &#34;2019-02-17 12:00:00\&#34; &#34;}
+{&#34;emp_id&#34;: 2, &#34;dept_id&#34;: 2, &#34;name&#34;: &#34;test2&#34;, &#34;created_at&#34;: &#34;2019-02-17 10:00:00&#34;, &#34;updated_at&#34;: &#34;2019-02-17 12:00:00&#34;}</code></pre></div>
+
+<h2 id="convert">convert</h2>
+
+<p>Avro フォーマットのファイルを Parquet フォーマットのファイルに変換します。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">java -cp &#39;target/classes:target/dependency/*&#39; org.apache.t.cli.Main convert /work/parquet-mr/data/userdata1.avro -o ../data/userdata1.parquet</code></pre></div>
+
+<h2 id="to-avro">to-avro</h2>
+
+<p><code>convert</code> の逆で、Parquet フォーマットのファイルを Avro フォーマットのファイルに変換します。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">java -cp &#39;target/classes:target/dependency/*&#39; org.apache.parquet.cli.Main to-avro /work/parquet-mr/data/test.parquet -o ../data/test.avro</code></pre></div>
+
+<h2 id="head">head</h2>
+
+<p><code>cat</code> と <code>head</code> は　Parquet ファイル内のデータを出力するコマンドです。どちらのコマンドも、先頭から <code>-n</code> で指定した分だけレコードを出力します。<code>cat</code> は <code>-n</code> を指定しないと全データを出力します。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">java -cp &#39;target/classes:target/dependency/*&#39; org.apache.parquet.cli.Main head -n 5 /work/parquet-mr/data/test.parquet
+{&#34;int32_field&#34;: 32, &#34;int64_field&#34;: 64, &#34;float_field&#34;: 1.0, &#34;double_field&#34;: 2.0, &#34;binary_field&#34;: {&#34;bytes&#34;: &#34;abcdefghijklmnopqrstuvwxyz0&#34;}, &#34;timestamp_field&#34;: 1541335275123}
+{&#34;int32_field&#34;: 33, &#34;int64_field&#34;: 65, &#34;float_field&#34;: 2.0, &#34;double_field&#34;: 3.0, &#34;binary_field&#34;: {&#34;bytes&#34;: &#34;abcdefghijklmnopqrstuvwxyz1&#34;}, &#34;timestamp_field&#34;: 1541335276123}
+{&#34;int32_field&#34;: 34, &#34;int64_field&#34;: 66, &#34;float_field&#34;: 3.0, &#34;double_field&#34;: 4.0, &#34;binary_field&#34;: {&#34;bytes&#34;: &#34;abcdefghijklmnopqrstuvwxyz2&#34;}, &#34;timestamp_field&#34;: 1541335277123}
+{&#34;int32_field&#34;: 35, &#34;int64_field&#34;: 67, &#34;float_field&#34;: 4.0, &#34;double_field&#34;: 5.0, &#34;binary_field&#34;: {&#34;bytes&#34;: &#34;abcdefghijklmnopqrstuvwxyz3&#34;}, &#34;timestamp_field&#34;: 1541335278123}
+{&#34;int32_field&#34;: 36, &#34;int64_field&#34;: 68, &#34;float_field&#34;: 5.0, &#34;double_field&#34;: 6.0, &#34;binary_field&#34;: {&#34;bytes&#34;: &#34;abcdefghijklmnopqrstuvwxyz4&#34;}, &#34;timestamp_field&#34;: 1541335279123}</code></pre></div>
+
+<h2 id="column-index">column-index</h2>
+
+<p><a href="https://masayuki038.github.io/blog/2019/02/10/parquet-column-index/">ColumnIndex</a> を出力します。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">$ java -cp &#39;target/classes:target/dependency/*&#39; org.apache.parquet.cli.Main column-index ../data/test.parquet
+row-group 0:
+column index for column int32_field:
+Boudary order: ASCENDING
+                      null count  min                                       max
+
+page-0                         0  32                                        331
+
+page-1                         0  332                                       426
+
+
+offset index for column int32_field:
+                          offset   compressed size       first row index
+page-0                         4                44                     0
+page-1                        48                34                   300
+...</code></pre></div>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p><a href="https://github.com/apache/parquet-mr/tree/master/parquet-tools">parquet-tools</a> と比較すると、ファイルの内容を表示する機能は大体同じですが、CSV や Avro から Parquet に変換する機能が付いているのが嬉しいところです。</p>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2019 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>
