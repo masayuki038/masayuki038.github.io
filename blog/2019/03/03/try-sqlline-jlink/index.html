@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>sqlline の実行環境を jlink で作成する</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="JDBC 経由で DB に接続したい時に、sqlline という SQL コマンドラインツールを使っています。このツールは既に fatjar や Docker Image でも提供されているのですが、J" />
+
+  
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@masayuki" />
+    <meta name="twitter:title" content="sqlline の実行環境を jlink で作成する" />
+    <meta name="twitter:description" content="JDBC 経由で DB に接続したい時に、sqlline という SQL コマンドラインツールを使っています。このツールは既に fatjar や Docker Image でも提供されているのですが、J" />
+    <meta name="twitter:image" content="/img/avatar.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="sqlline の実行環境を jlink で作成する" />
+  <meta property="og:description" content="JDBC 経由で DB に接続したい時に、sqlline という SQL コマンドラインツールを使っています。このツールは既に fatjar や Docker Image でも提供されているのですが、J" />
+  <meta property="og:url" content="/blog/2019/03/03/try-sqlline-jlink/" />
+  <meta property="og:image" content="/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.32" />
+
+
+<link rel="canonical" href="/blog/2019/03/03/try-sqlline-jlink/" />
+<link rel="alternative" href="/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="/css/bundle.css" />
+<link rel="stylesheet" href="/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://s.gravatar.com/avatar/4b97fb839e6040cfb353bd667ac93e54?s=80" alt="Avatar">
+  
+  <h2 class="title">act-act</h2>
+  
+  <p class="subtitle"></p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">sqlline の実行環境を jlink で作成する</h1>
+      <p class="post-meta">@Masayuki Takahashi · Mar 3, 2019 · 3 min read</p>
+    </header>
+    <article class="post-content">
+
+<p>JDBC 経由で DB に接続したい時に、<a href="https://github.com/julianhyde/sqlline">sqlline</a> という SQL コマンドラインツールを使っています。このツールは既に fatjar や <a href="https://github.com/joshelser/sqlline">Docker Image</a> でも提供されているのですが、JRE や Docker をインストールしていない環境でも使いたいことが何度かありました。</p>
+
+<p>Java 9 から <a href="https://docs.oracle.com/javase/jp/9/tools/jlink.htm">jlink</a> というツールが提供されています。このツールは、実行可能なバイナリを含んだ JRE を生成します。生成する JRE には、必要なモジュールのみを含められるようになっている為、ファイルサイズを抑えることができそうです。</p>
+
+<p>当初はこの <a href="https://docs.oracle.com/javase/jp/9/tools/jlink.htm">jlink</a> を使って <a href="https://github.com/julianhyde/sqlline">sqlline</a> の実行可能なバイナリを作成しようとしたのですが、<a href="https://docs.oracle.com/javase/jp/9/tools/jlink.htm">jlink</a> は automatic module (Java 9 以前の module-info.java が無いモジュール) に対応していない為、実行可能なバイナリを作成することができませんでした。<a href="https://github.com/julianhyde/sqlline">sqlline</a> に module-info.java を追加してみたのですが、依存しているモジュールが automatic module だとエラーになってしまいます。</p>
+
+<p>しかし、<a href="https://docs.oracle.com/javase/jp/9/tools/jlink.htm">jlink</a> を使うことで <a href="https://github.com/julianhyde/sqlline">sqlline</a> の fatjar を実行できる JRE を生成することはできます。そこで今回は <a href="https://docs.oracle.com/javase/jp/9/tools/jlink.htm">jlink</a> で生成した JRE + <a href="https://github.com/julianhyde/sqlline">sqlline</a> の fatjar のファイルサイズを確認し、<a href="https://github.com/joshelser/sqlline">Docker Image</a> とファイルサイズの比較をしてみました。</p>
+
+<h2 id="environment">Environment</h2>
+
+<p><a href="https://github.com/julianhyde/sqlline">sqlline</a> をビルドする環境には <a href="https://hub.docker.com/r/adoptopenjdk/openjdk11/">adoptopenjdk/openjdk11</a> を使いました。但し、pom.xml に記載された source / target は 1.8 のままにしています。</p>
+
+<h2 id="module-dependency">Module Dependency</h2>
+
+<p><a href="https://docs.oracle.com/javase/jp/9/tools/jlink.htm">jlink</a> でバイナリを生成するにあたり、fatjar 実行時に必要になるモジュールを調べておきます。これらには、fatjar には含まれないものの実行時には必要なモジュールを指定することになります。<a href="https://github.com/julianhyde/sqlline">sqlline</a> の場合は以下です。</p>
+
+<ul>
+<li>java.base</li>
+<li>java.sql</li>
+<li>javafx.swing
+
+<ul>
+<li>何故か <a href="https://github.com/julianhyde/sqlline">sqlline</a> の sqlline.ClassNameCompleter で javax.swing.JFrame を参照している</li>
+</ul></li>
+<li>jdk.unsupported
+
+<ul>
+<li>INT シグナルの trap で sun.misc パッケージを参照している</li>
+</ul></li>
+</ul>
+
+<p>javafx.swing は JDK から外れてしまっているものの、maven リポジトリから取得することができます。<a href="https://docs.oracle.com/javase/jp/9/tools/jlink.htm">jlink</a> で使うので、pom.xml の dependencies に追加しておきます。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">$ git diff
+diff --git a/pom.xml b/pom.xml
+index b8ff859..9abfbc9 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -326,6 +326,12 @@
+   &lt;/build&gt;
+
+   &lt;dependencies&gt;
++    &lt;dependency&gt;
++      &lt;groupId&gt;org.openjfx&lt;/groupId&gt;
++      &lt;artifactId&gt;javafx-swing&lt;/artifactId&gt;
++      &lt;version&gt;11.0.2&lt;/version&gt;
++      &lt;scope&gt;provided&lt;/scope&gt;
++    &lt;/dependency&gt;
+     &lt;dependency&gt;
+       &lt;groupId&gt;org.jline&lt;/groupId&gt;
+       &lt;artifactId&gt;jline-terminal&lt;/artifactId&gt;</code></pre></div>
+
+<h2 id="create-binary-files-with-jlink">Create Binary Files with jlink</h2>
+
+<p>まずはビルドします。その後、<code>mvn dependency:copy-dependencies</code> を実行して javafx-* を取り出して任意のディレクトリに配置します。そして <a href="https://docs.oracle.com/javase/jp/9/tools/jlink.htm">jlink</a> を実行すると output フォルダに指定したモジュールを含んだ実行環境が生成されます。この output フォルダには fatjar は含まれていないので、自分でコピーします。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text"><span class="err">$</span> <span class="nx">mvn</span> <span class="nx">clean</span> <span class="kn">package</span> <span class="o">-</span><span class="nx">DskipTests</span> <span class="o">-</span><span class="nx">Dmaven</span><span class="p">.</span><span class="nx">javadoc</span><span class="p">.</span><span class="nx">skip</span> <span class="o">-</span><span class="nx">Dcheckstyle</span><span class="p">.</span><span class="nx">skip</span>
+<span class="err">$</span> <span class="nx">mvn</span> <span class="nx">dependency</span><span class="p">:</span><span class="nx">copy</span><span class="o">-</span><span class="nx">dependencies</span>
+<span class="err">$</span> <span class="nx">mkdir</span> <span class="nx">modules</span>
+<span class="err">$</span> <span class="nx">cp</span> <span class="o">-</span><span class="nx">ip</span> <span class="nx">target</span><span class="o">/</span><span class="nx">dependency</span><span class="o">/</span><span class="nx">javafx</span><span class="o">-*</span> <span class="nx">modules</span><span class="o">/</span>
+<span class="err">$</span> <span class="nx">jlink</span> <span class="o">--</span><span class="nx">compress</span><span class="p">=</span><span class="mi">2</span> <span class="o">--</span><span class="nx">module</span><span class="o">-</span><span class="nx">path</span> <span class="nx">modules</span> <span class="o">--</span><span class="nx">add</span><span class="o">-</span><span class="nx">modules</span> <span class="nx">java</span><span class="p">.</span><span class="nx">base</span><span class="p">,</span><span class="nx">java</span><span class="p">.</span><span class="nx">sql</span><span class="p">,</span><span class="nx">javafx</span><span class="p">.</span><span class="nx">swing</span><span class="p">,</span><span class="nx">jdk</span><span class="p">.</span><span class="nx">unsupported</span> <span class="o">--</span><span class="nx">output</span> <span class="nx">output</span>
+<span class="err">$</span> <span class="nx">cp</span> <span class="o">-</span><span class="nx">ip</span> <span class="nx">target</span><span class="o">/</span><span class="nx">sqlline</span><span class="o">-</span><span class="mf">1.7.0</span><span class="o">-</span><span class="nx">SNAPSHOT</span><span class="o">-</span><span class="nx">jar</span><span class="o">-</span><span class="nx">with</span><span class="o">-</span><span class="nx">dependencies</span><span class="p">.</span><span class="nx">jar</span> <span class="nx">output</span><span class="o">/</span></code></pre></div>
+
+<p>output フォルダは以下のようになっています。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">$ ls -l output
+total 2208
+drwxr-xr-x  2 root root    4096 Mar  2 16:01 bin
+drwxr-xr-x  3 root root    4096 Mar  2 16:01 conf
+drwxr-xr-x  3 root root    4096 Mar  2 16:01 include
+drwxr-xr-x 11 root root    4096 Mar  2 16:01 legal
+drwxr-xr-x  5 root root    4096 Mar  2 16:01 lib
+-rw-r--r--  1 root root     192 Mar  2 16:01 release
+-rw-r--r--  1 root root 2234860 Mar  2 15:49 sqlline-1.7.0-SNAPSHOT-jar-with-dependencies.jar</code></pre></div>
+
+<p>output フォルダのサイズは 62M でした。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">$ du -d 1 -h . | grep output
+62M     ./output</code></pre></div>
+
+<p>これを tar.gz で固め、配布可能な1ファイルとします。固めた後のファイルサイズは 43M になりました。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">$ tar cvfz sqlline-1.7.0-executable.tar.gz output
+$ ls -lh sqlline-1.7.0-executable.tar.gz
+-rw-r--r-- 1 root root 43M Mar  2 16:04 sqlline-1.7.0-executable.tar.gz</code></pre></div>
+
+<h2 id="execute-on-non-jre-environment">Execute on non-JRE Environment</h2>
+
+<p>生成したバイナリファイルを、JRE がインストールされていないコンテナに持っていって展開したところ、無事動きました。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">rails@745e84994342:/usr/local/src/output$ java
+bash: java: command not found
+rails@745e84994342:/usr/local/src$ tar xf ./sqlline-1.7.0-executable.tar.gz
+rails@745e84994342:/usr/local/src$ cd output/
+rails@745e84994342:/usr/local/src/output$ bin/java -jar sqlline-1.7.0-SNAPSHOT-jar-with-dependencies.jar
+sqlline version 1.7.0-SNAPSHOT
+sqlline&gt; !quit</code></pre></div>
+
+<h2 id="file-size-comparison">File size comparison</h2>
+
+<p><a href="https://github.com/julianhyde/sqlline">sqlline</a> を Docker で提供しているいくつかの image を pull してみたところ、Size は以下のようになっていました。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">$ docker images | grep sqlline
+joshelser/sqlline        latest              943cfdc9ccda        23 months ago       277 MB
+veltio/sqlline           latest              a839cf56b131        2 years ago         602.1 MB
+gleisonsilva/sqlline     latest              d5800d44684a        2 years ago         602.1 MB</code></pre></div>
+
+<p><a href="https://docs.oracle.com/javase/jp/9/tools/jlink.htm">jlink</a> で生成した output フォルダのサイズは 62M なので、<a href="https://github.com/joshelser/sqlline">joshelser/sqlline</a> の <sup>1</sup>&frasl;<sub>4</sub> 程度の大きさになります。</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>JPMS に対応していないプロジェクトでも、<a href="https://docs.oracle.com/javase/jp/9/tools/jlink.htm">jlink</a> を使ってファイルを生成することにより、その fatjar と実行環境をコンパクトなファイルサイズで配布することができます。</p>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2019 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>
