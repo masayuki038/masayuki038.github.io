@@ -6,10 +6,19 @@
     <description>Recent content in Java on act-act</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja</language>
-    <lastBuildDate>Sat, 03 Jan 2015 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 03 Mar 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/categories/java/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>sqlline の実行環境を jlink で作成する</title>
+      <link>/blog/2019/03/03/try-sqlline-jlink/</link>
+      <pubDate>Sun, 03 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/2019/03/03/try-sqlline-jlink/</guid>
+      <description>JDBC 経由で DB に接続したい時に、sqlline という SQL コマンドラインツールを使っています。このツールは既に fatjar や Docker Image でも提供されているのですが、J</description>
+    </item>
     
     <item>
       <title>Getting Started with Quasar</title>
