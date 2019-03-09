@@ -5,7 +5,7 @@
   <meta charset="utf-8" />
 
   
-  <title>start</title>
+  <title>Failed to generate Javadoc on JDK11</title>
 
   
   
@@ -16,22 +16,22 @@
 
   
   <meta name="author" content="Masayuki Takahashi" />
-  <meta name="description" content="以前からOctopressが良いなと思っていたものの、ホスティングサービスを見つけられず、とはいえ自前で構築するのもちょっと面倒に思え、手が" />
+  <meta name="description" content="JDK11 で Javadoc の生成に失敗することがありました。 [ERROR] Failed to execute goal org.apache.maven.plugins:maven-javadoc-plugin:3.0.1:jar (attach-javadocs) on project sqlline: MavenReportException: Error while generating Javadoc: [ERROR] Exit code: 1 - Picked up JAVA_TOOL_OPTIONS: -XX:&#43;UseContainerSupport [ERROR] javadoc: error - The code being documented uses modules but the packages defined in https://docs.oracle.com/javase/8/docs/api/ are in the unnamed module. [ERROR] [ERROR] Command line was:" />
 
   
   
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:site" content="@masayuki" />
-    <meta name="twitter:title" content="start" />
-    <meta name="twitter:description" content="以前からOctopressが良いなと思っていたものの、ホスティングサービスを見つけられず、とはいえ自前で構築するのもちょっと面倒に思え、手が" />
+    <meta name="twitter:title" content="Failed to generate Javadoc on JDK11" />
+    <meta name="twitter:description" content="JDK11 で Javadoc の生成に失敗することがありました。 [ERROR] Failed to execute goal org.apache.maven.plugins:maven-javadoc-plugin:3.0.1:jar (attach-javadocs) on project sqlline: MavenReportException: Error while generating Javadoc: [ERROR] Exit code: 1 - Picked up JAVA_TOOL_OPTIONS: -XX:&#43;UseContainerSupport [ERROR] javadoc: error - The code being documented uses modules but the packages defined in https://docs.oracle.com/javase/8/docs/api/ are in the unnamed module. [ERROR] [ERROR] Command line was:" />
     <meta name="twitter:image" content="/img/avatar.jpg" />
   
 
   
   <meta property="og:type" content="article" />
-  <meta property="og:title" content="start" />
-  <meta property="og:description" content="以前からOctopressが良いなと思っていたものの、ホスティングサービスを見つけられず、とはいえ自前で構築するのもちょっと面倒に思え、手が" />
-  <meta property="og:url" content="/blog/2012/04/06/start/" />
+  <meta property="og:title" content="Failed to generate Javadoc on JDK11" />
+  <meta property="og:description" content="JDK11 で Javadoc の生成に失敗することがありました。 [ERROR] Failed to execute goal org.apache.maven.plugins:maven-javadoc-plugin:3.0.1:jar (attach-javadocs) on project sqlline: MavenReportException: Error while generating Javadoc: [ERROR] Exit code: 1 - Picked up JAVA_TOOL_OPTIONS: -XX:&#43;UseContainerSupport [ERROR] javadoc: error - The code being documented uses modules but the packages defined in https://docs.oracle.com/javase/8/docs/api/ are in the unnamed module. [ERROR] [ERROR] Command line was:" />
+  <meta property="og:url" content="/blog/2019/03/09/fail-to-generate-javadoc-on-jdk11/" />
   <meta property="og:image" content="/img/avatar.jpg" />
 
 
@@ -40,7 +40,7 @@
 <meta name="generator" content="Hugo 0.32" />
 
 
-<link rel="canonical" href="/blog/2012/04/06/start/" />
+<link rel="canonical" href="/blog/2019/03/09/fail-to-generate-javadoc-on-jdk11/" />
 <link rel="alternative" href="/index.xml" title="act-act" type="application/atom+xml" />
 
 
@@ -204,44 +204,60 @@
 
   <section class="main post-detail">
     <header class="post-header">
-      <h1 class="post-title">start</h1>
-      <p class="post-meta">@Masayuki Takahashi · Apr 6, 2012 · 2 min read</p>
+      <h1 class="post-title">Failed to generate Javadoc on JDK11</h1>
+      <p class="post-meta">@Masayuki Takahashi · Mar 9, 2019 · 1 min read</p>
     </header>
-    <article class="post-content"><p>以前からOctopressが良いなと思っていたものの、ホスティングサービスを見つけられず、とはいえ自前で構築するのもちょっと面倒に思え、手が出ませんでした。そんな時以下のページを見つけ、タイミングが良かったので早速自分でも作ってみました。</p>
+    <article class="post-content">
 
-<p><a href="http://os0x.github.com/2012/04/01/new-blog/">Octopressとgithub Pagesを使ったブログ - 0xff.toBlog()</a></p>
+<p>JDK11 で Javadoc の生成に失敗することがありました。</p>
 
-<p>普段Markdownを書かないので、これで練習してみたいと思います。構築に関しては以下のページを参考にしました。</p>
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">[ERROR] Failed to execute goal org.apache.maven.plugins:maven-javadoc-plugin:3.0.1:jar (attach-javadocs) on project sqlline: MavenReportException: Error while generating Javadoc:
+[ERROR] Exit code: 1 - Picked up JAVA_TOOL_OPTIONS: -XX:+UseContainerSupport
+[ERROR] javadoc: error - The code being documented uses modules but the packages defined in https://docs.oracle.com/javase/8/docs/api/ are in the unnamed module.
+[ERROR]
+[ERROR] Command line was: /opt/java/openjdk/bin/javadoc @options @packages
+[ERROR]
+[ERROR] Refer to the generated Javadoc files in &#39;/work/sqlline/target/apidocs&#39; dir.</code></pre></div>
 
-<p><a href="http://blog.glidenote.com/blog/2011/11/07/install-octopress-on-github/">GithubとOctopressでモダンな技術系ブログを作ってみる * Glide Note - グライドノート</a></p>
+<h1 id="issue">Issue</h1>
 
-<p>Rubyは1.9が出るかどうかというあたりで使わなくなってしまったので、rvmやbundleも初めてでしたが、案外簡単にできました。emacsでブログを書くのも初めてかな。何か楽しいです。</p>
+<p>これは JDK の問題で、以下のページで扱われています。Automatic Module の Javadoc を出力する際の問題のようです。</p>
 
-<hr />
+<ul>
+<li><a href="https://bugs.openjdk.java.net/browse/JDK-8219474">https://bugs.openjdk.java.net/browse/JDK-8219474</a></li>
+<li><a href="https://issues.apache.org/jira/browse/MJAVADOC-555">https://issues.apache.org/jira/browse/MJAVADOC-555</a></li>
+</ul>
 
-<p>が、実はlocaleでちょっと嵌りました。rake gen_deployした際に、以下のページにあるように「invalid byte sequence in US-ASCII 」というエラーがでました。</p>
+<h1 id="solution">Solution</h1>
 
-<p><a href="http://alexzeitler.com/blog/2012/01/15/rake-generate-for-octopress-fails-with-invalid-byte-sequence-in-us-ascii-argumenterror/">rake generate for octopress fails with invalid byte sequence in US-ASCII (ArgumentE\rror)</a></p>
+<p>私達の場合は source/target が 8 だったので、<a href="maven-javadoc-plugin">https://maven.apache.org/plugins/maven-javadoc-plugin/</a> に以下の設定を入れることで回避できました。</p>
 
-<p>UTF-8で送信した記事の内容が、US-ASCIIとして認識されているようでした。対処方も上記ページにあるようにLANGとLC_CTYPEを設定すれば良いのですが、.bashrcにLC_CTYPE=ja_JP.UTF-8と指定してもエラーとなってしまい、ちょっと困りました。</p>
+<p><div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">root@e6c75c575b52:/work/sqlline# git diff
+diff --git a/pom.xml b/pom.xml
+index b8ff859..5992824 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -215,6 +215,7 @@
+         &lt;configuration&gt;
+           &lt;additionalOptions&gt;${maven-javadoc-plugin.additionalOptions}&lt;/additionalOptions&gt;
+           &lt;show&gt;public&lt;/show&gt;
++          &lt;source&gt;${maven.compiler.source}&lt;/source&gt;
+         &lt;/configuration&gt;
+         &lt;executions&gt;
+           &lt;execution&gt;</code></pre></div></p>
 
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">$ <span class="nb">source</span> .bashrc
--bash: warning: setlocale: LC_CTYPE: cannot change locale <span class="o">(</span>ja_JP.UTF-8<span class="o">)</span>: No such file or directory
-$ locale -a
-locale: Cannot <span class="nb">set</span> LC_CTYPE to default locale: No such file or directory
-locale: Cannot <span class="nb">set</span> LC_MESSAGES to default locale: No such file or directory
-locale: Cannot <span class="nb">set</span> LC_COLLATE to default locale: No such file or directory</code></pre></div>
+<p>JDK 本体の修正は以下の Commit で行われています。</p>
 
-<p>調べてみたところ、ja_JP.UTF-8を指定するにはlanguage-pack-jaが必要とのことで、早速入れました。</p>
+<p><a href="https://github.com/openjdk/jdk/commit/478755a49ca9a1f403126a33db4165f84ad465fa">https://github.com/openjdk/jdk/commit/478755a49ca9a1f403126a33db4165f84ad465fa</a></p>
 
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">$ sudo apt-get install language-pack-ja</code></pre></div>
+<h1 id="conclusion">Conclusion</h1>
 
-<p>その後再度rake gen_deployしたところ、前記のエラーは解消され、無事アップされました。</p>
+<p>Java のリリースサイクルが速くなったこともあり、余計な Issue を踏まない為にも Version の指定ができるところはした方が良さそうです。</p>
 </article>
     <footer class="post-footer">
       
       <p class="post-copyright">
-        This post was published <strong>2528</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+        
       </p>
     </footer>
     
