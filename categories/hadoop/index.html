@@ -5,7 +5,11 @@
   <meta charset="utf-8" />
 
   
-  <title>Java Benchmark Framework</title>
+  <title>
+  Category → hadoop
+  
+   | act-act
+</title>
 
   
   
@@ -16,22 +20,20 @@
 
   
   <meta name="author" content="Masayuki Takahashi" />
-  <meta name="description" content="FileStoredMapはJava Heapを使わない代わりに動作が重いので、Berkeley DB Java Edition(以下BDB)と速度比較を数" />
+  <meta name="description" content="" />
 
   
-  
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:site" content="@masayuki" />
-    <meta name="twitter:title" content="Java Benchmark Framework" />
-    <meta name="twitter:description" content="FileStoredMapはJava Heapを使わない代わりに動作が重いので、Berkeley DB Java Edition(以下BDB)と速度比較を数" />
-    <meta name="twitter:image" content="/img/avatar.jpg" />
-  
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@masayuki" />
+  <meta name="twitter:title" content="act-act" />
+  <meta name="twitter:description" content="" />
+  <meta name="twitter:image" content="/img/avatar.jpg" />
 
   
-  <meta property="og:type" content="article" />
-  <meta property="og:title" content="Java Benchmark Framework" />
-  <meta property="og:description" content="FileStoredMapはJava Heapを使わない代わりに動作が重いので、Berkeley DB Java Edition(以下BDB)と速度比較を数" />
-  <meta property="og:url" content="/blog/2012/04/15/file-stored-map-bench2/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="act-act" />
+  <meta property="og:description" content="" />
+  <meta property="og:url" content="/categories/hadoop/" />
   <meta property="og:image" content="/img/avatar.jpg" />
 
 
@@ -40,7 +42,7 @@
 <meta name="generator" content="Hugo 0.32" />
 
 
-<link rel="canonical" href="/blog/2012/04/15/file-stored-map-bench2/" />
+<link rel="canonical" href="/categories/hadoop/" />
 <link rel="alternative" href="/index.xml" title="act-act" type="application/atom+xml" />
 
 
@@ -104,8 +106,6 @@
     <div class="suspension">
       <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
       
-        
-      
     </div>
     
     
@@ -128,8 +128,6 @@
         <li class="menu-item
             
             
-            
-              is-active
             ">
             <a href="/">Home</a>
           </li>
@@ -202,42 +200,27 @@
   </nav>
 </header>
 
-  <section class="main post-detail">
-    <header class="post-header">
-      <h1 class="post-title">Java Benchmark Framework</h1>
-      <p class="post-meta">@Masayuki Takahashi · Apr 15, 2012 · 1 min read</p>
+  <section class="main post-list">
+    <header class="list-header offscreen">
+      <h2 class="list-label">Posts List</h2>
     </header>
-    <article class="post-content"><p>FileStoredMapはJava Heapを使わない代わりに動作が重いので、Berkeley DB Java Edition(以下BDB)と速度比較を数週間前に行いました。その際、BDBのreadがあまりにも重く、比較自体が意味を成さないと考え、改めて計測しなおしてみました。</p>
-
-<p>今回計測するにあたり、以下のページのライブラリを使ってベンチマーク用のモジュールを作成しました。</p>
-
-<p><a href="http://www.ellipticgroup.com/html/benchmarkingArticle.html">Java benchmarking article: http://www.ellipticgroup.com/html/benchmarkingArticle.html</a></p>
-
-<p>このライブラリは、ウォームアップや、JITコンパイルの具合が変わった際に自動的に計測をしなおす等の機能が含まれています。</p>
-
-<p>結果は以下のページに載せています。</p>
-
-<p><a href="http://masayuki038.github.com/FileStoredMap">masayuki038.github.com/masayuki038/FileStoredMap</a></p>
-
-<p>やはりBDBのreadの値が大分変わりました。ざっと10倍程違います。</p>
-
-<p>FileStoredMapのreadと比較しても大体10倍くらいの開きがあります。まだプロファイリングしてませんが、以下の理由で遅いのではないかと考えています。</p>
-
-<ul>
-<li>readした際にデータを必ずdiskから取得している</li>
-<li>BSONフォーマットのバイナリからデシリアライズしている</li>
-</ul>
-
-<p>writeしたオブジェクトをメモリ上にLRUで一定サイズ保持しておけば速くはなると思いますが、極力メモリを使わないことを特徴としていることもあって、そういった実装を行う予定はありません。ただ、どの部分が重いかどうかは確認したいと思います。</p>
-</article>
-    <footer class="post-footer">
-      
-      <p class="post-copyright">
-        This post was published <strong>2527</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
-      </p>
-    </footer>
+    
     
       
+        <article class="post-entry">
+  <header class="post-header">
+    <h3 class="post-title"><a href="/blog/2019/03/17/hadoop-spark-conference-2019/" class="post-link">Hadoop / Spark Conference 2019 Japan</a></h3>
+    <p class="post-meta">@Masayuki Takahashi · Mar 17, 2019 · 4 min read</p>
+  </header>
+  
+  <p class="post-summary">3⁄14 に開催された Hadoop / Spark Conference 2019 Japan に行ってきました。参加したセッションの内容と感想を書いてみました。 Hadoop / Spark Conference Japan 2019 ご挨拶・開催にあたって 「Hadoop</p>
+  <footer class="post-footer">
+    <a class="read-more" href="/blog/2019/03/17/hadoop-spark-conference-2019/">Read More →</a>
+  </footer>
+</article>
+
+      
+    
     
   </section>
   <footer class="site-footer">

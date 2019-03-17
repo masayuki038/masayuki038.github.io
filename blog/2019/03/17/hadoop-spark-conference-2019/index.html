@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Hadoop / Spark Conference 2019 Japan</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="3&amp;frasl;14 に開催された Hadoop / Spark Conference 2019 Japan に行ってきました。参加したセッションの内容と感想を書いてみました。 Hadoop / Spark Conference Japan 2019 ご挨拶・開催にあたって 「Hadoop" />
+
+  
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@masayuki" />
+    <meta name="twitter:title" content="Hadoop / Spark Conference 2019 Japan" />
+    <meta name="twitter:description" content="3&amp;frasl;14 に開催された Hadoop / Spark Conference 2019 Japan に行ってきました。参加したセッションの内容と感想を書いてみました。 Hadoop / Spark Conference Japan 2019 ご挨拶・開催にあたって 「Hadoop" />
+    <meta name="twitter:image" content="/img/avatar.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Hadoop / Spark Conference 2019 Japan" />
+  <meta property="og:description" content="3&amp;frasl;14 に開催された Hadoop / Spark Conference 2019 Japan に行ってきました。参加したセッションの内容と感想を書いてみました。 Hadoop / Spark Conference Japan 2019 ご挨拶・開催にあたって 「Hadoop" />
+  <meta property="og:url" content="/blog/2019/03/17/hadoop-spark-conference-2019/" />
+  <meta property="og:image" content="/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.32" />
+
+
+<link rel="canonical" href="/blog/2019/03/17/hadoop-spark-conference-2019/" />
+<link rel="alternative" href="/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="/css/bundle.css" />
+<link rel="stylesheet" href="/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://s.gravatar.com/avatar/4b97fb839e6040cfb353bd667ac93e54?s=80" alt="Avatar">
+  
+  <h2 class="title">act-act</h2>
+  
+  <p class="subtitle"></p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Hadoop / Spark Conference 2019 Japan</h1>
+      <p class="post-meta">@Masayuki Takahashi · Mar 17, 2019 · 4 min read</p>
+    </header>
+    <article class="post-content">
+
+<p><sup>3</sup>&frasl;<sub>14</sub> に開催された <a href="http://hadoop.apache.jp/hcj2019-program/">Hadoop / Spark Conference 2019 Japan</a> に行ってきました。参加したセッションの内容と感想を書いてみました。</p>
+
+<h2 id="hadoop-spark-conference-japan-2019-ご挨拶-開催にあたって-https-www-slideshare-net-hadoopconf-hadoop-spark-conference-japan-2019-hamano"><a href="https://www.slideshare.net/hadoopconf/hadoop-spark-conference-japan-2019-hamano/">Hadoop / Spark Conference Japan 2019 ご挨拶・開催にあたって</a></h2>
+
+<p>「Hadoop もう終わりつつあるのでは？」と思われがちだけど、HDFS とか YARN といった技術は分散並列処理の基盤として主流だよ、という話。実際「Hadoop」という文字を Web の記事等で目にすることはかなり少なくなりましたが、分析基盤の構築の事例はまだ結構見るので、それらを支える技術として進化しているようです。</p>
+
+<h2 id="apache-hadoopの現在と未来-https-www-slideshare-net-techblogyahoo-apache-hadoop-136533881"><a href="https://www.slideshare.net/techblogyahoo/apache-hadoop-136533881">Apache Hadoopの現在と未来</a></h2>
+
+<p>参加申請の時に取ったアンケート結果の発表から。オンプレでの運用が多いのと、Kudu を使っているところがあったのが面白いな、と。あとは新機能の Hadoop Submarine, Hadoop Ozone が面白そう。この発表の時の話だったか忘れましたが、HDFS の Erasure Coding の導入によって、データの Locality を気にしなくなってきている、という話をもうちょっと聴きたかった。実運用ではもうあまり気にしなくても変わらないものなんですかね？</p>
+
+<h2 id="the-upcoming-spark-3-0-what-s-next">The upcoming Spark 3.0: What’s Next</h2>
+
+<p>Spark 3.0 の話。「GPU Aware Scheduling」とあったので、Spark はすでに計算処理に GPU を使うようになっているんだろうな。どういう条件で使うようになっているか気になるところ。「Data Source API V2 transactional write, columnar scan」ももうちょっと調べてみたい。Transactional Write といえば <a href="https://github.com/Netflix/iceberg">Iceberg</a> で実装を進めていますが、それとは別に Spark 独自で実装する、ということなのかな。Columnar Scan も現在どのような実装が使われていて、どのあたりが課題なのかは気になるところです。以前、Uber が Presto で Parquet File を Scan する際に、元々の実装だと Columnar Scan の効率が悪いので<a href="https://eng.uber.com/presto/">別の実装を作ったという話</a>がありましたが、同じようなことなのかな。</p>
+
+<h2 id="cloud-nativeなデータ分析基盤におけるprestoの活用-https-speakerdeck-com-satoshihirose-cloud-native-data-infrastructure-with-presto"><a href="https://speakerdeck.com/satoshihirose/cloud-native-data-infrastructure-with-presto">Cloud-Nativeなデータ分析基盤におけるPrestoの活用</a></h2>
+
+<p>SmartNews の分析基盤の話。Presto の利点は、クエリのレイテンシと複数のデータソースから集約できるところですかね。独自の Connector や Function を実装しているとのこと。</p>
+
+<h2 id="oasis-line-s-data-analysis-tool-using-apache-spark-https-speakerdeck-com-line-developers-oasis-lines-data-analysis-tool-using-apache-spark"><a href="https://speakerdeck.com/line_developers/oasis-lines-data-analysis-tool-using-apache-spark">OASIS : LINE’s Data Analysis Tool Using Apache Spark</a></h2>
+
+<p>Line で社内で分析する為に Notebook Application を独自で作った、という話。Data Permission や Workload Control を考えると、既存のツールをそのまま使うのが難しい、というのは凄く良く分かります…。このカンファレンスでこういった話が聴けると思ってなかったので、思わぬ収穫でした。とても面白かった。</p>
+
+<h2 id="1日100個以上のhadoopクラスターを使い捨てる方法-https-speakerdeck-com-nakazax-how-to-throw-away-100-hadoop-clusters-a-day"><a href="https://speakerdeck.com/nakazax/how-to-throw-away-100-hadoop-clusters-a-day">1日100個以上のHadoopクラスターを使い捨てる方法</a></h2>
+
+<p>「Hadoopクラスターを使い捨てる」とあったので、AWS EMR の話かな、と思ったらそのとおりでした。最近は AWS を全然触らなくなったので、このセッションで「c5.18xlarge」が出ていることや「AWS Glue Data Catalog」という新しい機能を知りました。EMR クラスタの落とし忘れとかよく分かります…。</p>
+
+<h2 id="ozone-an-object-store-for-apache-hadoop">Ozone: An Object Store for Apache Hadoop</h2>
+
+<p>Hadoop の新しいオブジェクトストア、Ozone のセッション。Small Files を扱うことができ、Scalable で、HDFS のインターフェースと互換性があり、また S3 のツールでも操作できる、ということでした。また、HDFS と Ozone (Hadoop Distributed Data Storage)を併用することもできそうです。Name Node の役割を担う Ozone Manager と BlockServer の役割を担う Storage Container Manager がそれぞれ scale できるようになっている、という話でした。</p>
+
+<h2 id="yosegi-で実現する-スキーマの柔軟性と処理性能を両立したログ収集システム-https-www-slideshare-net-techblogyahoo-hadoop-spark-conference-japan-2019-yosegi-135810726"><a href="https://www.slideshare.net/techblogyahoo/hadoop-spark-conference-japan-2019-yosegi-135810726/">「Yosegi」で実現する スキーマの柔軟性と処理性能を両立したログ収集システム</a></h2>
+
+<p>Schema-on-read のスキーマ柔軟な性質と、Schema-on-write の処理性能の良さの両方を備えた <a href="https://github.com/yahoojapan/yosegi">Yosegi</a> の話。両方の性質を持ったファイルフォーマットが欲しいと思うことはあっても、それを実装して運用しているところまで到達しているのは凄い。しかも TPC-H の bench は Parquet よりも優れています。ログ収集の仕組みの中に Kafka の Schema Registry があったので、スキーマの変更が入るとこれがキツいんだろうな…。今までどうしてたのか気になります(Schema Registry で苦労しているので…)。</p>
+
+<h2 id="arrow-fdw-postgresqlで大量のログデータを処理するためのハードウェア最適化アプローチ-https-www-slideshare-net-kaigai-20190314-pgstrom-arrowfdw"><a href="https://www.slideshare.net/kaigai/20190314-pgstrom-arrowfdw">Arrow_Fdw – PostgreSQLで大量のログデータを処理するためのハードウェア最適化アプローチ</a></h2>
+
+<p>PostgreSQL の Foreign Data Wrapper(FDW)の仕組みを使い、<a href="https://arrow.apache.org/">Apache Arrow</a>のデータに対してクエリを実行できるようにした話。また、PostgreSQL のレコードを Arrow の形式に変換する <a href="https://github.com/heterodb/pg2arrow">Pg2arrow</a> というツールも実装した、とのこと。Arrow データはパーティショニングして配置できるようになっており、不要なパーティションは Scan しないようになっていました。このセッションの最後に、カラムナフォーマットの中から Arrow を選んだ理由について質問させてもらいましたが、Arrow は圧縮が無いので、ということでした。その後の質問で出ていたクエリ処理の話は、Gandiva のことかな？</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>久々にカンファレンスに参加しましたが、色々と面白い話が聴けて良かったです。</p>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2019 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>

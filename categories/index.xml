@@ -93,6 +93,15 @@
     </item>
     
     <item>
+      <title>Hadoop</title>
+      <link>/categories/hadoop/</link>
+      <pubDate>Sun, 17 Mar 2019 00:00:01 +0000</pubDate>
+      
+      <guid>/categories/hadoop/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Hive</title>
       <link>/categories/hive/</link>
       <pubDate>Sun, 13 Oct 2013 00:00:00 +0000</pubDate>
@@ -251,6 +260,15 @@
       <pubDate>Sun, 19 Jan 2014 00:00:00 +0000</pubDate>
       
       <guid>/categories/serf/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Spark</title>
+      <link>/categories/spark/</link>
+      <pubDate>Sun, 17 Mar 2019 00:00:01 +0000</pubDate>
+      
+      <guid>/categories/spark/</guid>
       <description></description>
     </item>
     
