@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>/blog/2019/04/06/java-gandiva-on-windows/</loc>
+    <lastmod>2019-04-06T00:00:01+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/blog/2019/03/17/hadoop-spark-conference-2019/</loc>
     <lastmod>2019-03-17T00:00:01+00:00</lastmod>
   </url>
@@ -280,6 +285,12 @@
   </url>
   
   <url>
+    <loc>/categories/arrow/</loc>
+    <lastmod>2019-04-06T00:00:01+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/categories/calcite/</loc>
     <lastmod>2019-01-06T00:00:00+00:00</lastmod>
     <priority>0</priority>
@@ -324,6 +335,12 @@
   <url>
     <loc>/categories/filestoredmap/</loc>
     <lastmod>2012-05-03T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/gandiva/</loc>
+    <lastmod>2019-04-06T00:00:01+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -407,7 +424,7 @@
   
   <url>
     <loc>/post/</loc>
-    <lastmod>2019-03-17T00:00:01+00:00</lastmod>
+    <lastmod>2019-04-06T00:00:01+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -466,7 +483,7 @@
   
   <url>
     <loc>/</loc>
-    <lastmod>2019-03-17T00:00:01+00:00</lastmod>
+    <lastmod>2019-04-06T00:00:01+00:00</lastmod>
     <priority>0</priority>
   </url>
   

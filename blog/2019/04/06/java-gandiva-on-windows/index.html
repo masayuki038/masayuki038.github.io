@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Java / Gandiva on Windows</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="Apache Arrow の Issue を watch していたら、Gandiva が Windows 環境でも動くようになっていたので、開発環境を構築しました。 C&#43;&#43; Development Setup Gandiva は C&#43;&#43; で開発されているので、まず C&#43;&#43;" />
+
+  
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@masayuki" />
+    <meta name="twitter:title" content="Java / Gandiva on Windows" />
+    <meta name="twitter:description" content="Apache Arrow の Issue を watch していたら、Gandiva が Windows 環境でも動くようになっていたので、開発環境を構築しました。 C&#43;&#43; Development Setup Gandiva は C&#43;&#43; で開発されているので、まず C&#43;&#43;" />
+    <meta name="twitter:image" content="/img/avatar.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Java / Gandiva on Windows" />
+  <meta property="og:description" content="Apache Arrow の Issue を watch していたら、Gandiva が Windows 環境でも動くようになっていたので、開発環境を構築しました。 C&#43;&#43; Development Setup Gandiva は C&#43;&#43; で開発されているので、まず C&#43;&#43;" />
+  <meta property="og:url" content="/blog/2019/04/06/java-gandiva-on-windows/" />
+  <meta property="og:image" content="/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.32" />
+
+
+<link rel="canonical" href="/blog/2019/04/06/java-gandiva-on-windows/" />
+<link rel="alternative" href="/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="/css/bundle.css" />
+<link rel="stylesheet" href="/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://s.gravatar.com/avatar/4b97fb839e6040cfb353bd667ac93e54?s=80" alt="Avatar">
+  
+  <h2 class="title">act-act</h2>
+  
+  <p class="subtitle"></p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Java / Gandiva on Windows</h1>
+      <p class="post-meta">@Masayuki Takahashi · Apr 6, 2019 · 3 min read</p>
+    </header>
+    <article class="post-content">
+
+<p><a href="https://github.com/apache/arrow">Apache Arrow</a> の Issue を watch していたら、<a href="https://github.com/apache/arrow/tree/master/java/gandiva">Gandiva</a> が Windows 環境でも動くようになっていたので、開発環境を構築しました。</p>
+
+<h2 id="c-development-setup">C++ Development Setup</h2>
+
+<p>Gandiva は C++ で開発されているので、まず C++ の開発環境が必要になります。Windows の C++ の開発環境の構築に関しては、以下に記載されています。</p>
+
+<ul>
+<li><a href="https://github.com/apache/arrow/blob/master/docs/source/developers/cpp.rst#developing-on-windows">Developing on Windows</a></li>
+</ul>
+
+<p>今回は Visual Studio 2017 の Community をインストールしました。</p>
+
+<h3 id="compile">Compile</h3>
+
+<p>Apache Arrow は 様々な言語に対応していますが、それらを1つの git リポジトリで管理しています。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">$ git clone https://github.com/apache/arrow.git</code></pre></div>
+
+<p><a href="https://github.com/apache/arrow/blob/master/docs/source/developers/cpp.rst#developing-on-windows">Developing on Windows</a> に記載されている内容に沿って、ビルドできる状態にします。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">$ activate arrow-dev
+$ set ARROW_BUILD_TOOLCHAIN=%CONDA_PREFIX%\Library
+$ &#34;C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat&#34; -arch=amd64</code></pre></div>
+
+<p>ビルドは以下のとおりです。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">$ cd arrow\cpp
+$ mkdir build
+$ cd build
+$ cmake -G &#34;NMake Makefiles&#34; -DARROW_GANDIVA=ON -DARROW_GANDIVA_JAVA=ON -DCMAKE_BUILD_TYPE=Release ..
+$ cmake --build . --config Release</code></pre></div>
+
+<h3 id="errors">Errors</h3>
+
+<h4 id="error-expected-function-body-after-function-declarator">error: expected function body after function declarator</h4>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">D:/development/repository/git/arrow/cpp/src/gandiva/precompiled/../../arrow/vendored/datetime/date.h:229:81: error: expected function body after function declarator
+CONSTCD11 month_weekday_last operator/(const weekday_last&amp; wdl, int          m) NOEXCEPT;
+                                                                                ^
+D:/development/repository/git/arrow/cpp/src/gandiva/precompiled/../../arrow/vendored/datetime/date.h:101:22: note: expanded from macro &#39;NOEXCEPT&#39;
+#    define NOEXCEPT _NOEXCEPT</code></pre></div>
+
+<p>関数の最後に付いている <code>NOEXCEPT</code> を認識することができず、コンパイルエラー。これは以下の変更をすることで回避しています。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-diff" data-lang="diff">(arrow-dev) D:\development\repository\git\arrow\cpp\build&gt;git diff
+<span class="gh">diff --git a/cpp/src/gandiva/precompiled/CMakeLists.txt b/cpp/src/gandiva/precompiled/CMakeLists.txt
+</span><span class="gh">index 6d3daf2..c98c020 100644
+</span><span class="gh"></span><span class="gd">--- a/cpp/src/gandiva/precompiled/CMakeLists.txt
+</span><span class="gd"></span><span class="gi">+++ b/cpp/src/gandiva/precompiled/CMakeLists.txt
+</span><span class="gi"></span><span class="gu">@@ -35,7 +35,7 @@ if(MSVC)
+</span><span class="gu"></span>   # Visual Studio 2015, and the standard library uses C++14 features,
+   # so we have to use that -std version to get the IR compilation to
+   # work
+<span class="gd">-  set(PLATFORM_CLANG_OPTIONS -std=c++14 -fms-compatibility -fms-compatibility-version=19)
+</span><span class="gd"></span><span class="gi">+  set(PLATFORM_CLANG_OPTIONS -std=c++14 -fms-compatibility -fms-compatibility-version=19.10)
+</span><span class="gi"></span> else()
+   set(PLATFORM_CLANG_OPTIONS -std=c++11)
+<span class="err"> endif()</span></code></pre></div>
+
+<p>以下のページを見ると <code>noexcept</code> は MSVC 19.0 (VS2015) でサポートされていることになっているので、変更前の設定で合っています。Clang のバージョンに依るのかな。</p>
+
+<p><a href="https://ja.cppreference.com/w/cpp/compiler_support">https://ja.cppreference.com/w/cpp/compiler_support</a></p>
+
+<p>Clang のバージョンは以下のとおり。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">(arrow-dev) C:\development\cmder\cmder_mini_1.3.4&gt;clang --version
+clang version 7.0.0 (tags/RELEASE_700/final)
+Target: x86_64-pc-windows-msvc
+Thread model: posix
+InstalledDir: C:\development\python\Miniconda3\envs\arrow-dev\Library\bin</code></pre></div>
+
+<h4 id="error-lnk2001">error LNK2001</h4>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">   ライブラリ ..\..\..\release\gandiva_jni.lib とオブジェクト ..\..\..\release\gandiva_jni.exp を作成中
+expression_registry_helper.cc.obj : error LNK2001: 外部シンボル &#34;&#34;class google::protobuf::internal::ExplicitlyConstructed&lt;class std::basic_string&lt;char,struct std::char_traits&lt;char&gt;,class std::allocator&lt;char
+&gt; &gt; &gt; google::protobuf::internal::fixed_address_empty_string&#34; (?fixed_address_empty_string@internal@protobuf@google@@3V?$ExplicitlyConstructed@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@123@A)&#34; は未解決です。
+Types.pb.cc.obj : error LNK2001: 外部シンボル &#34;&#34;class google::protobuf::internal::ExplicitlyConstructed&lt;class std::basic_string&lt;char,struct std::char_traits&lt;char&gt;,class std::allocator&lt;char&gt; &gt; &gt; google::prot
+obuf::internal::fixed_address_empty_string&#34; (?fixed_address_empty_string@internal@protobuf@google@@3V?$ExplicitlyConstructed@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@123@A)&#34; は未解決で
+す。
+jni_common.cc.obj : error LNK2001: 外部シンボル &#34;&#34;private: static int google::protobuf::io::CodedInputStream::default_recursion_limit_&#34; (?default_recursion_limit_@CodedInputStream@io@protobuf@google@@0HA)&#34;
+は未解決です。
+..\..\..\release\gandiva_jni.dll : fatal error LNK1120: 2 件の未解決の外部参照</code></pre></div>
+
+<p>libprotobuf の関数をリンクするあたりでエラーがでます。</p>
+
+<p>以下のコマンドで <code>libprotobuf.lib</code> に含まれている関数を確認すると、エラーになっている関数のシグネチャが出力されるので問題ないように見えるのですが…。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">link /dump /exports C:\development\python\Miniconda3\envs\arrow-dev\Library\lib\libprotobuf.lib</code></pre></div>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">?fixed_address_empty_string@internal@protobuf@google@@3V?$ExplicitlyConstructed@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@123@A (class google::protobuf::internal::ExplicitlyConstructed&lt;class std::basic_string&lt;char,struct std::char_traits&lt;char&gt;,class std::allocator&lt;char&gt; &gt; &gt; google::protobuf::internal::fixed_address_empty_string)</code></pre></div>
+
+<p>もうちょっと調べてみると、問題はヘッダ側でした。</p>
+
+<ul>
+<li>include/google/protobuf/message_lite.h</li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="c1">// Default empty string object. Don&#39;t use this directly. Instead, call
+</span><span class="c1">// GetEmptyString() to get the reference.
+</span><span class="c1"></span><span class="n">PROTOBUF_EXPORT</span> <span class="k">extern</span> <span class="n">ExplicitlyConstructed</span><span class="o">&lt;::</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span>
+    <span class="n">fixed_address_empty_string</span><span class="p">;</span></code></pre></div>
+
+<ul>
+<li>include/google/protobuf/port_def.inc</li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#if defined(_MSC_VER) &amp;&amp; defined(PROTOBUF_USE_DLLS)
+</span><span class="cp">#ifdef LIBPROTOBUF_EXPORTS
+</span><span class="cp">#define PROTOBUF_EXPORT __declspec(dllexport)
+</span><span class="cp">#else
+</span><span class="cp">#define PROTOBUF_EXPORT __declspec(dllimport)
+</span><span class="cp">#endif
+</span><span class="cp">#ifdef LIBPROTOC_EXPORTS
+</span><span class="cp">#define PROTOC_EXPORT __declspec(dllexport)
+</span><span class="cp">#else
+</span><span class="cp">#define PROTOC_EXPORT __declspec(dllimport)
+</span><span class="cp">#endif
+</span><span class="cp">#else
+</span><span class="cp">#define PROTOBUF_EXPORT
+</span><span class="cp">#define PROTOC_EXPORT
+</span><span class="cp">#endif</span></code></pre></div>
+
+<p>以上より、以下の設定を加えています。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-diff" data-lang="diff"><span class="gh">diff --git a/cpp/src/gandiva/jni/CMakeLists.txt b/cpp/src/gandiva/jni/CMakeLists.txt
+</span><span class="gh">index 680b6e5..33a7e96 100644
+</span><span class="gh"></span><span class="gd">--- a/cpp/src/gandiva/jni/CMakeLists.txt
+</span><span class="gd"></span><span class="gi">+++ b/cpp/src/gandiva/jni/CMakeLists.txt
+</span><span class="gi"></span><span class="gu">@@ -19,6 +19,8 @@ if(CMAKE_VERSION VERSION_LESS 3.11)
+</span><span class="gu"></span>   message(FATAL_ERROR &#34;Building the Gandiva JNI bindings requires CMake version &gt;= 3.11&#34;)
+ endif()
+
+<span class="gi">+add_definitions(-DPROTOBUF_USE_DLLS)
+</span><span class="gi">+
+</span><span class="gi"></span> # Find JNI
+<span class="err"> find_package(JNI REQUIRED)</span></code></pre></div>
+
+<h2 id="java">Java</h2>
+
+<p>現時点での Java の parent の pom.xml では Gandiva がビルド対象になっていないので、Java の parent で Gandiva もビルドする場合には、以下のように pom.xml に追加する必要があります。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-diff" data-lang="diff"><span class="gh">diff --git a/java/pom.xml b/java/pom.xml
+</span><span class="gh">index 9e4afcf..cdb8885 100644
+</span><span class="gh"></span><span class="gd">--- a/java/pom.xml
+</span><span class="gd"></span><span class="gi">+++ b/java/pom.xml
+</span><span class="gi"></span><span class="gu">@@ -652,6 +652,7 @@
+</span><span class="gu"></span>     &lt;module&gt;adapter/jdbc&lt;/module&gt;
+     &lt;module&gt;plasma&lt;/module&gt;
+     &lt;module&gt;flight&lt;/module&gt;
+<span class="gi">+    &lt;module&gt;gandiva&lt;/module&gt;
+</span><span class="gi"></span>   &lt;/modules&gt;
+
+<span class="err">   &lt;profiles&gt;</span></code></pre></div>
+
+<p>Gandiva の test を実行する際に、C++ のビルドで生成した <code>gandiva_jni.dll</code> が必要になります。以下のコマンドで実行します。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">mvn install -Dcheckstyle.skip -Dflatc.download.skip=true -Dgandiva.cpp.build.dir=&lt;path to gandiva_jni.dll dir&gt; </code></pre></div>
+
+<p>また、以下の <code>Erros</code> で記載していますが、Windows で Arrow の Java モジュールをビルドする際に必要な <code>flatc.exe</code> はMaven から取得することができないので、自分でダウンロードして配置し、<code>-Dflatc.download.skip=true</code> をつけてビルドする必要があります。</p>
+
+<h3 id="errors-1">Errors</h3>
+
+<h4 id="could-not-find-artifact-com-github-icexelloss-flatc-windows-x86-64-exe-1-9-0-in-central-https-repo-maven-apache-org-maven2">Could not find artifact com.github.icexelloss:flatc-windows-x86_64:exe:1.9.0 in central (<a href="https://repo.maven.apache.org/maven2">https://repo.maven.apache.org/maven2</a>)</h4>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 47.503 s
+[INFO] Finished at: 2019-04-06T21:54:03+09:00
+[INFO] Final Memory: 72M/464M
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy (copy-flatc) on project arrow-format: Unable to find/resolve artifact.: Could not find artifact com.github.icexelloss:flatc-windows-x86_64:exe:1.9.0 in central (https://repo.maven.apache.org/maven2) -&gt; [Help 1]</code></pre></div>
+
+<p>これは <code>com.github.icexelloss:flatc-windows-x86_64:exe:1.9.0</code> が Maven Central Repository に無いことに起因しています。以下に対応方法が記載されています。</p>
+
+<ul>
+<li><a href="https://lists.apache.org/thread.html/5532d6b84e55159953975413772bf856e61d2b01a0fd19955dd4eb4f@%3Cdev.arrow.apache.org%3E">java/format: Windows build fails due to no flatc binary available - Apache Mail Archive</a></li>
+</ul>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>以上の手順で Windows / Java の環境で Gandiva を動かすことができました。Arrow は Windows ビルドも積極的にサポートしているので、興味がある人はぜひトライしてください。今回の変更内容は、適用する条件を整理して PR を投げるつもりです。</p>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2019 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>

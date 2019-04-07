@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Gandiva on act-act</title>
+    <link>/categories/gandiva/</link>
+    <description>Recent content in Gandiva on act-act</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja</language>
+    <lastBuildDate>Sat, 06 Apr 2019 00:00:01 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/gandiva/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Java / Gandiva on Windows</title>
+      <link>/blog/2019/04/06/java-gandiva-on-windows/</link>
+      <pubDate>Sat, 06 Apr 2019 00:00:01 +0000</pubDate>
+      
+      <guid>/blog/2019/04/06/java-gandiva-on-windows/</guid>
+      <description>Apache Arrow の Issue を watch していたら、Gandiva が Windows 環境でも動くようになっていたので、開発環境を構築しました。 C++ Development Setup Gandiva は C++ で開発されているので、まず C++</description>
+    </item>
+    
+  </channel>
+</rss>

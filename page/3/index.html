@@ -205,6 +205,19 @@
       
         <article class="post-entry">
   <header class="post-header">
+    <h3 class="post-title"><a href="/blog/2014/07/05/couchdb-code-reading6/" class="post-link">CouchDB Source Code Reading part6</a></h3>
+    <p class="post-meta">@Masayuki Takahashi · Jul 5, 2014 · 5 min read</p>
+  </header>
+  
+  <p class="post-summary">couch_httpd_db:db_req/2 前回までドキュメントの取得の流れを見てきたので、次に更新まわりを見ていこうと思います。 couch_httpd_db.erl: 1db_req(#httpd{method=&#39;POST&#39;,path_parts=[_DbName]}=Req, Db) -&gt; 2 couch_httpd:validate_ctype(Req, &#34;application/json&#34;), 3 Doc = couch_doc:from_json_obj(couch_httpd:json_body(Req)), 4 validate_attachment_names(Doc), 5 Doc2 = case Doc#doc.id of 6 &lt;&lt;&#34;&#34;&gt;&gt; -&gt; 7 Doc#doc{id=couch_uuids:new(), revs={0, []}};</p>
+  <footer class="post-footer">
+    <a class="read-more" href="/blog/2014/07/05/couchdb-code-reading6/">Read More →</a>
+  </footer>
+</article>
+
+      
+        <article class="post-entry">
+  <header class="post-header">
     <h3 class="post-title"><a href="/blog/2014/06/21/couchdb-code-reading5/" class="post-link">CouchDB Source Code Reading part5</a></h3>
     <p class="post-meta">@Masayuki Takahashi · Jun 21, 2014 · 7 min read</p>
   </header>
@@ -316,19 +329,6 @@
   <p class="post-summary">Docker ちょっと前にVPSサービスの乗り換えをしました。それまで、1つのVPS仮想ノードに複数のサービスを置いていたのですが、この乗り換えを機にD</p>
   <footer class="post-footer">
     <a class="read-more" href="/2013/12/30/how-to-assign-a-port-mapping-to-an-running-docker-container/">Read More →</a>
-  </footer>
-</article>
-
-      
-        <article class="post-entry">
-  <header class="post-header">
-    <h3 class="post-title"><a href="/blog/2013/10/13/mock-hive-server/" class="post-link">How to create Mock Hive Server</a></h3>
-    <p class="post-meta">@Masayuki Takahashi · Oct 13, 2013 · 2 min read</p>
-  </header>
-  
-  <p class="post-summary">We need a Mock Hive Server for tests 以前、thrift_erlを使ってHiveクライアントを作成しました。このHiveクライアントのテストを書こうとすると、Hi</p>
-  <footer class="post-footer">
-    <a class="read-more" href="/blog/2013/10/13/mock-hive-server/">Read More →</a>
   </footer>
 </article>
 
