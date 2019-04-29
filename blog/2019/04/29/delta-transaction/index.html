@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Transaction protocol of Delta Lake</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="Databricks から Delta Lake というモジュールがリリースされました。これは Databricks で提供している Delta という Transactional なストレージの一部を OSS として公開したようです。このモジュール" />
+
+  
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@masayuki" />
+    <meta name="twitter:title" content="Transaction protocol of Delta Lake" />
+    <meta name="twitter:description" content="Databricks から Delta Lake というモジュールがリリースされました。これは Databricks で提供している Delta という Transactional なストレージの一部を OSS として公開したようです。このモジュール" />
+    <meta name="twitter:image" content="/img/avatar.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Transaction protocol of Delta Lake" />
+  <meta property="og:description" content="Databricks から Delta Lake というモジュールがリリースされました。これは Databricks で提供している Delta という Transactional なストレージの一部を OSS として公開したようです。このモジュール" />
+  <meta property="og:url" content="/blog/2019/04/29/delta-transaction/" />
+  <meta property="og:image" content="/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.32" />
+
+
+<link rel="canonical" href="/blog/2019/04/29/delta-transaction/" />
+<link rel="alternative" href="/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="/css/bundle.css" />
+<link rel="stylesheet" href="/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://s.gravatar.com/avatar/4b97fb839e6040cfb353bd667ac93e54?s=80" alt="Avatar">
+  
+  <h2 class="title">act-act</h2>
+  
+  <p class="subtitle"></p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Transaction protocol of Delta Lake</h1>
+      <p class="post-meta">@Masayuki Takahashi · Apr 29, 2019 · 5 min read</p>
+    </header>
+    <article class="post-content">
+
+<p>Databricks から <a href="https://delta.io/">Delta Lake</a> というモジュールがリリースされました。これは Databricks で提供している Delta という Transactional なストレージの一部を OSS として公開したようです。このモジュールは現在 Spark に対応しています。</p>
+
+<p>この Delta のトランザクションの仕組みが気になったので、GitHub に公開されているコードを clone し、データを append / overwrite するテストコードを動かしてトランザクションがどのような仕組みで実現されているか調べてみました。</p>
+
+<h2 id="setup">Setup</h2>
+
+<p>公開されたコードは GitHub にあります。Scala が動く環境であればテストコードを動かすことはできます。Windows の場合は <code>winutils</code> が必要です。</p>
+
+<p>package は <code>org.apache.spark.sql.delta</code> になっています。</p>
+
+<p><a href="https://github.com/delta-io/delta">https://github.com/delta-io/delta</a></p>
+
+<h2 id="transaction-protocol">Transaction Protocol</h2>
+
+<p>Delta はバージョン番号を使ってトランザクションを管理しています。バージョン番号は、データを更新する度に1つ上がります。バージョン番号や更新内容は、データの保存先のフォルダの配下の <code>_delta_log</code> というフォルダに JSON ファイルとして保存するようになっています。</p>
+
+<p><a href="https://github.com/delta-io/delta/blob/master/README.md#transaction-protocol">https://github.com/delta-io/delta/blob/master/README.md#transaction-protocol</a></p>
+
+<h2 id="file-format">File Format</h2>
+
+<p>データのファイルフォーマットは <a href="https://parquet.apache.org/">Parquet</a> が使われています。Parquet ファイルは特に拡張されているわけではないので、<a href="https://github.com/apache/parquet-mr/tree/master/parquet-cli">parquet-cli</a> や <a href="https://github.com/apache/parquet-mr/tree/master/parquet-tools">parquet-tools</a> で読み取ることができます。</p>
+
+<h2 id="append">Append</h2>
+
+<p><a href="https://github.com/delta-io/delta/blob/16e087979ebd41ff3e893c8735a0e64e913de78b/src/test/scala/org/apache/spark/sql/delta/DeltaSuiteOSS.scala">org.apache.spark.sql.delta.DeltaSuiteOSS</a> に &ldquo;ppend then read&rdquo; というテストがあります。このテストケースは、データの追加を3つのトランザクションに分けて実行します。このテストを実行し、どのようなファイルが生成されるか確認してみました。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-scala" data-lang="scala"><span class="ln"> 1</span>  <span class="n">test</span><span class="o">(</span><span class="s">&#34;append then read&#34;</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln"> 2</span>    <span class="k">val</span> <span class="n">tempDir</span> <span class="k">=</span> <span class="nc">Utils</span><span class="o">.</span><span class="n">createTempDir</span><span class="o">()</span>
+<span class="ln"> 3</span>    <span class="nc">Seq</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="n">toDF</span><span class="o">().</span><span class="n">write</span><span class="o">.</span><span class="n">format</span><span class="o">(</span><span class="s">&#34;delta&#34;</span><span class="o">).</span><span class="n">save</span><span class="o">(</span><span class="n">tempDir</span><span class="o">.</span><span class="n">toString</span><span class="o">)</span>
+<span class="ln"> 4</span>    <span class="nc">Seq</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">).</span><span class="n">toDF</span><span class="o">().</span><span class="n">write</span><span class="o">.</span><span class="n">format</span><span class="o">(</span><span class="s">&#34;delta&#34;</span><span class="o">).</span><span class="n">mode</span><span class="o">(</span><span class="s">&#34;append&#34;</span><span class="o">).</span><span class="n">save</span><span class="o">(</span><span class="n">tempDir</span><span class="o">.</span><span class="n">toString</span><span class="o">)</span>
+<span class="ln"> 5</span>
+<span class="ln"> 6</span>    <span class="k">def</span> <span class="n">data</span><span class="k">:</span> <span class="kt">DataFrame</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="n">format</span><span class="o">(</span><span class="s">&#34;delta&#34;</span><span class="o">).</span><span class="n">load</span><span class="o">(</span><span class="n">tempDir</span><span class="o">.</span><span class="n">toString</span><span class="o">)</span>
+<span class="ln"> 7</span>    <span class="n">checkAnswer</span><span class="o">(</span><span class="n">data</span><span class="o">,</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">2</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">3</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Nil</span><span class="o">)</span>
+<span class="ln"> 8</span>
+<span class="ln"> 9</span>    <span class="c1">// append more
+</span><span class="ln">10</span><span class="c1"></span>    <span class="nc">Seq</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">6</span><span class="o">).</span><span class="n">toDF</span><span class="o">().</span><span class="n">write</span><span class="o">.</span><span class="n">format</span><span class="o">(</span><span class="s">&#34;delta&#34;</span><span class="o">).</span><span class="n">mode</span><span class="o">(</span><span class="s">&#34;append&#34;</span><span class="o">).</span><span class="n">save</span><span class="o">(</span><span class="n">tempDir</span><span class="o">.</span><span class="n">toString</span><span class="o">)</span>
+<span class="ln">11</span>    <span class="n">checkAnswer</span><span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="n">toDF</span><span class="o">(),</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">2</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">3</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">4</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">5</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">6</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Nil</span><span class="o">)</span>
+<span class="ln">12</span>  <span class="o">}</span></code></pre></div>
+
+<p>上記のテストコードを実行すると、以下のようなファイルが生成されます。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt"><span class="p">.</span>
+<span class="o">|</span>-- _delta_log
+<span class="o">|</span>   <span class="o">|</span>-- <span class="mi">00000000000000000000</span><span class="p">.</span>json
+<span class="o">|</span>   <span class="o">|</span>-- <span class="mi">00000000000000000001</span><span class="p">.</span>json
+<span class="o">|</span>   <span class="err">`</span>-- <span class="mi">00000000000000000002</span><span class="p">.</span>json
+<span class="o">|</span>-- part-00000-6217e923-3003-4d3d-9347-78fc9cd4a465-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
+<span class="o">|</span>-- part-00000-bcc5a893-4c8e-46b4-9e37-adbb0e447ccc-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
+<span class="o">|</span>-- part-00000-cafe2cc5-8dd0-4d2d-a362-e9e1efd46628-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
+<span class="o">|</span>-- part-00001-4717e754-ac60-46fd-8e46-bff299965988-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
+<span class="err">`</span>-- part-00001-e61a04d4-e92a-4117-b40e-b6d100af1ad8-c000<span class="p">.</span>snappy<span class="p">.</span>parquet</code></pre></div>
+
+<p>厳密には上記の1ファイル毎に .crc ファイルも生成されますが、ここでは省略しています。</p>
+
+<p>トランザクションは <code>save</code> の度に実行されます。前記のテストコードでは3回 <code>save</code> しているので <code>_delta_logs</code> に3つの JSON ファイルが生成されています。この json ファイルの番号が version になります。各ファイルを見ていきます。最初は <code>Seq(1)</code> を save したトランザクションです。</p>
+
+<ul>
+<li>00000000000000000000.json</li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span><span class="nt">&#34;commitInfo&#34;</span><span class="p">:{</span><span class="nt">&#34;timestamp&#34;</span><span class="p">:</span><span class="mi">1556452442349</span><span class="p">,</span><span class="nt">&#34;operation&#34;</span><span class="p">:</span><span class="s2">&#34;WRITE&#34;</span><span class="p">,</span><span class="nt">&#34;operationParameters&#34;</span><span class="p">:{</span><span class="nt">&#34;mode&#34;</span><span class="p">:</span><span class="s2">&#34;ErrorIfExists&#34;</span><span class="p">,</span><span class="nt">&#34;partitionBy&#34;</span><span class="p">:</span><span class="s2">&#34;[]&#34;</span><span class="p">}}}</span>
+<span class="p">{</span><span class="nt">&#34;protocol&#34;</span><span class="p">:{</span><span class="nt">&#34;minReaderVersion&#34;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="nt">&#34;minWriterVersion&#34;</span><span class="p">:</span><span class="mi">2</span><span class="p">}}</span>
+<span class="p">{</span><span class="nt">&#34;metaData&#34;</span><span class="p">:{</span><span class="nt">&#34;id&#34;</span><span class="p">:</span><span class="s2">&#34;43568f12-07f7-4c59-a870-54f3ef1c3c70&#34;</span><span class="p">,</span><span class="nt">&#34;format&#34;</span><span class="p">:{</span><span class="nt">&#34;provider&#34;</span><span class="p">:</span><span class="s2">&#34;parquet&#34;</span><span class="p">,</span><span class="nt">&#34;options&#34;</span><span class="p">:{}},</span><span class="nt">&#34;schemaString&#34;</span><span class="p">:</span><span class="s2">&#34;{\&#34;type\&#34;:\&#34;struct\&#34;,\&#34;fields\&#34;:[{\&#34;name\&#34;:\&#34;value\&#34;,\&#34;type\&#34;:\&#34;integer\&#34;,\&#34;nullable\&#34;:true,\&#34;metadata\&#34;:{}}]}&#34;</span><span class="p">,</span><span class="nt">&#34;partitionColumns&#34;</span><span class="p">:[],</span><span class="nt">&#34;configuration&#34;</span><span class="p">:{},</span><span class="nt">&#34;createdTime&#34;</span><span class="p">:</span><span class="mi">1556452390011</span><span class="p">}}</span>
+<span class="p">{</span><span class="nt">&#34;add&#34;</span><span class="p">:{</span><span class="nt">&#34;path&#34;</span><span class="p">:</span><span class="s2">&#34;part-00000-6217e923-3003-4d3d-9347-78fc9cd4a465-c000.snappy.parquet&#34;</span><span class="p">,</span><span class="nt">&#34;partitionValues&#34;</span><span class="p">:{},</span><span class="nt">&#34;size&#34;</span><span class="p">:</span><span class="mi">396</span><span class="p">,</span><span class="nt">&#34;modificationTime&#34;</span><span class="p">:</span><span class="mi">1556452442321</span><span class="p">,</span><span class="nt">&#34;dataChange&#34;</span><span class="p">:</span><span class="kc">true</span><span class="p">}}</span></code></pre></div>
+
+<p><code>commitInfo</code> はコミット時のタイムスタンプや操作が記録されています。<code>protocol</code> には read/write それぞれの min version が、<code>metaData</code> はスキーマ定義が記録されています。 <code>protocol</code> と <code>metaData</code> は version:0 の JSON ファイルにしか出力されません。<code>add</code> はこのトランザクションで追加された Parquet ファイル です。この Parquet ファイルは以下のような値が格納されています。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt"><span class="err">$</span> java -cp target/classes;target/dependency/<span class="o">*</span> org<span class="p">.</span>apache<span class="p">.</span>parquet<span class="p">.</span>cli<span class="p">.</span>Main cat D<span class="o">:</span><span class="ss">\</span>tmp<span class="ss">\</span>delta<span class="ss">\</span>append<span class="ss">\</span>part-00000-6217e923-3003-4d3d-9347-78fc9cd4a465-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
+<span class="ss">{</span>&#34;value&#34;<span class="o">:</span> <span class="mi">1</span><span class="ss">}</span></code></pre></div>
+
+<p>次に <code>Seq(2,3)</code> を保存したトランザクションの JSON ファイルを確認します。</p>
+
+<ul>
+<li>00000000000000000001.json</li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span><span class="nt">&#34;commitInfo&#34;</span><span class="p">:{</span><span class="nt">&#34;timestamp&#34;</span><span class="p">:</span><span class="mi">1556452453918</span><span class="p">,</span><span class="nt">&#34;operation&#34;</span><span class="p">:</span><span class="s2">&#34;WRITE&#34;</span><span class="p">,</span><span class="nt">&#34;operationParameters&#34;</span><span class="p">:{</span><span class="nt">&#34;mode&#34;</span><span class="p">:</span><span class="s2">&#34;Append&#34;</span><span class="p">,</span><span class="nt">&#34;partitionBy&#34;</span><span class="p">:</span><span class="s2">&#34;[]&#34;</span><span class="p">},</span><span class="nt">&#34;readVersion&#34;</span><span class="p">:</span><span class="mi">0</span><span class="p">}}</span>
+<span class="p">{</span><span class="nt">&#34;add&#34;</span><span class="p">:{</span><span class="nt">&#34;path&#34;</span><span class="p">:</span><span class="s2">&#34;part-00000-cafe2cc5-8dd0-4d2d-a362-e9e1efd46628-c000.snappy.parquet&#34;</span><span class="p">,</span><span class="nt">&#34;partitionValues&#34;</span><span class="p">:{},</span><span class="nt">&#34;size&#34;</span><span class="p">:</span><span class="mi">396</span><span class="p">,</span><span class="nt">&#34;modificationTime&#34;</span><span class="p">:</span><span class="mi">1556452453912</span><span class="p">,</span><span class="nt">&#34;dataChange&#34;</span><span class="p">:</span><span class="kc">true</span><span class="p">}}</span>
+<span class="p">{</span><span class="nt">&#34;add&#34;</span><span class="p">:{</span><span class="nt">&#34;path&#34;</span><span class="p">:</span><span class="s2">&#34;part-00001-e61a04d4-e92a-4117-b40e-b6d100af1ad8-c000.snappy.parquet&#34;</span><span class="p">,</span><span class="nt">&#34;partitionValues&#34;</span><span class="p">:{},</span><span class="nt">&#34;size&#34;</span><span class="p">:</span><span class="mi">396</span><span class="p">,</span><span class="nt">&#34;modificationTime&#34;</span><span class="p">:</span><span class="mi">1556452453899</span><span class="p">,</span><span class="nt">&#34;dataChange&#34;</span><span class="p">:</span><span class="kc">true</span><span class="p">}}</span></code></pre></div>
+
+<p><code>commitInfo</code> の <code>mode</code> が <code>Append</code> になっています。また、<code>add</code> が2つ記録されています。これらのファイルを見てみます。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt"><span class="err">$</span> java -cp target/classes;target/dependency/<span class="o">*</span> org<span class="p">.</span>apache<span class="p">.</span>parquet<span class="p">.</span>cli<span class="p">.</span>Main cat D<span class="o">:</span><span class="ss">\</span>tmp<span class="ss">\</span>delta<span class="ss">\</span>append<span class="ss">\</span>part-00000-cafe2cc5-8dd0-4d2d-a362-e9e1efd46628-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
+<span class="ss">{</span>&#34;value&#34;<span class="o">:</span> <span class="mi">2</span><span class="ss">}</span></code></pre></div>
+
+<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt"><span class="err">$</span> java -cp target/classes;target/dependency/<span class="o">*</span> org<span class="p">.</span>apache<span class="p">.</span>parquet<span class="p">.</span>cli<span class="p">.</span>Main cat D<span class="o">:</span><span class="ss">\</span>tmp<span class="ss">\</span>delta<span class="ss">\</span>append<span class="ss">\</span>part-00001-e61a04d4-e92a-4117-b40e-b6d100af1ad8-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
+<span class="ss">{</span>&#34;value&#34;<span class="o">:</span> <span class="mi">3</span><span class="ss">}</span></code></pre></div>
+
+<p>そして <code>Seq(4,5,6)</code> を保存したトランザクションの JSON ファイルと Parquet ファイルは以下のとおりです。</p>
+
+<ul>
+<li>00000000000000000002.json</li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span><span class="nt">&#34;commitInfo&#34;</span><span class="p">:{</span><span class="nt">&#34;timestamp&#34;</span><span class="p">:</span><span class="mi">1556452472683</span><span class="p">,</span><span class="nt">&#34;operation&#34;</span><span class="p">:</span><span class="s2">&#34;WRITE&#34;</span><span class="p">,</span><span class="nt">&#34;operationParameters&#34;</span><span class="p">:{</span><span class="nt">&#34;mode&#34;</span><span class="p">:</span><span class="s2">&#34;Append&#34;</span><span class="p">,</span><span class="nt">&#34;partitionBy&#34;</span><span class="p">:</span><span class="s2">&#34;[]&#34;</span><span class="p">},</span><span class="nt">&#34;readVersion&#34;</span><span class="p">:</span><span class="mi">1</span><span class="p">}}</span>
+<span class="p">{</span><span class="nt">&#34;add&#34;</span><span class="p">:{</span><span class="nt">&#34;path&#34;</span><span class="p">:</span><span class="s2">&#34;part-00000-bcc5a893-4c8e-46b4-9e37-adbb0e447ccc-c000.snappy.parquet&#34;</span><span class="p">,</span><span class="nt">&#34;partitionValues&#34;</span><span class="p">:{},</span><span class="nt">&#34;size&#34;</span><span class="p">:</span><span class="mi">396</span><span class="p">,</span><span class="nt">&#34;modificationTime&#34;</span><span class="p">:</span><span class="mi">1556452472671</span><span class="p">,</span><span class="nt">&#34;dataChange&#34;</span><span class="p">:</span><span class="kc">true</span><span class="p">}}</span>
+<span class="p">{</span><span class="nt">&#34;add&#34;</span><span class="p">:{</span><span class="nt">&#34;path&#34;</span><span class="p">:</span><span class="s2">&#34;part-00001-4717e754-ac60-46fd-8e46-bff299965988-c000.snappy.parquet&#34;</span><span class="p">,</span><span class="nt">&#34;partitionValues&#34;</span><span class="p">:{},</span><span class="nt">&#34;size&#34;</span><span class="p">:</span><span class="mi">400</span><span class="p">,</span><span class="nt">&#34;modificationTime&#34;</span><span class="p">:</span><span class="mi">1556452472679</span><span class="p">,</span><span class="nt">&#34;dataChange&#34;</span><span class="p">:</span><span class="kc">true</span><span class="p">}}</span></code></pre></div>
+
+<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt"><span class="err">$</span> java -cp target/classes;target/dependency/<span class="o">*</span> org<span class="p">.</span>apache<span class="p">.</span>parquet<span class="p">.</span>cli<span class="p">.</span>Main cat D<span class="o">:</span><span class="ss">\</span>tmp<span class="ss">\</span>delta<span class="ss">\</span>append<span class="ss">\</span>part-00000-bcc5a893-4c8e-46b4-9e37-adbb0e447ccc-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
+<span class="ss">{</span>&#34;value&#34;<span class="o">:</span> <span class="mi">4</span><span class="ss">}</span></code></pre></div>
+
+<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt"><span class="err">$</span> java -cp target/classes;target/dependency/<span class="o">*</span> org<span class="p">.</span>apache<span class="p">.</span>parquet<span class="p">.</span>cli<span class="p">.</span>Main cat D<span class="o">:</span><span class="ss">\</span>tmp<span class="ss">\</span>delta<span class="ss">\</span>append<span class="ss">\</span>part-00001-4717e754-ac60-46fd-8e46-bff299965988-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
+<span class="ss">{</span>&#34;value&#34;<span class="o">:</span> <span class="mi">5</span><span class="ss">}</span>
+<span class="ss">{</span>&#34;value&#34;<span class="o">:</span> <span class="mi">6</span><span class="ss">}</span></code></pre></div>
+
+<p>このように <code>_dalta_log</code> 配下の JSON ファイルで version 毎にどの Parquet ファイルが追加されたかを記録しています。</p>
+
+<h2 id="overwrite">Overwrite</h2>
+
+<p>GitHub にアップされているコードには <code>overwrite</code> のテストケースを見つけられなかったので、以下のコードを追加してみました。期待値も <code>overwrite</code> の期待値に変更しています。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-scala" data-lang="scala"><span class="ln"> 1</span>  <span class="n">test</span><span class="o">(</span><span class="s">&#34;overwrite then read&#34;</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln"> 2</span>    <span class="k">val</span> <span class="n">tempDir</span> <span class="k">=</span> <span class="nc">Utils</span><span class="o">.</span><span class="n">createTempDir</span><span class="o">()</span>
+<span class="ln"> 3</span>    <span class="nc">Seq</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="n">toDF</span><span class="o">().</span><span class="n">write</span><span class="o">.</span><span class="n">format</span><span class="o">(</span><span class="s">&#34;delta&#34;</span><span class="o">).</span><span class="n">save</span><span class="o">(</span><span class="n">tempDir</span><span class="o">.</span><span class="n">toString</span><span class="o">)</span>
+<span class="ln"> 4</span>    <span class="nc">Seq</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">).</span><span class="n">toDF</span><span class="o">().</span><span class="n">write</span><span class="o">.</span><span class="n">format</span><span class="o">(</span><span class="s">&#34;delta&#34;</span><span class="o">).</span><span class="n">mode</span><span class="o">(</span><span class="s">&#34;overwrite&#34;</span><span class="o">).</span><span class="n">save</span><span class="o">(</span><span class="n">tempDir</span><span class="o">.</span><span class="n">toString</span><span class="o">)</span>
+<span class="ln"> 5</span>
+<span class="ln"> 6</span>    <span class="k">def</span> <span class="n">data</span><span class="k">:</span> <span class="kt">DataFrame</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="n">format</span><span class="o">(</span><span class="s">&#34;delta&#34;</span><span class="o">).</span><span class="n">load</span><span class="o">(</span><span class="n">tempDir</span><span class="o">.</span><span class="n">toString</span><span class="o">)</span>
+<span class="ln"> 7</span>    <span class="n">checkAnswer</span><span class="o">(</span><span class="n">data</span><span class="o">,</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">2</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">3</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Nil</span><span class="o">)</span>
+<span class="ln"> 8</span>
+<span class="ln"> 9</span>    <span class="nc">Seq</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">6</span><span class="o">).</span><span class="n">toDF</span><span class="o">().</span><span class="n">write</span><span class="o">.</span><span class="n">format</span><span class="o">(</span><span class="s">&#34;delta&#34;</span><span class="o">).</span><span class="n">mode</span><span class="o">(</span><span class="s">&#34;overwrite&#34;</span><span class="o">).</span><span class="n">save</span><span class="o">(</span><span class="n">tempDir</span><span class="o">.</span><span class="n">toString</span><span class="o">)</span>
+<span class="ln">10</span>    <span class="n">checkAnswer</span><span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="n">toDF</span><span class="o">(),</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">4</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">5</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">6</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Nil</span><span class="o">)</span>
+<span class="ln">11</span>  <span class="o">}</span></code></pre></div>
+
+<p>それぞれ JSON ファイルを見ていきます。Parquet ファイルの内容は <code>append</code> の時と同様なので割愛します。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt"><span class="p">.</span>
+<span class="o">|</span>-- _delta_log
+<span class="o">|</span>   <span class="o">|</span>-- <span class="mi">00000000000000000000</span><span class="p">.</span>json
+<span class="o">|</span>   <span class="o">|</span>-- <span class="mi">00000000000000000001</span><span class="p">.</span>json
+<span class="o">|</span>   <span class="err">`</span>-- <span class="mi">00000000000000000002</span><span class="p">.</span>json
+<span class="o">|</span>-- part-00000-0e21921d-2ecb-41d7-80b3-6b7e982b13aa-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
+<span class="o">|</span>-- part-00000-b953f8cb-ac9f-441f-b544-c40a0e329802-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
+<span class="o">|</span>-- part-00000-eef7b120-c3ba-426a-afa3-56e3d3f03f7f-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
+<span class="o">|</span>-- part-00001-0fa56342-4b55-4241-8c82-a76c2d1bcbd3-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
+<span class="err">`</span>-- part-00001-fa0320b6-c11f-4d00-8c9d-aa0c2f1a2066-c000<span class="p">.</span>snappy<span class="p">.</span>parquet</code></pre></div>
+
+<ul>
+<li>00000000000000000000.json</li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span><span class="nt">&#34;commitInfo&#34;</span><span class="p">:{</span><span class="nt">&#34;timestamp&#34;</span><span class="p">:</span><span class="mi">1556454039726</span><span class="p">,</span><span class="nt">&#34;operation&#34;</span><span class="p">:</span><span class="s2">&#34;WRITE&#34;</span><span class="p">,</span><span class="nt">&#34;operationParameters&#34;</span><span class="p">:{</span><span class="nt">&#34;mode&#34;</span><span class="p">:</span><span class="s2">&#34;ErrorIfExists&#34;</span><span class="p">,</span><span class="nt">&#34;partitionBy&#34;</span><span class="p">:</span><span class="s2">&#34;[]&#34;</span><span class="p">}}}</span>
+<span class="p">{</span><span class="nt">&#34;protocol&#34;</span><span class="p">:{</span><span class="nt">&#34;minReaderVersion&#34;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="nt">&#34;minWriterVersion&#34;</span><span class="p">:</span><span class="mi">2</span><span class="p">}}</span>
+<span class="p">{</span><span class="nt">&#34;metaData&#34;</span><span class="p">:{</span><span class="nt">&#34;id&#34;</span><span class="p">:</span><span class="s2">&#34;6f97245f-8e71-4042-aa37-b65136d22696&#34;</span><span class="p">,</span><span class="nt">&#34;format&#34;</span><span class="p">:{</span><span class="nt">&#34;provider&#34;</span><span class="p">:</span><span class="s2">&#34;parquet&#34;</span><span class="p">,</span><span class="nt">&#34;options&#34;</span><span class="p">:{}},</span><span class="nt">&#34;schemaString&#34;</span><span class="p">:</span><span class="s2">&#34;{\&#34;type\&#34;:\&#34;struct\&#34;,\&#34;fields\&#34;:[{\&#34;name\&#34;:\&#34;value\&#34;,\&#34;type\&#34;:\&#34;integer\&#34;,\&#34;nullable\&#34;:true,\&#34;metadata\&#34;:{}}]}&#34;</span><span class="p">,</span><span class="nt">&#34;partitionColumns&#34;</span><span class="p">:[],</span><span class="nt">&#34;configuration&#34;</span><span class="p">:{},</span><span class="nt">&#34;createdTime&#34;</span><span class="p">:</span><span class="mi">1556454038600</span><span class="p">}}</span>
+<span class="p">{</span><span class="nt">&#34;add&#34;</span><span class="p">:{</span><span class="nt">&#34;path&#34;</span><span class="p">:</span><span class="s2">&#34;part-00000-b953f8cb-ac9f-441f-b544-c40a0e329802-c000.snappy.parquet&#34;</span><span class="p">,</span><span class="nt">&#34;partitionValues&#34;</span><span class="p">:{},</span><span class="nt">&#34;size&#34;</span><span class="p">:</span><span class="mi">396</span><span class="p">,</span><span class="nt">&#34;modificationTime&#34;</span><span class="p">:</span><span class="mi">1556454039685</span><span class="p">,</span><span class="nt">&#34;dataChange&#34;</span><span class="p">:</span><span class="kc">true</span><span class="p">}}</span></code></pre></div>
+
+<ul>
+<li>00000000000000000001.json</li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span><span class="nt">&#34;commitInfo&#34;</span><span class="p">:{</span><span class="nt">&#34;timestamp&#34;</span><span class="p">:</span><span class="mi">1556454047961</span><span class="p">,</span><span class="nt">&#34;operation&#34;</span><span class="p">:</span><span class="s2">&#34;WRITE&#34;</span><span class="p">,</span><span class="nt">&#34;operationParameters&#34;</span><span class="p">:{</span><span class="nt">&#34;mode&#34;</span><span class="p">:</span><span class="s2">&#34;Overwrite&#34;</span><span class="p">,</span><span class="nt">&#34;partitionBy&#34;</span><span class="p">:</span><span class="s2">&#34;[]&#34;</span><span class="p">},</span><span class="nt">&#34;readVersion&#34;</span><span class="p">:</span><span class="mi">0</span><span class="p">}}</span>
+<span class="p">{</span><span class="nt">&#34;add&#34;</span><span class="p">:{</span><span class="nt">&#34;path&#34;</span><span class="p">:</span><span class="s2">&#34;part-00000-0e21921d-2ecb-41d7-80b3-6b7e982b13aa-c000.snappy.parquet&#34;</span><span class="p">,</span><span class="nt">&#34;partitionValues&#34;</span><span class="p">:{},</span><span class="nt">&#34;size&#34;</span><span class="p">:</span><span class="mi">396</span><span class="p">,</span><span class="nt">&#34;modificationTime&#34;</span><span class="p">:</span><span class="mi">1556454046506</span><span class="p">,</span><span class="nt">&#34;dataChange&#34;</span><span class="p">:</span><span class="kc">true</span><span class="p">}}</span>
+<span class="p">{</span><span class="nt">&#34;add&#34;</span><span class="p">:{</span><span class="nt">&#34;path&#34;</span><span class="p">:</span><span class="s2">&#34;part-00001-fa0320b6-c11f-4d00-8c9d-aa0c2f1a2066-c000.snappy.parquet&#34;</span><span class="p">,</span><span class="nt">&#34;partitionValues&#34;</span><span class="p">:{},</span><span class="nt">&#34;size&#34;</span><span class="p">:</span><span class="mi">396</span><span class="p">,</span><span class="nt">&#34;modificationTime&#34;</span><span class="p">:</span><span class="mi">1556454046509</span><span class="p">,</span><span class="nt">&#34;dataChange&#34;</span><span class="p">:</span><span class="kc">true</span><span class="p">}}</span>
+<span class="p">{</span><span class="nt">&#34;remove&#34;</span><span class="p">:{</span><span class="nt">&#34;path&#34;</span><span class="p">:</span><span class="s2">&#34;part-00000-b953f8cb-ac9f-441f-b544-c40a0e329802-c000.snappy.parquet&#34;</span><span class="p">,</span><span class="nt">&#34;deletionTimestamp&#34;</span><span class="p">:</span><span class="mi">1556454047960</span><span class="p">,</span><span class="nt">&#34;dataChange&#34;</span><span class="p">:</span><span class="kc">true</span><span class="p">}}</span></code></pre></div>
+
+<p><code>remove</code> が追加されています。これは version:0 で追加した Parquet ファイルの削除を表しています。</p>
+
+<ul>
+<li>00000000000000000002.json</li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span><span class="nt">&#34;commitInfo&#34;</span><span class="p">:{</span><span class="nt">&#34;timestamp&#34;</span><span class="p">:</span><span class="mi">1556454057726</span><span class="p">,</span><span class="nt">&#34;operation&#34;</span><span class="p">:</span><span class="s2">&#34;WRITE&#34;</span><span class="p">,</span><span class="nt">&#34;operationParameters&#34;</span><span class="p">:{</span><span class="nt">&#34;mode&#34;</span><span class="p">:</span><span class="s2">&#34;Overwrite&#34;</span><span class="p">,</span><span class="nt">&#34;partitionBy&#34;</span><span class="p">:</span><span class="s2">&#34;[]&#34;</span><span class="p">},</span><span class="nt">&#34;readVersion&#34;</span><span class="p">:</span><span class="mi">1</span><span class="p">}}</span>
+<span class="p">{</span><span class="nt">&#34;add&#34;</span><span class="p">:{</span><span class="nt">&#34;path&#34;</span><span class="p">:</span><span class="s2">&#34;part-00000-eef7b120-c3ba-426a-afa3-56e3d3f03f7f-c000.snappy.parquet&#34;</span><span class="p">,</span><span class="nt">&#34;partitionValues&#34;</span><span class="p">:{},</span><span class="nt">&#34;size&#34;</span><span class="p">:</span><span class="mi">396</span><span class="p">,</span><span class="nt">&#34;modificationTime&#34;</span><span class="p">:</span><span class="mi">1556454056539</span><span class="p">,</span><span class="nt">&#34;dataChange&#34;</span><span class="p">:</span><span class="kc">true</span><span class="p">}}</span>
+<span class="p">{</span><span class="nt">&#34;add&#34;</span><span class="p">:{</span><span class="nt">&#34;path&#34;</span><span class="p">:</span><span class="s2">&#34;part-00001-0fa56342-4b55-4241-8c82-a76c2d1bcbd3-c000.snappy.parquet&#34;</span><span class="p">,</span><span class="nt">&#34;partitionValues&#34;</span><span class="p">:{},</span><span class="nt">&#34;size&#34;</span><span class="p">:</span><span class="mi">400</span><span class="p">,</span><span class="nt">&#34;modificationTime&#34;</span><span class="p">:</span><span class="mi">1556454056548</span><span class="p">,</span><span class="nt">&#34;dataChange&#34;</span><span class="p">:</span><span class="kc">true</span><span class="p">}}</span>
+<span class="p">{</span><span class="nt">&#34;remove&#34;</span><span class="p">:{</span><span class="nt">&#34;path&#34;</span><span class="p">:</span><span class="s2">&#34;part-00000-0e21921d-2ecb-41d7-80b3-6b7e982b13aa-c000.snappy.parquet&#34;</span><span class="p">,</span><span class="nt">&#34;deletionTimestamp&#34;</span><span class="p">:</span><span class="mi">1556454057726</span><span class="p">,</span><span class="nt">&#34;dataChange&#34;</span><span class="p">:</span><span class="kc">true</span><span class="p">}}</span>
+<span class="p">{</span><span class="nt">&#34;remove&#34;</span><span class="p">:{</span><span class="nt">&#34;path&#34;</span><span class="p">:</span><span class="s2">&#34;part-00001-fa0320b6-c11f-4d00-8c9d-aa0c2f1a2066-c000.snappy.parquet&#34;</span><span class="p">,</span><span class="nt">&#34;deletionTimestamp&#34;</span><span class="p">:</span><span class="mi">1556454057726</span><span class="p">,</span><span class="nt">&#34;dataChange&#34;</span><span class="p">:</span><span class="kc">true</span><span class="p">}}</span></code></pre></div>
+
+<p>これも、version:1 で追加された Parquet ファイルの削除を表しています。</p>
+
+<p><code>append</code> の時と比較すると <code>overwrite</code> の場合は以前の version の Parquet ファイルを削除する記録が残るようになっています。しかし、<code>remove</code> で指定されている Parquet ファイルは実際には削除されておらず、データフォルダの中に残っています。この点が通常の <code>overwrite</code> の挙動と異なっています。</p>
+
+<h2 id="checkpoint">Checkpoint</h2>
+
+<p>ここまでの結果から、最新のデータを read するのに <code>_delta_log</code> 配下のすべての JSON ファイルを読む必要がありそうです。そうなると変更を重ねたデータを read する時に JSON ファイルの解析に時間がかかるのでは、という懸念があります。</p>
+
+<p>Delta では <code>checkpoint</code> を追加することによりこの問題を回避できるようです。この <code>checkpoint</code> は、任意のバージョンの状態を Parquet ファイルに出力します。先程の <code>overwrite</code> のテストコードをベースに、 <code>checkpoint</code> を追加するコードを書いて動かしてみました。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-scala" data-lang="scala"><span class="ln"> 1</span>  <span class="n">test</span><span class="o">(</span><span class="s">&#34;overwrite and checkpoint then read&#34;</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln"> 2</span>    <span class="k">val</span> <span class="n">tempDir</span> <span class="k">=</span> <span class="nc">Utils</span><span class="o">.</span><span class="n">createTempDir</span><span class="o">()</span>
+<span class="ln"> 3</span>    <span class="k">val</span> <span class="n">writersLog</span> <span class="k">=</span> <span class="nc">DeltaLog</span><span class="o">.</span><span class="n">forTable</span><span class="o">(</span><span class="n">spark</span><span class="o">,</span> <span class="k">new</span> <span class="nc">Path</span><span class="o">(</span><span class="n">tempDir</span><span class="o">.</span><span class="n">toURI</span><span class="o">))</span>
+<span class="ln"> 4</span>    <span class="nc">Seq</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="n">toDF</span><span class="o">().</span><span class="n">write</span><span class="o">.</span><span class="n">format</span><span class="o">(</span><span class="s">&#34;delta&#34;</span><span class="o">).</span><span class="n">save</span><span class="o">(</span><span class="n">tempDir</span><span class="o">.</span><span class="n">toString</span><span class="o">)</span>
+<span class="ln"> 5</span>    <span class="nc">Seq</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">).</span><span class="n">toDF</span><span class="o">().</span><span class="n">write</span><span class="o">.</span><span class="n">format</span><span class="o">(</span><span class="s">&#34;delta&#34;</span><span class="o">).</span><span class="n">mode</span><span class="o">(</span><span class="s">&#34;overwrite&#34;</span><span class="o">).</span><span class="n">save</span><span class="o">(</span><span class="n">tempDir</span><span class="o">.</span><span class="n">toString</span><span class="o">)</span>
+<span class="ln"> 6</span>
+<span class="ln"> 7</span>    <span class="k">def</span> <span class="n">data</span><span class="k">:</span> <span class="kt">DataFrame</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="n">format</span><span class="o">(</span><span class="s">&#34;delta&#34;</span><span class="o">).</span><span class="n">load</span><span class="o">(</span><span class="n">tempDir</span><span class="o">.</span><span class="n">toString</span><span class="o">)</span>
+<span class="ln"> 8</span>    <span class="n">checkAnswer</span><span class="o">(</span><span class="n">data</span><span class="o">,</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">2</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">3</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Nil</span><span class="o">)</span>
+<span class="ln"> 9</span>    
+<span class="ln">10</span>    <span class="nc">Seq</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">6</span><span class="o">).</span><span class="n">toDF</span><span class="o">().</span><span class="n">write</span><span class="o">.</span><span class="n">format</span><span class="o">(</span><span class="s">&#34;delta&#34;</span><span class="o">).</span><span class="n">mode</span><span class="o">(</span><span class="s">&#34;overwrite&#34;</span><span class="o">).</span><span class="n">save</span><span class="o">(</span><span class="n">tempDir</span><span class="o">.</span><span class="n">toString</span><span class="o">)</span>
+<span class="ln">11</span>    <span class="c1">// Add checkpoint
+</span><span class="ln">12</span><span class="c1"></span>    <span class="n">writersLog</span><span class="o">.</span><span class="n">checkpoint</span><span class="o">()</span>
+<span class="ln">13</span>    <span class="n">checkAnswer</span><span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="n">toDF</span><span class="o">(),</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">4</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">5</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">6</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Nil</span><span class="o">)</span>
+<span class="ln">14</span>  <span class="o">}</span></code></pre></div>
+
+<p>12行目で <code>checkpoint</code> を記録しています。このコードを実行すると、以下のようなファイルが生成されます。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt"><span class="p">.</span>
+<span class="o">|</span>-- _delta_log
+<span class="o">|</span>   <span class="o">|</span>-- <span class="mi">00000000000000000000</span><span class="p">.</span>json
+<span class="o">|</span>   <span class="o">|</span>-- <span class="mi">00000000000000000001</span><span class="p">.</span>json
+<span class="o">|</span>   <span class="o">|</span>-- <span class="mi">00000000000000000002</span><span class="p">.</span>checkpoint<span class="p">.</span>parquet
+<span class="o">|</span>   <span class="o">|</span>-- <span class="mi">00000000000000000002</span><span class="p">.</span>json
+<span class="o">|</span>   <span class="err">`</span>-- _last_checkpoint
+<span class="o">|</span>-- part-00000-0bc9cae4-22ae-4285-810d-50b1837fb343-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
+<span class="o">|</span>-- part-00000-3f35a68e-cf56-4761-8228-996731a810d6-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
+<span class="o">|</span>-- part-00000-6156403c-f8aa-4aa0-a01b-ba1b2763b267-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
+<span class="o">|</span>-- part-00001-83503bcd-7cd3-4f21-9d94-ca70112cfa65-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
+<span class="err">`</span>-- part-00001-9c744388-e8fb-4164-a8e3-a88022e1a25c-c000<span class="p">.</span>snappy<span class="p">.</span>parquet</code></pre></div>
+
+<p><code>_delta_log</code> の配下に <code>_last_checkpoint</code> と <code>00000000000000000002.checkpoint.parquet</code> が追加されていることが分かります。<code>_last_checkpoint</code> は以下のようになっています。</p>
+
+<ul>
+<li>_last_checkpoint</li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt"><span class="ss">{</span>&#34;version&#34;<span class="o">:</span><span class="mi">2</span><span class="p">,</span>&#34;size&#34;<span class="o">:</span><span class="mi">7</span><span class="ss">}</span></code></pre></div>
+
+<p><code>version</code> には <code>checkpoint</code> を実行した時のバージョンが記録されています。<code>size</code> は恐らく <code>00000000000000000002.checkpoint.parquet</code> のフィールドサイズだと思います。</p>
+
+<p><code>00000000000000000002.checkpoint.parquet</code> は Parquet で deprecated になっている <code>INT96</code> が使われており、<a href="https://github.com/apache/parquet-mr/tree/master/parquet-cli">parquet-cli</a> では内容を確認することができません。<a href="https://github.com/apache/parquet-mr/tree/master/parquet-tools">parquet-tools</a> で dump してみました。出力結果が大きいので以下に貼り付けました。</p>
+
+<p><a href="https://gist.github.com/masayuki038/210370087784eb2203376c7453ccf524">https://gist.github.com/masayuki038/210370087784eb2203376c7453ccf524</a></p>
+
+<p>この中の <code>remove.path</code> を見ると version:1 と version:0 のファイルが記録されていることから、この Parquet ファイルを参照することによって過去の JSON ファイルを参照することなく任意のバージョンの状態を取得することができるようになっているようです。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">BINARY remove<span class="p">.</span>path
+--------------------------------------------------------------------------------
+<span class="o">***</span> row group <span class="mi">1</span> of <span class="mi">1</span><span class="p">,</span> values <span class="mi">1</span> to <span class="mi">7</span> <span class="o">***</span>
+value <span class="mi">1</span><span class="o">:</span> R<span class="o">:</span><span class="mi">0</span> D<span class="o">:</span><span class="mi">0</span> V<span class="o">:</span><span class="s">&lt;null&gt;</span>
+value <span class="mi">2</span><span class="o">:</span> R<span class="o">:</span><span class="mi">0</span> D<span class="o">:</span><span class="mi">0</span> V<span class="o">:</span><span class="s">&lt;null&gt;</span>
+value <span class="mi">3</span><span class="o">:</span> R<span class="o">:</span><span class="mi">0</span> D<span class="o">:</span><span class="mi">2</span> V<span class="o">:</span>part-00001-83503bcd-7cd3-4f21-9d94-ca70112cfa65-c00 <span class="ss">[</span>more<span class="ss">]</span><span class="p">...</span>
+value <span class="mi">4</span><span class="o">:</span> R<span class="o">:</span><span class="mi">0</span> D<span class="o">:</span><span class="mi">2</span> V<span class="o">:</span>part-00000-3f35a68e-cf56-4761-8228-996731a810d6-c00 <span class="ss">[</span>more<span class="ss">]</span><span class="p">...</span>
+value <span class="mi">5</span><span class="o">:</span> R<span class="o">:</span><span class="mi">0</span> D<span class="o">:</span><span class="mi">0</span> V<span class="o">:</span><span class="s">&lt;null&gt;</span>
+value <span class="mi">6</span><span class="o">:</span> R<span class="o">:</span><span class="mi">0</span> D<span class="o">:</span><span class="mi">0</span> V<span class="o">:</span><span class="s">&lt;null&gt;</span>
+value <span class="mi">7</span><span class="o">:</span> R<span class="o">:</span><span class="mi">0</span> D<span class="o">:</span><span class="mi">2</span> V<span class="o">:</span>part-00000-6156403c-f8aa-4aa0-a01b-ba1b2763b267-c00 <span class="ss">[</span>more<span class="ss">]</span><span class="p">...</span></code></pre></div>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>Delta のトランザクションの仕組みを見てみました。このような仕組みは Apache Incubator Project の <a href="http://hudi.incubator.apache.org/">Hudi</a> や <a href="https://iceberg.apache.org/">Iceberg</a> も提供しているので、実現方式の比較をしてみたいところです。　</p>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2019 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>

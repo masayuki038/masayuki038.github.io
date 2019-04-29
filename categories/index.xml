@@ -57,6 +57,15 @@
     </item>
     
     <item>
+      <title>Delta</title>
+      <link>/categories/delta/</link>
+      <pubDate>Mon, 29 Apr 2019 00:00:01 +0000</pubDate>
+      
+      <guid>/categories/delta/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Docker</title>
       <link>/categories/docker/</link>
       <pubDate>Sat, 22 Feb 2014 00:00:00 +0000</pubDate>
@@ -212,7 +221,7 @@
     <item>
       <title>Parquet</title>
       <link>/categories/parquet/</link>
-      <pubDate>Tue, 19 Feb 2019 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 29 Apr 2019 00:00:01 +0000</pubDate>
       
       <guid>/categories/parquet/</guid>
       <description></description>
