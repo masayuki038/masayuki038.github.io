@@ -208,6 +208,19 @@
       
         <article class="post-entry">
   <header class="post-header">
+    <h3 class="post-title"><a href="/blog/2019/01/06/efficent-data-transper-mechanisms/" class="post-link">『Efficient Data Transfer Mechanisms on Analytics Data Processing System』を読んだ</a></h3>
+    <p class="post-meta">@Masayuki Takahashi · Jan 6, 2019 · 2 min read</p>
+  </header>
+  
+  <p class="post-summary">Calcite の Adapter を書いている中で、それぞれのRelNode(Scan/Filter/Aggregation …) の結果(タプル)の生成と、それに使用される</p>
+  <footer class="post-footer">
+    <a class="read-more" href="/blog/2019/01/06/efficent-data-transper-mechanisms/">Read More →</a>
+  </footer>
+</article>
+
+      
+        <article class="post-entry">
+  <header class="post-header">
     <h3 class="post-title"><a href="/blog/2017/06/17/file-serdes-with-apache-arrow/" class="post-link">Serialize/Deserialize With Apache Arrow</a></h3>
     <p class="post-meta">@Masayuki Takahashi · Jun 17, 2017 · 2 min read</p>
   </header>
@@ -325,19 +338,6 @@ drill-override.conf: 1drill.exec: { 2 cluster-id: &#34;drillbits1&#34;, 3 zk.con
   <p class="post-summary">couch_db:update_doc/4 引き続きcouch_db:update_docs/4を。 couch_db.erl: 1 if (AllOrNothing) and (PreCommitFailures /= []) -&gt; 2 {aborted, 3 lists:foldl(fun({#doc{id=Id,revs=Revs}, Ref},Acc) -&gt; 4 case lists:keyfind(Ref,1,PreCommitFailures) of 5 {Ref, Error} -&gt; 6 case Revs of 7 {Pos, [RevId|_]} -&gt; 8 [{{Id,{Pos, RevId}}, Error} | Acc]; 9 {0, []} -&gt;</p>
   <footer class="post-footer">
     <a class="read-more" href="/blog/2014/07/27/couchdb-code-reading9/">Read More →</a>
-  </footer>
-</article>
-
-      
-        <article class="post-entry">
-  <header class="post-header">
-    <h3 class="post-title"><a href="/blog/2014/07/19/couchdb-code-reading8/" class="post-link">CouchDB Source Code Reading part8</a></h3>
-    <p class="post-meta">@Masayuki Takahashi · Jul 19, 2014 · 9 min read</p>
-  </header>
-  
-  <p class="post-summary">couch_db:update_doc/4 前回からの続きで、couch_db:update_docs/4の続きを。 couch_db.erl: 1 case (Db#db.validate_doc_funs /= []) orelse 2 lists:any( 3 fun({#doc{id= &lt;&lt;?DESIGN_DOC_PREFIX, _/binary&gt;&gt;}, _Ref}) -&gt; 4 true; 5 ({#doc{atts=Atts}, _Ref}) -&gt; 6 Atts /= [] 7 end, Docs3) of 8 true -&gt; 9</p>
-  <footer class="post-footer">
-    <a class="read-more" href="/blog/2014/07/19/couchdb-code-reading8/">Read More →</a>
   </footer>
 </article>
 

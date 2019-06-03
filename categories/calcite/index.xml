@@ -6,10 +6,19 @@
     <description>Recent content in Calcite on act-act</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja</language>
-    <lastBuildDate>Sun, 06 Jan 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 03 Jun 2019 23:00:01 +0000</lastBuildDate>
     
 	<atom:link href="/categories/calcite/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Calcite Code Reading Part1</title>
+      <link>/blog/2019/06/04/calcite-code-reading-part1/</link>
+      <pubDate>Mon, 03 Jun 2019 23:00:01 +0000</pubDate>
+      
+      <guid>/blog/2019/06/04/calcite-code-reading-part1/</guid>
+      <description>Image by 949158 from Pixabay Calcite の Adapter を書いているのですが、たまにうまく動かせなくて困ることがあるので、頭からコードを読んでみることにしました。 Calcite GitHub の README.md を見ると、</description>
+    </item>
     
     <item>
       <title>『Efficient Data Transfer Mechanisms on Analytics Data Processing System』を読んだ</title>

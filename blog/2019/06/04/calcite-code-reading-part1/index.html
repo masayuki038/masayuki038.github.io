@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Calcite Code Reading Part1</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="Image by 949158 from Pixabay Calcite の Adapter を書いているのですが、たまにうまく動かせなくて困ることがあるので、頭からコードを読んでみることにしました。 Calcite GitHub の README.md を見ると、" />
+
+  
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@masayuki" />
+    <meta name="twitter:title" content="Calcite Code Reading Part1" />
+    <meta name="twitter:description" content="Image by 949158 from Pixabay Calcite の Adapter を書いているのですが、たまにうまく動かせなくて困ることがあるので、頭からコードを読んでみることにしました。 Calcite GitHub の README.md を見ると、" />
+    <meta name="twitter:image" content="/img/avatar.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Calcite Code Reading Part1" />
+  <meta property="og:description" content="Image by 949158 from Pixabay Calcite の Adapter を書いているのですが、たまにうまく動かせなくて困ることがあるので、頭からコードを読んでみることにしました。 Calcite GitHub の README.md を見ると、" />
+  <meta property="og:url" content="/blog/2019/06/04/calcite-code-reading-part1/" />
+  <meta property="og:image" content="/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.32" />
+
+
+<link rel="canonical" href="/blog/2019/06/04/calcite-code-reading-part1/" />
+<link rel="alternative" href="/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="/css/bundle.css" />
+<link rel="stylesheet" href="/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+
+<nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Calcite Code Reading Part1</h1>
+      <p class="post-meta">@Masayuki Takahashi · Jun 3, 2019 · 6 min read</p>
+    </header>
+    <article class="post-content">
+
+<p><img src="/images/calcite/calcite-728760_1280.jpg" alt="calcite" /></p>
+
+<p>Image by <a href="https://pixabay.com/users/949158-949158/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=728760">949158</a> from <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=728760">Pixabay</a></p>
+
+<p>Calcite の Adapter を書いているのですが、たまにうまく動かせなくて困ることがあるので、頭からコードを読んでみることにしました。</p>
+
+<h1 id="calcite">Calcite</h1>
+
+<p>GitHub の <a href="https://github.com/apache/calcite">README.md</a> を見ると、&rdquo;Apache Calcite is a dynamic data management framework. For more details, see the home page.&rdquo; と書かれており、詳細は <a href="http://calcite.apache.org/">home page</a> を見ろ、となっています。</p>
+
+<p>私が触れてきた範囲で書くと、Calcite は任意のデータソースに対して SQL で操作するインターフェースを提供する、データベースのツールキットです。例えば CSV ファイルに対して SQL で問い合わせるような機能(CSV Adapter)を提供しています。Calcite はサポートするデータソースごとに Adapter を実装するようになっています。例えば <a href="https://geode.apache.org/">Geode</a> や [Cassandra])(<a href="http://cassandra.apache.org/">http://cassandra.apache.org/</a>) の Adapter を持っています。また、ミドルウェアに組み込まれているケースもあります。詳細は <a href="http://calcite.apache.org/community/#talks">Community</a> のページを参照してください。</p>
+
+<h1 id="test-code">Test Code</h1>
+
+<p>処理の流れを見ていくにあたり、CSV Adapter を実装した <a href="[https://github.com/apache/calcite/tree/master/example]">example プロジェクト</a>を使い、以下のようなテストコードを動かしました。<code>model.json</code> では Adapter の SchemaFactory のクラス等を設定しています。</p>
+
+<ul>
+<li>Test Code</li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln">1</span>  <span class="nd">@Test</span>
+<span class="ln">2</span>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testExample</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">ClassNotFoundException</span><span class="o">,</span> <span class="n">SQLException</span> <span class="o">{</span>
+<span class="ln">3</span>    <span class="n">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="s">&#34;org.apache.calcite.jdbc.Driver&#34;</span><span class="o">);</span>
+<span class="ln">4</span>    <span class="k">try</span> <span class="o">(</span><span class="n">Connection</span> <span class="n">conn</span> <span class="o">=</span> <span class="n">DriverManager</span><span class="o">.</span><span class="na">getConnection</span><span class="o">(</span><span class="s">&#34;jdbc:calcite:model=target/test-classes/example-model.json&#34;</span><span class="o">,</span> <span class="s">&#34;foo&#34;</span><span class="o">,</span> <span class="s">&#34;bar&#34;</span><span class="o">))</span> <span class="o">{</span>
+<span class="ln">5</span>      <span class="k">try</span> <span class="o">(</span><span class="n">Statement</span> <span class="n">stmt</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="na">createStatement</span><span class="o">())</span> <span class="o">{</span>
+<span class="ln">6</span>        <span class="n">stmt</span><span class="o">.</span><span class="na">executeQuery</span><span class="o">(</span><span class="s">&#34;select empno, gender, name from EMPS where name = &#39;John&#39;&#34;</span><span class="o">);</span>
+<span class="ln">7</span>      <span class="o">}</span>
+<span class="ln">8</span>    <span class="o">}</span>
+<span class="ln">9</span>  <span class="o">}</span></code></pre></div>
+
+<ul>
+<li>example-model.json</li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-json" data-lang="json"><span class="ln"> 1</span><span class="p">{</span>
+<span class="ln"> 2</span>  <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;1.0&#34;</span><span class="p">,</span>
+<span class="ln"> 3</span>  <span class="nt">&#34;defaultSchema&#34;</span><span class="p">:</span> <span class="s2">&#34;SALES&#34;</span><span class="p">,</span>
+<span class="ln"> 4</span>  <span class="nt">&#34;schemas&#34;</span><span class="p">:</span> <span class="p">[</span>
+<span class="ln"> 5</span>    <span class="p">{</span>
+<span class="ln"> 6</span>      <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;SALES&#34;</span><span class="p">,</span>
+<span class="ln"> 7</span>      <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;custom&#34;</span><span class="p">,</span>
+<span class="ln"> 8</span>      <span class="nt">&#34;factory&#34;</span><span class="p">:</span> <span class="s2">&#34;org.apache.calcite.adapter.csv.CsvSchemaFactory&#34;</span><span class="p">,</span>
+<span class="ln"> 9</span>      <span class="nt">&#34;operand&#34;</span><span class="p">:</span> <span class="p">{</span>
+<span class="ln">10</span>        <span class="nt">&#34;directory&#34;</span><span class="p">:</span> <span class="s2">&#34;sales&#34;</span><span class="p">,</span>
+<span class="ln">11</span>        <span class="nt">&#34;flavor&#34;</span><span class="p">:</span> <span class="s2">&#34;translatable&#34;</span>
+<span class="ln">12</span>      <span class="p">}</span>
+<span class="ln">13</span>    <span class="p">}</span>
+<span class="ln">14</span>  <span class="p">]</span>
+<span class="ln">15</span><span class="p">}</span></code></pre></div>
+
+<h1 id="jdbc">JDBC</h1>
+
+<p>前記のテストコードでは <a href="https://calcite.apache.org/avatica/">Avatica</a> という Calcite のサブプロジェクトの JDBC Driver が load されます。ただ、Calcite にも JDBC のクラスが付いており、最終的には <a href="https://github.com/apache/calcite/blob/master/core/src/main/java/org/apache/calcite/jdbc/CalciteConnectionImpl.java">CalciteConnectionImpl</a> や <a href="https://github.com/apache/calcite/blob/master/core/src/main/java/org/apache/calcite/jdbc/CalcitePreparedStatement.java">CalcitePreparedStatement</a> といったクラスが呼び出されるようになっています。</p>
+
+<h1 id="planner">Planner</h1>
+
+<p>Calcite は指定された SQL に対して実行計画を作成します。この実行計画の作成には以下の2種類のクラスがあります。</p>
+
+<ul>
+<li><a href="https://github.com/apache/calcite/blob/master/core/src/main/java/org/apache/calcite/plan/hep/HepPlanner.java">HepPlanner</a></li>
+<li><a href="https://github.com/apache/calcite/blob/master/core/src/main/java/org/apache/calcite/plan/volcano/VolcanoPlanner.java">VolcanoPlanner</a></li>
+</ul>
+
+<p>JavaDoc を見ても、RBO / CBO といった表現は無いのですが、VolcanoPlanner は Cost を見ているので CBO と考えて良さそうです。なお、上記コードでも VolcanoPlanner が生成され、実行計画を作成しています。</p>
+
+<ul>
+<li><a href="https://github.com/apache/calcite/blob/73023148e7f37d494f6caf92b01b090f6dde13cd/core/src/main/java/org/apache/calcite/prepare/CalcitePrepareImpl.java#L422">core/src/main/java/org/apache/calcite/prepare/CalcitePrepareImpl.java</a></li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln">422</span>  <span class="cm">/** Creates a query planner and initializes it with a default set of
+</span><span class="ln">423</span><span class="cm">   * rules. */</span>
+<span class="ln">424</span>  <span class="kd">protected</span> <span class="n">RelOptPlanner</span> <span class="nf">createPlanner</span><span class="o">(</span>
+<span class="ln">425</span>      <span class="kd">final</span> <span class="n">CalcitePrepare</span><span class="o">.</span><span class="na">Context</span> <span class="n">prepareContext</span><span class="o">,</span>
+<span class="ln">426</span>      <span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">calcite</span><span class="o">.</span><span class="na">plan</span><span class="o">.</span><span class="na">Context</span> <span class="n">externalContext</span><span class="o">,</span>
+<span class="ln">427</span>      <span class="n">RelOptCostFactory</span> <span class="n">costFactory</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">428</span>    <span class="k">if</span> <span class="o">(</span><span class="n">externalContext</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">429</span>      <span class="n">externalContext</span> <span class="o">=</span> <span class="n">Contexts</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">prepareContext</span><span class="o">.</span><span class="na">config</span><span class="o">());</span>
+<span class="ln">430</span>    <span class="o">}</span>
+<span class="ln">431</span>    <span class="kd">final</span> <span class="n">VolcanoPlanner</span> <span class="n">planner</span> <span class="o">=</span>
+<span class="ln">432</span>        <span class="k">new</span> <span class="n">VolcanoPlanner</span><span class="o">(</span><span class="n">costFactory</span><span class="o">,</span> <span class="n">externalContext</span><span class="o">);</span></code></pre></div>
+
+<h1 id="sql-parser">SQL Parser</h1>
+
+<p>SQL は SqlParser が parse して SqlNode に変換しています。</p>
+
+<ul>
+<li><a href="https://github.com/apache/calcite/blob/73023148e7f37d494f6caf92b01b090f6dde13cd/core/src/main/java/org/apache/calcite/prepare/CalcitePrepareImpl.java#L596">core/src/main/java/org/apache/calcite/prepare/CalcitePrepareImpl.java</a></li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln">596</span>    <span class="k">if</span> <span class="o">(</span><span class="n">query</span><span class="o">.</span><span class="na">sql</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">597</span>      <span class="kd">final</span> <span class="n">CalciteConnectionConfig</span> <span class="n">config</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="na">config</span><span class="o">();</span>
+<span class="ln">598</span>      <span class="kd">final</span> <span class="n">SqlParser</span><span class="o">.</span><span class="na">ConfigBuilder</span> <span class="n">parserConfig</span> <span class="o">=</span> <span class="n">createParserConfig</span><span class="o">()</span>
+<span class="ln">599</span>          <span class="o">.</span><span class="na">setQuotedCasing</span><span class="o">(</span><span class="n">config</span><span class="o">.</span><span class="na">quotedCasing</span><span class="o">())</span>
+<span class="ln">600</span>          <span class="o">.</span><span class="na">setUnquotedCasing</span><span class="o">(</span><span class="n">config</span><span class="o">.</span><span class="na">unquotedCasing</span><span class="o">())</span>
+<span class="ln">601</span>          <span class="o">.</span><span class="na">setQuoting</span><span class="o">(</span><span class="n">config</span><span class="o">.</span><span class="na">quoting</span><span class="o">())</span>
+<span class="ln">602</span>          <span class="o">.</span><span class="na">setConformance</span><span class="o">(</span><span class="n">config</span><span class="o">.</span><span class="na">conformance</span><span class="o">())</span>
+<span class="ln">603</span>          <span class="o">.</span><span class="na">setCaseSensitive</span><span class="o">(</span><span class="n">config</span><span class="o">.</span><span class="na">caseSensitive</span><span class="o">());</span>
+<span class="ln">604</span>      <span class="kd">final</span> <span class="n">SqlParserImplFactory</span> <span class="n">parserFactory</span> <span class="o">=</span>
+<span class="ln">605</span>          <span class="n">config</span><span class="o">.</span><span class="na">parserFactory</span><span class="o">(</span><span class="n">SqlParserImplFactory</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+<span class="ln">606</span>      <span class="k">if</span> <span class="o">(</span><span class="n">parserFactory</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">607</span>        <span class="n">parserConfig</span><span class="o">.</span><span class="na">setParserFactory</span><span class="o">(</span><span class="n">parserFactory</span><span class="o">);</span>
+<span class="ln">608</span>      <span class="o">}</span>
+<span class="ln">609</span>      <span class="n">SqlParser</span> <span class="n">parser</span> <span class="o">=</span> <span class="n">createParser</span><span class="o">(</span><span class="n">query</span><span class="o">.</span><span class="na">sql</span><span class="o">,</span>  <span class="n">parserConfig</span><span class="o">);</span>
+<span class="ln">610</span>      <span class="n">SqlNode</span> <span class="n">sqlNode</span><span class="o">;</span>
+<span class="ln">611</span>      <span class="k">try</span> <span class="o">{</span>
+<span class="ln">612</span>        <span class="n">sqlNode</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="na">parseStmt</span><span class="o">();</span>
+<span class="ln">613</span>        <span class="n">statementType</span> <span class="o">=</span> <span class="n">getStatementType</span><span class="o">(</span><span class="n">sqlNode</span><span class="o">.</span><span class="na">getKind</span><span class="o">());</span>
+<span class="ln">614</span>      <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SqlParseException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">615</span>        <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span>
+<span class="ln">616</span>            <span class="s">&#34;parse failed: &#34;</span> <span class="o">+</span> <span class="n">e</span><span class="o">.</span><span class="na">getMessage</span><span class="o">(),</span> <span class="n">e</span><span class="o">);</span>
+<span class="ln">617</span>      <span class="o">}</span></code></pre></div>
+
+<p>select 文の場合は SqlNode を継承した SqlSelect のインスタンスが生成されます。SqlSelect は内部で <code>from</code> や <code>where</code> といった SqlNode を持っています。</p>
+
+<ul>
+<li><a href="https://github.com/apache/calcite/blob/76a8cfd18acb70b6053b983ba99bbf0ccf967e12/core/src/main/java/org/apache/calcite/sql/SqlSelect.java#L33">core/src/main/java/org/apache/calcite/sql/SqlSelect.java</a>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln">33</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SqlSelect</span> <span class="kd">extends</span> <span class="n">SqlCall</span> <span class="o">{</span>
+<span class="ln">34</span>  <span class="c1">//~ Static fields/initializers ---------------------------------------------
+</span><span class="ln">35</span><span class="c1"></span>
+<span class="ln">36</span>  <span class="c1">// constants representing operand positions
+</span><span class="ln">37</span><span class="c1"></span>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">FROM_OPERAND</span> <span class="o">=</span> <span class="n">2</span><span class="o">;</span>
+<span class="ln">38</span>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">WHERE_OPERAND</span> <span class="o">=</span> <span class="n">3</span><span class="o">;</span>
+<span class="ln">39</span>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">HAVING_OPERAND</span> <span class="o">=</span> <span class="n">5</span><span class="o">;</span>
+<span class="ln">40</span>
+<span class="ln">41</span>  <span class="n">SqlNodeList</span> <span class="n">keywordList</span><span class="o">;</span>
+<span class="ln">42</span>  <span class="n">SqlNodeList</span> <span class="n">selectList</span><span class="o">;</span>
+<span class="ln">43</span>  <span class="n">SqlNode</span> <span class="n">from</span><span class="o">;</span>
+<span class="ln">44</span>  <span class="n">SqlNode</span> <span class="n">where</span><span class="o">;</span>
+<span class="ln">45</span>  <span class="n">SqlNodeList</span> <span class="n">groupBy</span><span class="o">;</span>
+<span class="ln">46</span>  <span class="n">SqlNode</span> <span class="n">having</span><span class="o">;</span>
+<span class="ln">47</span>  <span class="n">SqlNodeList</span> <span class="n">windowDecls</span><span class="o">;</span>
+<span class="ln">48</span>  <span class="n">SqlNodeList</span> <span class="n">orderBy</span><span class="o">;</span>
+<span class="ln">49</span>  <span class="n">SqlNode</span> <span class="n">offset</span><span class="o">;</span>
+<span class="ln">50</span>  <span class="n">SqlNode</span> <span class="n">fetch</span><span class="o">;</span>
+<span class="ln">51</span>  </code></pre></div></li>
+</ul>
+
+<h1 id="logical-plan">Logical Plan</h1>
+
+<p>次に Logical Plan を作成します。Logical Plan は SQL から生成されます。Logical Plan の時点では、planner による最適化は行われておらず、SQL に基づいた実行計画が作成されるだけです。</p>
+
+<ul>
+<li><a href="https://github.com/apache/calcite/blob/73023148e7f37d494f6caf92b01b090f6dde13cd/core/src/main/java/org/apache/calcite/prepare/Prepare.java#L239">core/src/main/java/org/apache/calcite/prepare/Prepare.java</a></li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln">239</span>  <span class="kd">public</span> <span class="n">PreparedResult</span> <span class="nf">prepareSql</span><span class="o">(</span>
+<span class="ln">240</span>      <span class="n">SqlNode</span> <span class="n">sqlQuery</span><span class="o">,</span>
+<span class="ln">241</span>      <span class="n">SqlNode</span> <span class="n">sqlNodeOriginal</span><span class="o">,</span>
+<span class="ln">242</span>      <span class="n">Class</span> <span class="n">runtimeContextClass</span><span class="o">,</span>
+<span class="ln">243</span>      <span class="n">SqlValidator</span> <span class="n">validator</span><span class="o">,</span>
+<span class="ln">244</span>      <span class="kt">boolean</span> <span class="n">needsValidation</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">245</span>    <span class="n">init</span><span class="o">(</span><span class="n">runtimeContextClass</span><span class="o">);</span>
+<span class="ln">246</span>
+<span class="ln">247</span>    <span class="kd">final</span> <span class="n">SqlToRelConverter</span><span class="o">.</span><span class="na">ConfigBuilder</span> <span class="n">builder</span> <span class="o">=</span>
+<span class="ln">248</span>        <span class="n">SqlToRelConverter</span><span class="o">.</span><span class="na">configBuilder</span><span class="o">()</span>
+<span class="ln">249</span>            <span class="o">.</span><span class="na">withTrimUnusedFields</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span>
+<span class="ln">250</span>            <span class="o">.</span><span class="na">withExpand</span><span class="o">(</span><span class="n">THREAD_EXPAND</span><span class="o">.</span><span class="na">get</span><span class="o">())</span>
+<span class="ln">251</span>            <span class="o">.</span><span class="na">withExplain</span><span class="o">(</span><span class="n">sqlQuery</span><span class="o">.</span><span class="na">getKind</span><span class="o">()</span> <span class="o">==</span> <span class="n">SqlKind</span><span class="o">.</span><span class="na">EXPLAIN</span><span class="o">);</span>
+<span class="ln">252</span>    <span class="kd">final</span> <span class="n">SqlToRelConverter</span> <span class="n">sqlToRelConverter</span> <span class="o">=</span>
+<span class="ln">253</span>        <span class="n">getSqlToRelConverter</span><span class="o">(</span><span class="n">validator</span><span class="o">,</span> <span class="n">catalogReader</span><span class="o">,</span> <span class="n">builder</span><span class="o">.</span><span class="na">build</span><span class="o">());</span>
+<span class="ln">254</span>
+<span class="ln">255</span>    <span class="n">SqlExplain</span> <span class="n">sqlExplain</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+<span class="ln">256</span>    <span class="k">if</span> <span class="o">(</span><span class="n">sqlQuery</span><span class="o">.</span><span class="na">getKind</span><span class="o">()</span> <span class="o">==</span> <span class="n">SqlKind</span><span class="o">.</span><span class="na">EXPLAIN</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">257</span>      <span class="c1">// dig out the underlying SQL statement
+</span><span class="ln">258</span><span class="c1"></span>      <span class="n">sqlExplain</span> <span class="o">=</span> <span class="o">(</span><span class="n">SqlExplain</span><span class="o">)</span> <span class="n">sqlQuery</span><span class="o">;</span>
+<span class="ln">259</span>      <span class="n">sqlQuery</span> <span class="o">=</span> <span class="n">sqlExplain</span><span class="o">.</span><span class="na">getExplicandum</span><span class="o">();</span>
+<span class="ln">260</span>      <span class="n">sqlToRelConverter</span><span class="o">.</span><span class="na">setDynamicParamCountInExplain</span><span class="o">(</span>
+<span class="ln">261</span>          <span class="n">sqlExplain</span><span class="o">.</span><span class="na">getDynamicParamCount</span><span class="o">());</span>
+<span class="ln">262</span>    <span class="o">}</span>
+<span class="ln">263</span>
+<span class="ln">264</span>    <span class="n">RelRoot</span> <span class="n">root</span> <span class="o">=</span>
+<span class="ln">265</span>        <span class="n">sqlToRelConverter</span><span class="o">.</span><span class="na">convertQuery</span><span class="o">(</span><span class="n">sqlQuery</span><span class="o">,</span> <span class="n">needsValidation</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+<span class="ln">266</span>    <span class="n">Hook</span><span class="o">.</span><span class="na">CONVERTED</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="n">root</span><span class="o">.</span><span class="na">rel</span><span class="o">);</span></code></pre></div>
+
+<p><code>sqlToRelConverter.convertQuery(sqlQuery, needsValidation, true);</code> の部分が Logical Plan の生成になります。前記のテストコードを実行すると、ここで以下のような Logical Plan が生成されます。上記の <code>RelRoot</code> が 一番上の <code>LogicalProject</code> になります。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text"><span class="ln">1</span>LogicalProject(subset=[rel#28:Subset#3.ENUMERABLE.[]], EMPNO=[$0], GENDER=[$2], NAME=[$1]): rowcount = 15.0, cumulative cost = {15.0 rows, 45.0 cpu, 0.0 io}, id = 23
+<span class="ln">2</span>  LogicalFilter(subset=[rel#22:Subset#2.NONE.[]], condition=[=($1, &#39;John&#39;)]): rowcount = 15.0, cumulative cost = {15.0 rows, 100.0 cpu, 0.0 io}, id = 21
+<span class="ln">3</span>    LogicalProject(subset=[rel#20:Subset#1.NONE.[]], EMPNO=[$0], NAME=[$1], GENDER=[$3]): rowcount = 100.0, cumulative cost = {100.0 rows, 300.0 cpu, 0.0 io}, id = 19
+<span class="ln">4</span>      CsvTableScan(subset=[rel#18:Subset#0.ENUMERABLE.[]], table=[[SALES, EMPS]], fields=[[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]]): rowcount = 100.0, cumulative cost = {100.0 rows, 101.0 cpu, 0.0 io}, id = 0</code></pre></div>
+
+<h1 id="physical-plan">Physical Plan</h1>
+
+<p>生成された Logical Plan を元に Physical Plan を作成します。</p>
+
+<ul>
+<li><a href="https://github.com/apache/calcite/blob/73023148e7f37d494f6caf92b01b090f6dde13cd/core/src/main/java/org/apache/calcite/prepare/Prepare.java#L319">core/src/main/java/org/apache/calcite/prepare/Prepare.java</a></li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln">319</span>    <span class="n">root</span> <span class="o">=</span> <span class="n">optimize</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="n">getMaterializations</span><span class="o">(),</span> <span class="n">getLattices</span><span class="o">());</span></code></pre></div>
+
+<p><code>optimize</code> が呼び出されると 最初の方で生成した <code>VolcanoPlanner</code> によって 以下のような Physical Plan が生成されます。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text"><span class="ln">1</span>2019-06-03 20:49:33,973 [main] DEBUG - Cheapest plan:
+<span class="ln">2</span>EnumerableProject(EMPNO=[$0], GENDER=[$2], NAME=[$1]): rowcount = 15.0, cumulative cost = {71.66666666666667 rows, 187.08333333333334 cpu, 0.0 io}, id = 59
+<span class="ln">3</span>  EnumerableFilter(condition=[=($1, &#39;John&#39;)]): rowcount = 15.0, cumulative cost = {56.66666666666667 rows, 142.08333333333334 cpu, 0.0 io}, id = 58
+<span class="ln">4</span>    CsvTableScan(table=[[SALES, EMPS]], fields=[[0, 1, 3]]): rowcount = 100.0, cumulative cost = {41.66666666666667 rows, 42.083333333333336 cpu, 0.0 io}, id = 57</code></pre></div>
+
+<p>Enumerable* は Calcite のスタンダードな Adapter に属するクラスです。この <a href="[https://github.com/apache/calcite/tree/master/example]">example プロジェクト</a>では <a href="https://github.com/apache/calcite/tree/master/example/csv/src/main/java/org/apache/calcite/adapter/csv">CSV Adapter</a> として CsvTableScan や CsvTable といったクラスを提供して CSV ファイルからデータを取り出すようにし、それ以降は Enumerable Adapter を使ってデータを処理しています。</p>
+
+<h1 id="implement">Implement</h1>
+
+<p>Physical Plan が決まると、その Physical Plan を構成するノードがクエリの実行に必要な処理を行います。</p>
+
+<ul>
+<li><a href="https://github.com/apache/calcite/blob/73023148e7f37d494f6caf92b01b090f6dde13cd/core/src/main/java/org/apache/calcite/prepare/Prepare.java#L332">core/src/main/java/org/apache/calcite/prepare/Prepare.java</a></li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln">332</span>    <span class="k">return</span> <span class="n">implement</span><span class="o">(</span><span class="n">root</span><span class="o">);</span></code></pre></div>
+
+<p>このメソッド以降の処理内容は Adapter によって異なります。Enumerable Adapter の場合は、Physical Plan を基に Java のクラスを生成します。どの Enumerable クラスがどのようなコードを出力するかは、EnumerableProject や EnumerableFilter の implement メソッドで実装されている…と言いたいところなのですが、実際には <code>optimize</code> の中で決まった Cheapest Plan に対して更に HepPlanner で変換が行われ、EnumerableProject と EnumerableFilter は EnumerableCalc に置き換わっているので、<a href="https://github.com/apache/calcite/blob/73023148e7f37d494f6caf92b01b090f6dde13cd/core/src/main/java/org/apache/calcite/adapter/enumerable/EnumerableCalc.java#L110">EnumerableCalc#implement</a> が呼び出されて以下のようなクラスが生成されます。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="cm">/*   1 */</span> <span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">calcite</span><span class="o">.</span><span class="na">DataContext</span> <span class="n">root</span><span class="o">;</span>
+<span class="cm">/*   2 */</span> 
+<span class="cm">/*   3 */</span> <span class="kd">public</span> <span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">calcite</span><span class="o">.</span><span class="na">linq4j</span><span class="o">.</span><span class="na">Enumerable</span> <span class="nf">bind</span><span class="o">(</span><span class="kd">final</span> <span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">calcite</span><span class="o">.</span><span class="na">DataContext</span> <span class="n">root0</span><span class="o">)</span> <span class="o">{</span>
+<span class="cm">/*   4 */</span>   <span class="n">root</span> <span class="o">=</span> <span class="n">root0</span><span class="o">;</span>
+<span class="cm">/*   5 */</span>   <span class="kd">final</span> <span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">calcite</span><span class="o">.</span><span class="na">linq4j</span><span class="o">.</span><span class="na">Enumerable</span> <span class="n">_inputEnumerable</span> <span class="o">=</span> <span class="o">((</span><span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">calcite</span><span class="o">.</span><span class="na">adapter</span><span class="o">.</span><span class="na">csv</span><span class="o">.</span><span class="na">CsvTranslatableTable</span><span class="o">)</span> <span class="n">root</span><span class="o">.</span><span class="na">getRootSchema</span><span class="o">().</span><span class="na">getSubSchema</span><span class="o">(</span><span class="s">&#34;SALES&#34;</span><span class="o">).</span><span class="na">getTable</span><span class="o">(</span><span class="s">&#34;EMPS&#34;</span><span class="o">)).</span><span class="na">project</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[]</span> <span class="o">{</span>
+<span class="cm">/*   6 */</span>     <span class="n">0</span><span class="o">,</span>
+<span class="cm">/*   7 */</span>     <span class="n">1</span><span class="o">,</span>
+<span class="cm">/*   8 */</span>     <span class="n">3</span><span class="o">});</span>
+<span class="cm">/*   9 */</span>   <span class="k">return</span> <span class="k">new</span> <span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">calcite</span><span class="o">.</span><span class="na">linq4j</span><span class="o">.</span><span class="na">AbstractEnumerable</span><span class="o">(){</span>
+<span class="cm">/*  10 */</span>       <span class="kd">public</span> <span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">calcite</span><span class="o">.</span><span class="na">linq4j</span><span class="o">.</span><span class="na">Enumerator</span> <span class="nf">enumerator</span><span class="o">()</span> <span class="o">{</span>
+<span class="cm">/*  11 */</span>         <span class="k">return</span> <span class="k">new</span> <span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">calcite</span><span class="o">.</span><span class="na">linq4j</span><span class="o">.</span><span class="na">Enumerator</span><span class="o">(){</span>
+<span class="cm">/*  12 */</span>             <span class="kd">public</span> <span class="kd">final</span> <span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">calcite</span><span class="o">.</span><span class="na">linq4j</span><span class="o">.</span><span class="na">Enumerator</span> <span class="n">inputEnumerator</span> <span class="o">=</span> <span class="n">_inputEnumerable</span><span class="o">.</span><span class="na">enumerator</span><span class="o">();</span>
+<span class="cm">/*  13 */</span>             <span class="kd">public</span> <span class="kt">void</span> <span class="nf">reset</span><span class="o">()</span> <span class="o">{</span>
+<span class="cm">/*  14 */</span>               <span class="n">inputEnumerator</span><span class="o">.</span><span class="na">reset</span><span class="o">();</span>
+<span class="cm">/*  15 */</span>             <span class="o">}</span>
+<span class="cm">/*  16 */</span> 
+<span class="cm">/*  17 */</span>             <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">moveNext</span><span class="o">()</span> <span class="o">{</span>
+<span class="cm">/*  18 */</span>               <span class="k">while</span> <span class="o">(</span><span class="n">inputEnumerator</span><span class="o">.</span><span class="na">moveNext</span><span class="o">())</span> <span class="o">{</span>
+<span class="cm">/*  19 */</span>                 <span class="kd">final</span> <span class="n">Object</span><span class="o">[]</span> <span class="n">current</span> <span class="o">=</span> <span class="o">(</span><span class="n">Object</span><span class="o">[])</span> <span class="n">inputEnumerator</span><span class="o">.</span><span class="na">current</span><span class="o">();</span>
+<span class="cm">/*  20 */</span>                 <span class="kd">final</span> <span class="n">String</span> <span class="n">inp1_</span> <span class="o">=</span> <span class="n">current</span><span class="o">[</span><span class="n">1</span><span class="o">]</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">?</span> <span class="o">(</span><span class="n">String</span><span class="o">)</span> <span class="kc">null</span> <span class="o">:</span> <span class="n">current</span><span class="o">[</span><span class="n">1</span><span class="o">].</span><span class="na">toString</span><span class="o">();</span>
+<span class="cm">/*  21 */</span>                 <span class="k">if</span> <span class="o">(</span><span class="n">inp1_</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">calcite</span><span class="o">.</span><span class="na">runtime</span><span class="o">.</span><span class="na">SqlFunctions</span><span class="o">.</span><span class="na">eq</span><span class="o">(</span><span class="n">inp1_</span><span class="o">,</span> <span class="s">&#34;John&#34;</span><span class="o">))</span> <span class="o">{</span>
+<span class="cm">/*  22 */</span>                   <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+<span class="cm">/*  23 */</span>                 <span class="o">}</span>
+<span class="cm">/*  24 */</span>               <span class="o">}</span>
+<span class="cm">/*  25 */</span>               <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+<span class="cm">/*  26 */</span>             <span class="o">}</span>
+<span class="cm">/*  27 */</span> 
+<span class="cm">/*  28 */</span>             <span class="kd">public</span> <span class="kt">void</span> <span class="nf">close</span><span class="o">()</span> <span class="o">{</span>
+<span class="cm">/*  29 */</span>               <span class="n">inputEnumerator</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+<span class="cm">/*  30 */</span>             <span class="o">}</span>
+<span class="cm">/*  31 */</span> 
+<span class="cm">/*  32 */</span>             <span class="kd">public</span> <span class="n">Object</span> <span class="nf">current</span><span class="o">()</span> <span class="o">{</span>
+<span class="cm">/*  33 */</span>               <span class="kd">final</span> <span class="n">Object</span><span class="o">[]</span> <span class="n">current</span> <span class="o">=</span> <span class="o">(</span><span class="n">Object</span><span class="o">[])</span> <span class="n">inputEnumerator</span><span class="o">.</span><span class="na">current</span><span class="o">();</span>
+<span class="cm">/*  34 */</span>               <span class="k">return</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]</span> <span class="o">{</span>
+<span class="cm">/*  35 */</span>                   <span class="n">current</span><span class="o">[</span><span class="n">0</span><span class="o">],</span>
+<span class="cm">/*  36 */</span>                   <span class="n">current</span><span class="o">[</span><span class="n">2</span><span class="o">],</span>
+<span class="cm">/*  37 */</span>                   <span class="n">current</span><span class="o">[</span><span class="n">1</span><span class="o">]};</span>
+<span class="cm">/*  38 */</span>             <span class="o">}</span>
+<span class="cm">/*  39 */</span> 
+<span class="cm">/*  40 */</span>           <span class="o">};</span>
+<span class="cm">/*  41 */</span>       <span class="o">}</span>
+<span class="cm">/*  42 */</span> 
+<span class="cm">/*  43 */</span>     <span class="o">};</span>
+<span class="cm">/*  44 */</span> <span class="o">}</span>
+<span class="cm">/*  45 */</span> 
+<span class="cm">/*  46 */</span> 
+<span class="cm">/*  47 */</span> <span class="kd">public</span> <span class="n">Class</span> <span class="nf">getElementType</span><span class="o">()</span> <span class="o">{</span>
+<span class="cm">/*  48 */</span>   <span class="k">return</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Object</span><span class="o">[].</span><span class="na">class</span><span class="o">;</span>
+<span class="cm">/*  49 */</span> <span class="o">}</span>
+<span class="cm">/*  50 */</span> 
+<span class="cm">/*  51 */</span> </code></pre></div>
+
+<h1 id="statement">Statement</h1>
+
+<p>Implement でクラス(の文字列)を生成した後、そのクラスのインスタンスを生成します。</p>
+
+<ul>
+<li><a href="https://github.com/apache/calcite/blob/73023148e7f37d494f6caf92b01b090f6dde13cd/core/src/main/java/org/apache/calcite/adapter/enumerable/EnumerableInterpretable.java#L133">core/src/main/java/org/apache/calcite/adapter/enumerable/EnumerableInterpretable.java</a></li>
+</ul>
+
+<p><div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln">133</span>  <span class="kd">static</span> <span class="n">Bindable</span> <span class="nf">getBindable</span><span class="o">(</span><span class="n">ClassDeclaration</span> <span class="n">expr</span><span class="o">,</span> <span class="n">String</span> <span class="n">s</span><span class="o">,</span> <span class="kt">int</span> <span class="n">fieldCount</span><span class="o">)</span>
+<span class="ln">134</span>      <span class="kd">throws</span> <span class="n">CompileException</span><span class="o">,</span> <span class="n">IOException</span> <span class="o">{</span>
+<span class="ln">135</span>    <span class="n">ICompilerFactory</span> <span class="n">compilerFactory</span><span class="o">;</span>
+<span class="ln">136</span>    <span class="k">try</span> <span class="o">{</span>
+<span class="ln">137</span>      <span class="n">compilerFactory</span> <span class="o">=</span> <span class="n">CompilerFactoryFactory</span><span class="o">.</span><span class="na">getDefaultCompilerFactory</span><span class="o">();</span>
+<span class="ln">138</span>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">139</span>      <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalStateException</span><span class="o">(</span>
+<span class="ln">140</span>          <span class="s">&#34;Unable to instantiate java compiler&#34;</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+<span class="ln">141</span>    <span class="o">}</span>
+<span class="ln">142</span>    <span class="n">IClassBodyEvaluator</span> <span class="n">cbe</span> <span class="o">=</span> <span class="n">compilerFactory</span><span class="o">.</span><span class="na">newClassBodyEvaluator</span><span class="o">();</span>
+<span class="ln">143</span>    <span class="n">cbe</span><span class="o">.</span><span class="na">setClassName</span><span class="o">(</span><span class="n">expr</span><span class="o">.</span><span class="na">name</span><span class="o">);</span>
+<span class="ln">144</span>    <span class="n">cbe</span><span class="o">.</span><span class="na">setExtendedClass</span><span class="o">(</span><span class="n">Utilities</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+<span class="ln">145</span>    <span class="n">cbe</span><span class="o">.</span><span class="na">setImplementedInterfaces</span><span class="o">(</span>
+<span class="ln">146</span>        <span class="n">fieldCount</span> <span class="o">==</span> <span class="n">1</span>
+<span class="ln">147</span>            <span class="o">?</span> <span class="k">new</span> <span class="n">Class</span><span class="o">[]</span> <span class="o">{</span><span class="n">Bindable</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">Typed</span><span class="o">.</span><span class="na">class</span><span class="o">}</span>
+<span class="ln">148</span>            <span class="o">:</span> <span class="k">new</span> <span class="n">Class</span><span class="o">[]</span> <span class="o">{</span><span class="n">ArrayBindable</span><span class="o">.</span><span class="na">class</span><span class="o">});</span>
+<span class="ln">149</span>    <span class="n">cbe</span><span class="o">.</span><span class="na">setParentClassLoader</span><span class="o">(</span><span class="n">EnumerableInterpretable</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getClassLoader</span><span class="o">());</span>
+<span class="ln">150</span>    <span class="k">if</span> <span class="o">(</span><span class="n">CalcitePrepareImpl</span><span class="o">.</span><span class="na">DEBUG</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">151</span>      <span class="c1">// Add line numbers to the generated janino class
+</span><span class="ln">152</span><span class="c1"></span>      <span class="n">cbe</span><span class="o">.</span><span class="na">setDebuggingInformation</span><span class="o">(</span><span class="kc">true</span><span class="o">,</span> <span class="kc">true</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+<span class="ln">153</span>    <span class="o">}</span>
+<span class="ln">154</span>    <span class="k">return</span> <span class="o">(</span><span class="n">Bindable</span><span class="o">)</span> <span class="n">cbe</span><span class="o">.</span><span class="na">createInstance</span><span class="o">(</span><span class="k">new</span> <span class="n">StringReader</span><span class="o">(</span><span class="n">s</span><span class="o">));</span>
+<span class="ln">155</span>  <span class="o">}</span></code></pre></div></p>
+
+<p>生成したインスタンス(bindable)を <code>CalciteSignature</code> に詰め、それを Avatica の ResultSet に渡します。</p>
+
+<ul>
+<li><a href="https://github.com/apache/calcite/blob/73023148e7f37d494f6caf92b01b090f6dde13cd/core/src/main/java/org/apache/calcite/jdbc/CalciteMetaImpl.java#L551">core/src/main/java/org/apache/calcite/jdbc/CalciteMetaImpl.java</a></li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln">551</span>    <span class="n">signature</span> <span class="o">=</span> <span class="n">calciteConnection</span><span class="o">.</span><span class="na">parseQuery</span><span class="o">(</span><span class="n">query</span><span class="o">,</span> <span class="n">context</span><span class="o">,</span> <span class="n">maxRowCount</span><span class="o">);</span>
+<span class="ln">552</span>    <span class="n">statement</span><span class="o">.</span><span class="na">setSignature</span><span class="o">(</span><span class="n">signature</span><span class="o">);</span>
+<span class="ln">553</span>    <span class="kd">final</span> <span class="kt">int</span> <span class="n">updateCount</span><span class="o">;</span>
+<span class="ln">554</span>    <span class="k">switch</span> <span class="o">(</span><span class="n">signature</span><span class="o">.</span><span class="na">statementType</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">555</span>    <span class="k">case</span> <span class="nl">CREATE:</span>
+<span class="ln">556</span>    <span class="k">case</span> <span class="nl">DROP:</span>
+<span class="ln">557</span>    <span class="k">case</span> <span class="nl">ALTER:</span>
+<span class="ln">558</span>    <span class="k">case</span> <span class="nl">OTHER_DDL:</span>
+<span class="ln">559</span>      <span class="n">updateCount</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="c1">// DDL produces no result set
+</span><span class="ln">560</span><span class="c1"></span>      <span class="k">break</span><span class="o">;</span><span class="nl">
+</span><span class="ln">561</span><span class="nl">    default:</span>
+<span class="ln">562</span>      <span class="n">updateCount</span> <span class="o">=</span> <span class="o">-</span><span class="n">1</span><span class="o">;</span> <span class="c1">// SELECT and DML produces result set
+</span><span class="ln">563</span><span class="c1"></span>      <span class="k">break</span><span class="o">;</span>
+<span class="ln">564</span>    <span class="o">}</span>
+<span class="ln">565</span>    <span class="n">callback</span><span class="o">.</span><span class="na">assign</span><span class="o">(</span><span class="n">signature</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">updateCount</span><span class="o">);</span>
+<span class="ln">566</span>  <span class="o">}</span></code></pre></div>
+
+<ul>
+<li><a href="https://github.com/apache/calcite-avatica/blob/d52c2036224911d93fe3185f521768037e62a437/core/src/main/java/org/apache/calcite/avatica/AvaticaConnection.java#L652">core/src/main/java/org/apache/calcite/avatica/AvaticaConnection.java</a></li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln">652</span>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">assign</span><span class="o">(</span><span class="n">Meta</span><span class="o">.</span><span class="na">Signature</span> <span class="n">signature</span><span class="o">,</span> <span class="n">Meta</span><span class="o">.</span><span class="na">Frame</span> <span class="n">firstFrame</span><span class="o">,</span>
+<span class="ln">653</span>        <span class="kt">long</span> <span class="n">updateCount</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">SQLException</span> <span class="o">{</span>
+<span class="ln">654</span>      <span class="n">statement</span><span class="o">.</span><span class="na">setSignature</span><span class="o">(</span><span class="n">signature</span><span class="o">);</span>
+<span class="ln">655</span>
+<span class="ln">656</span>      <span class="k">if</span> <span class="o">(</span><span class="n">updateCount</span> <span class="o">!=</span> <span class="o">-</span><span class="n">1</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">657</span>        <span class="n">statement</span><span class="o">.</span><span class="na">updateCount</span> <span class="o">=</span> <span class="n">updateCount</span><span class="o">;</span>
+<span class="ln">658</span>      <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+<span class="ln">659</span>        <span class="kd">final</span> <span class="n">TimeZone</span> <span class="n">timeZone</span> <span class="o">=</span> <span class="n">getTimeZone</span><span class="o">();</span>
+<span class="ln">660</span>        <span class="n">statement</span><span class="o">.</span><span class="na">openResultSet</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="na">newResultSet</span><span class="o">(</span><span class="n">statement</span><span class="o">,</span> <span class="k">new</span> <span class="n">QueryState</span><span class="o">(</span><span class="n">sql</span><span class="o">),</span>
+<span class="ln">661</span>            <span class="n">signature</span><span class="o">,</span> <span class="n">timeZone</span><span class="o">,</span> <span class="n">firstFrame</span><span class="o">);</span>
+<span class="ln">662</span>      <span class="o">}</span>
+<span class="ln">663</span>    <span class="o">}</span></code></pre></div>
+
+<p>あとは ResultSet#next が呼び出される度に生成されたインスタンスの <code>moveNext</code> や <code>current</code> が呼び出され、CSV のデータが取り出されるようになっています。</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>今回は Calcite の <a href="[https://github.com/apache/calcite/tree/master/example]">example プロジェクト</a> プロジェクトを使って、CSV ファイルへのクエリ発行から以下の流れを見てきました。</p>
+
+<ul>
+<li>SQL の parse</li>
+<li>Logical Plan の生成</li>
+<li>Physical Plan の生成</li>
+<li>実行クラスの生成</li>
+<li>ResultSet の生成</li>
+</ul>
+
+<p>次は主要なクラスのコードを掘り下げて見ていきたいと思います。</p>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2019 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>

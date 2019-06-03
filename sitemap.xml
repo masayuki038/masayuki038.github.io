@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>/blog/2019/06/04/calcite-code-reading-part1/</loc>
+    <lastmod>2019-06-03T23:00:01+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/blog/2019/04/29/delta-transaction/</loc>
     <lastmod>2019-04-29T00:00:01+00:00</lastmod>
   </url>
@@ -297,7 +302,7 @@
   
   <url>
     <loc>/categories/calcite/</loc>
-    <lastmod>2019-01-06T00:00:00+00:00</lastmod>
+    <lastmod>2019-06-03T23:00:01+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -435,7 +440,7 @@
   
   <url>
     <loc>/post/</loc>
-    <lastmod>2019-04-29T00:00:01+00:00</lastmod>
+    <lastmod>2019-06-03T23:00:01+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -494,7 +499,7 @@
   
   <url>
     <loc>/</loc>
-    <lastmod>2019-04-29T00:00:01+00:00</lastmod>
+    <lastmod>2019-06-03T23:00:01+00:00</lastmod>
     <priority>0</priority>
   </url>
   
