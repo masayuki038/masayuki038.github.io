@@ -23,14 +23,14 @@ drill-override.conf: 1drill.exec: { 2 cluster-id: &amp;#34;drillbits1&amp;#34;, 
 
   
   
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:site" content="@masayuki" />
-    <meta name="twitter:title" content="Debugging Apache Drill on Windows" />
-    <meta name="twitter:description" content="TL;DR I try to remote debug Apache Drill in Embedded Mode with IntelliJ on Windows10.
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:image" content="https://s.gravatar.com/avatar/4b97fb839e6040cfb353bd667ac93e54?s=80"/>
+<meta name="twitter:title" content="Debugging Apache Drill on Windows"/>
+<meta name="twitter:description" content="TL;DR I try to remote debug Apache Drill in Embedded Mode with IntelliJ on Windows10.
 Prerequirements  Apache Drill installation Apache Drill source code(same version) IDEA IntelliJ  Set DRILL_SHELL_JAVA_OPTS Using sqlline.bat for starting drill as embedded mode. We can set debug options to DRILL_SHELL_JAVA_OPTS.
 1set DRILL_SHELL_JAVA_OPTS=-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 Timeout Configuration To avoid timeout for debugging, set drill.exec.rpc.user.timeout to 0 in drill-override.conf.
-drill-override.conf: 1drill.exec: { 2 cluster-id: &amp;#34;drillbits1&amp;#34;, 3 zk.connect: &amp;#34;localhost:2181&amp;#34;, 4 rpc: { 5 user: { 6 timeout: 0 7 } 8 } 9}" />
-    <meta name="twitter:image" content="/img/avatar.jpg" />
+drill-override.conf: 1drill.exec: { 2 cluster-id: &#34;drillbits1&#34;, 3 zk.connect: &#34;localhost:2181&#34;, 4 rpc: { 5 user: { 6 timeout: 0 7 } 8 } 9}"/>
+
   
 
   

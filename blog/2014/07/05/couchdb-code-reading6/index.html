@@ -20,11 +20,11 @@
 
   
   
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:site" content="@masayuki" />
-    <meta name="twitter:title" content="CouchDB Source Code Reading part6" />
-    <meta name="twitter:description" content="couch_httpd_db:db_req/2 前回までドキュメントの取得の流れを見てきたので、次に更新まわりを見ていこうと思います。 couch_httpd_db.erl: 1db_req(#httpd{method=&amp;#39;POST&amp;#39;,path_parts=[_DbName]}=Req, Db) -&amp;gt; 2 couch_httpd:validate_ctype(Req, &amp;#34;application/json&amp;#34;), 3 Doc = couch_doc:from_json_obj(couch_httpd:json_body(Req)), 4 validate_attachment_names(Doc), 5 Doc2 = case Doc#doc.id of 6 &amp;lt;&amp;lt;&amp;#34;&amp;#34;&amp;gt;&amp;gt; -&amp;gt; 7 Doc#doc{id=couch_uuids:new(), revs={0, []}};" />
-    <meta name="twitter:image" content="/img/avatar.jpg" />
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:image" content="https://s.gravatar.com/avatar/4b97fb839e6040cfb353bd667ac93e54?s=80"/>
+<meta name="twitter:title" content="CouchDB Source Code Reading part6"/>
+<meta name="twitter:description" content="couch_httpd_db:db_req/2 前回までドキュメントの取得の流れを見てきたので、次に更新まわりを見ていこうと思います。 couch_httpd_db.erl: 1db_req(#httpd{method=&#39;POST&#39;,path_parts=[_DbName]}=Req, Db) -&gt; 2 couch_httpd:validate_ctype(Req, &#34;application/json&#34;), 3 Doc = couch_doc:from_json_obj(couch_httpd:json_body(Req)), 4 validate_attachment_names(Doc), 5 Doc2 = case Doc#doc.id of 6 &lt;&lt;&#34;&#34;&gt;&gt; -&gt; 7 Doc#doc{id=couch_uuids:new(), revs={0, []}};"/>
+
   
 
   
@@ -399,7 +399,7 @@
     <footer class="post-footer">
       
       <p class="post-copyright">
-        This post was published <strong>1794</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+        This post was published <strong>1795</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
       </p>
     </footer>
     
