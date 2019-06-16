@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Voila</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="QuantStack が Jupyter Notebook のコンテンツを Standalone Application や Dashboard に変換する voila というツールをリリースしました。 And voilà! – Jupyter Blog Features 前記の Jupyter Blog の記事にあるように、voila には" />
+
+  
+  
+  <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://masayuki038.github.io/images/voila/voila4.png"/>
+
+<meta name="twitter:title" content="Voila"/>
+<meta name="twitter:description" content="QuantStack が Jupyter Notebook のコンテンツを Standalone Application や Dashboard に変換する voila というツールをリリースしました。 And voilà! – Jupyter Blog Features 前記の Jupyter Blog の記事にあるように、voila には"/>
+
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Voila" />
+  <meta property="og:description" content="QuantStack が Jupyter Notebook のコンテンツを Standalone Application や Dashboard に変換する voila というツールをリリースしました。 And voilà! – Jupyter Blog Features 前記の Jupyter Blog の記事にあるように、voila には" />
+  <meta property="og:url" content="/blog/2019/06/16/voila/" />
+  <meta property="og:image" content="/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.32" />
+
+
+<link rel="canonical" href="/blog/2019/06/16/voila/" />
+<link rel="alternative" href="/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="/css/bundle.css" />
+<link rel="stylesheet" href="/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+
+<nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Voila</h1>
+      <p class="post-meta">@Masayuki Takahashi · Jun 16, 2019 · 2 min read</p>
+    </header>
+    <article class="post-content">
+
+<p><a href="http://quantstack.net/">QuantStack</a> が Jupyter Notebook のコンテンツを Standalone Application や Dashboard に変換する <a href="https://github.com/QuantStack/voila">voila</a> というツールをリリースしました。</p>
+
+<ul>
+<li><a href="https://blog.jupyter.org/and-voil%C3%A0-f6a2c08a4a93">And voilà! – Jupyter Blog</a></li>
+</ul>
+
+<h1 id="features">Features</h1>
+
+<p>前記の Jupyter Blog の記事にあるように、voila には以下のような特徴があります。</p>
+
+<ol>
+<li>Jupyter interactive widgets をサポートしており、それらの widgets が Jupyter Kernel とやり取りできる</li>
+<li>ダッシュボードの利用者による任意のコード実行を許可していない</li>
+<li>Jupyter の標準プロトコルやファイルフォーマットに準拠しており、言語に依存しない</li>
+<li>リッチなレイアウトを作成できる柔軟なテンプレートシステム</li>
+</ol>
+
+<p>ただ、実際に使ってみると以下の点が良いと感じました。</p>
+
+<ul>
+<li>導入が簡単</li>
+<li>Web のリクエスト毎にコードが評価されるので最新の状況をチェックできる
+
+<ul>
+<li><code>jupyter nbconvert --to html foo.ipynb</code> を定期的に実行しなくても良い</li>
+</ul></li>
+</ul>
+
+<h1 id="getting-start">Getting Start</h1>
+
+<p>voila は <code>pip</code> や <code>conda</code> でインストールすることができます。詳細は前記の Jupyter Blog の記事を参照してください。今回は以下のような .ipynb を用意して試してみました。</p>
+
+<p><img src="/images/voila/voila1.png" alt="notebook" /></p>
+
+<p>起動は以下のように .ipynb を指定します。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">viola test1.ipynb</code></pre></div>
+
+<p>するとブラウザで以下のような画面を表示します。</p>
+
+<p><img src="/images/voila/voila2.png" alt="voila-light" /></p>
+
+<p>デフォルトではコードを表示しませんが、<code>--strip-sources=False</code> を付けて実行すると表示するようになっています。また <code>--theme</code> でテーマを指定することもできます。テーマは今のところ light / dark のみとなっています。</p>
+
+<p><img src="/images/voila/voila3.png" alt="voila-dark" /></p>
+
+<h1 id="template">Template</h1>
+
+<p>自分でテンプレートを作ることができるようになっています。すでに <a href="https://github.com/QuantStack/voila-gridstack">voila-gridstack</a> というテンプレートがあるので、それを使って出力してみました。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">voila test1.ipynb --template=gridstack</code></pre></div>
+
+<p>notebook のそれぞれの出力結果を格子状に表示します。</p>
+
+<p><img src="/images/voila/voila4.png" alt="voila-grid" /></p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>社内にあるデータを notebook 上でを集計してサクっと公開し、そこで最新の状況を確認できるものが欲しかったところなので、暫く使ってみる予定です。但し Web のリクエスト毎に評価されるということは、データの取得や負荷のかかる集計処理を考慮する必要があります。データの更新頻度に合わせた cache が作れたりすると良いですね。</p>
+
+<p>他にも Dashboard 上で Jupyter interactive widgets を使ったり、<a href="https://github.com/QuantStack/voila-vuetify/">テンプレートに Vue.js を使う</a>こともできるようですが、それらが必要になったら試してみたいと思います。</p>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2019 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>
