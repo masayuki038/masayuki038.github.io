@@ -35,7 +35,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.32" />
+<meta name="generator" content="Hugo 0.55.6" />
 
 
 <link rel="canonical" href="/" />
@@ -201,6 +201,19 @@
       
         <article class="post-entry">
   <header class="post-header">
+    <h3 class="post-title"><a href="/blog/2019/09/23/flask-uwsgi-prefork/" class="post-link">flask run と uWSGI prefork</a></h3>
+    <p class="post-meta">@Masayuki Takahashi · Sep 23, 2019 · 4 min read</p>
+  </header>
+  
+  <p class="post-summary">Flask の起動時に Background で Thread を動かし、そこで値を更新して、HTTP Request でその値を返すようなコードを書いていました。 そのコードは、ローカルで flask run で実行する</p>
+  <footer class="post-footer">
+    <a class="read-more" href="/blog/2019/09/23/flask-uwsgi-prefork/">Read More →</a>
+  </footer>
+</article>
+
+      
+        <article class="post-entry">
+  <header class="post-header">
     <h3 class="post-title"><a href="/blog/2019/06/16/voila/" class="post-link">Voila で Jupyter Notebook から Dashboard を作成する</a></h3>
     <p class="post-meta">@Masayuki Takahashi · Jun 16, 2019 · 2 min read</p>
   </header>
@@ -312,19 +325,6 @@
   <p class="post-summary">もうすぐリリースされる parquet-1.11.0 には、ColumnIndex という機能が追加されています。 ColumnIndex Layout to Support Page Skipping そこで、この ColumnIndex について調べてみました。 これまで</p>
   <footer class="post-footer">
     <a class="read-more" href="/blog/2019/02/10/parquet-column-index/">Read More →</a>
-  </footer>
-</article>
-
-      
-        <article class="post-entry">
-  <header class="post-header">
-    <h3 class="post-title"><a href="/blog/2019/01/13/data-fusion/" class="post-link">Rust で書かれた Query Engine のコードを眺めた</a></h3>
-    <p class="post-meta">@Masayuki Takahashi · Jan 13, 2019 · 2 min read</p>
-  </header>
-  
-  <p class="post-summary">dev@arrow.apache.org を見てたら、Rust で Query Engine を書いている話が出ていた。これは Apache Arrow の Commiter である Andy Grove が作っている DataFusion というプロジェクト。 https://github.com/andygrove/datafusion The current code supports single-threaded execution of limited SQL queries (projection, selection, and</p>
-  <footer class="post-footer">
-    <a class="read-more" href="/blog/2019/01/13/data-fusion/">Read More →</a>
   </footer>
 </article>
 

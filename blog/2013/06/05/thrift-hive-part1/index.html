@@ -37,7 +37,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.32" />
+<meta name="generator" content="Hugo 0.55.6" />
 
 
 <link rel="canonical" href="/blog/2013/06/05/thrift-hive-part1/" />
@@ -281,7 +281,7 @@ total <span class="m">144</span>
 
 <p>生成したコードを使ってHiveに接続するモジュールを作成します。まだほとんどErlangでコードを書いたことがない上、rebarを使ってアプリケーションの下地を作るのは初めてなので、見よう見まねです。</p>
 
-<p><div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">$ rebar create-app <span class="nv">appid</span><span class="o">=</span>thrift-hive
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">$ rebar create-app <span class="nv">appid</span><span class="o">=</span>thrift-hive
 <span class="o">==</span>&gt; thrift-hive <span class="o">(</span>create-app<span class="o">)</span>
 Writing src/thrift-hive.app.src
 Writing src/thrift-hive_app.erl
@@ -289,7 +289,7 @@ Writing src/thrift-hive_sup.erl
 
 $ mkdir deps
 $ mkdir rel
-$ mkdir include</code></pre></div></p>
+$ mkdir include</code></pre></div>
 
 <p>Thriftのライブラリは<a href="https://github.com/xslogic/thrift_erl">thrift-erl</a>を使います。rebar.configは以下のとおりです。</p>
 
@@ -403,7 +403,7 @@ ERROR: eunit failed <span class="k">while</span> processing /home/masayuki/work/
     <footer class="post-footer">
       
       <p class="post-copyright">
-        This post was published <strong>2202</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+        This post was published <strong>2301</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
       </p>
     </footer>
     

@@ -37,7 +37,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.32" />
+<meta name="generator" content="Hugo 0.55.6" />
 
 
 <link rel="canonical" href="/blog/2014/05/30/couchdb-code-reading3/" />
@@ -226,8 +226,8 @@
 <p><code>IdBtree</code>、<code>SeqBtree</code>、<code>LocalDocsBtree</code>の3つのtreeの用意が行われています。まずは<code>IdBtree</code>の初期化の部分。<code>split</code>には以下の関数が設定されています。</p>
 
 <p>couch_db_updater.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>btree_by_id_split<span class="o">(</span><span class="c1">#full_doc_info{id=Id, update_seq=Seq,
-</span><span class="ln">2</span><span class="c1"></span>        <span class="nv">deleted</span><span class="o">=</span>Deleted, <span class="nv">rev_tree</span><span class="o">=</span>Tree<span class="o">})</span> -&gt;
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>btree_by_id_split<span class="o">(</span><span class="c1">#full_doc_info{id=Id, update_seq=Seq,</span>
+<span class="ln">2</span>        <span class="nv">deleted</span><span class="o">=</span>Deleted, <span class="nv">rev_tree</span><span class="o">=</span>Tree<span class="o">})</span> -&gt;
 <span class="ln">3</span><span class="o">(</span>...snip...<span class="o">)</span></code></pre></div></p>
 
 <p><code>full_doc_info</code>というドキュメントを扱っています。レコードの定義は以下のようになっています。</p>
@@ -285,8 +285,8 @@
 <p>ここで<code>couch_db_updater:btree_by_id_split/1</code>戻ります。</p>
 
 <p>couch_db_updater.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>btree_by_id_split<span class="o">(</span><span class="c1">#full_doc_info{id=Id, update_seq=Seq,
-</span><span class="ln"> 2</span><span class="c1"></span>        <span class="nv">deleted</span><span class="o">=</span>Deleted, <span class="nv">rev_tree</span><span class="o">=</span>Tree<span class="o">})</span> -&gt;
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>btree_by_id_split<span class="o">(</span><span class="c1">#full_doc_info{id=Id, update_seq=Seq,</span>
+<span class="ln"> 2</span>        <span class="nv">deleted</span><span class="o">=</span>Deleted, <span class="nv">rev_tree</span><span class="o">=</span>Tree<span class="o">})</span> -&gt;
 <span class="ln"> 3</span>    <span class="nv">DiskTree</span> <span class="o">=</span>
 <span class="ln"> 4</span>    couch_key_tree:map<span class="o">(</span>
 <span class="ln"> 5</span>        fun<span class="o">(</span>_RevId, ?REV_MISSING<span class="o">)</span> -&gt;
@@ -335,8 +335,8 @@
 <span class="ln">14</span>        <span class="o">(</span>_RevId, ?REV_MISSING, _Type, Acc<span class="o">)</span> -&gt;
 <span class="ln">15</span>            <span class="o">{</span>?REV_MISSING, Acc<span class="o">}</span>
 <span class="ln">16</span>        end, <span class="m">0</span>, DiskTree<span class="o">)</span>,
-<span class="ln">17</span>    <span class="c1">#full_doc_info{
-</span><span class="ln">18</span><span class="c1"></span>        <span class="nv">id</span> <span class="o">=</span> Id,
+<span class="ln">17</span>    <span class="c1">#full_doc_info{</span>
+<span class="ln">18</span>        <span class="nv">id</span> <span class="o">=</span> Id,
 <span class="ln">19</span>        <span class="nv">update_seq</span> <span class="o">=</span> HighSeq,
 <span class="ln">20</span>        <span class="nv">deleted</span> <span class="o">=</span> <span class="o">(</span><span class="nv">Deleted</span> <span class="o">==</span> <span class="m">1</span><span class="o">)</span>,
 <span class="ln">21</span>        <span class="nv">rev_tree</span> <span class="o">=</span> Tree,
@@ -392,12 +392,12 @@
 <p>次に<code>SeqBtree</code>の方を。現時点でIdBtreeとの役割の違いが分かっていないので、推測できる部分が少ないのがツラいところです。</p>
 
 <p>couch_db_updater.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>btree_by_seq_split<span class="o">(</span><span class="c1">#doc_info{id=Id, high_seq=KeySeq, revs=Revs}) -&gt;
-</span><span class="ln">2</span><span class="c1"></span>    <span class="o">{</span>RevInfos, DeletedRevInfos<span class="o">}</span> <span class="o">=</span> lists:foldl<span class="o">(</span>
-<span class="ln">3</span>        fun<span class="o">(</span><span class="c1">#rev_info{deleted = false, seq = Seq} = Ri, {Acc, AccDel}) -&gt;
-</span><span class="ln">4</span><span class="c1"></span>                <span class="o">{[{</span>Ri#rev_info.rev, Seq, Ri#rev_info.body_sp<span class="o">}</span> <span class="p">|</span> Acc<span class="o">]</span>, AccDel<span class="o">}</span><span class="p">;</span>
-<span class="ln">5</span>            <span class="o">(</span><span class="c1">#rev_info{deleted = true, seq = Seq} = Ri, {Acc, AccDel}) -&gt;
-</span><span class="ln">6</span><span class="c1"></span>                <span class="o">{</span>Acc, <span class="o">[{</span>Ri#rev_info.rev, Seq, Ri#rev_info.body_sp<span class="o">}</span> <span class="p">|</span> AccDel<span class="o">]}</span>
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>btree_by_seq_split<span class="o">(</span><span class="c1">#doc_info{id=Id, high_seq=KeySeq, revs=Revs}) -&gt;</span>
+<span class="ln">2</span>    <span class="o">{</span>RevInfos, DeletedRevInfos<span class="o">}</span> <span class="o">=</span> lists:foldl<span class="o">(</span>
+<span class="ln">3</span>        fun<span class="o">(</span><span class="c1">#rev_info{deleted = false, seq = Seq} = Ri, {Acc, AccDel}) -&gt;</span>
+<span class="ln">4</span>                <span class="o">{[{</span>Ri#rev_info.rev, Seq, Ri#rev_info.body_sp<span class="o">}</span> <span class="p">|</span> Acc<span class="o">]</span>, AccDel<span class="o">}</span><span class="p">;</span>
+<span class="ln">5</span>            <span class="o">(</span><span class="c1">#rev_info{deleted = true, seq = Seq} = Ri, {Acc, AccDel}) -&gt;</span>
+<span class="ln">6</span>                <span class="o">{</span>Acc, <span class="o">[{</span>Ri#rev_info.rev, Seq, Ri#rev_info.body_sp<span class="o">}</span> <span class="p">|</span> AccDel<span class="o">]}</span>
 <span class="ln">7</span>        end,
 <span class="ln">8</span>        <span class="o">{[]</span>, <span class="o">[]}</span>, Revs<span class="o">)</span>,
 <span class="ln">9</span>    <span class="o">{</span>KeySeq, <span class="o">{</span>Id, lists:reverse<span class="o">(</span>RevInfos<span class="o">)</span>, lists:reverse<span class="o">(</span>DeletedRevInfos<span class="o">)}}</span>.</code></pre></div></p>
@@ -433,14 +433,14 @@
 
 <p>couch_db_updater.erl:
 <div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>btree_by_seq_join<span class="o">(</span>KeySeq, <span class="o">{</span>Id, RevInfos, DeletedRevInfos<span class="o">})</span> -&gt;
-<span class="ln">2</span>    <span class="c1">#doc_info{
-</span><span class="ln">3</span><span class="c1"></span>        <span class="nv">id</span> <span class="o">=</span> Id,
+<span class="ln">2</span>    <span class="c1">#doc_info{</span>
+<span class="ln">3</span>        <span class="nv">id</span> <span class="o">=</span> Id,
 <span class="ln">4</span>        <span class="nv">high_seq</span><span class="o">=</span>KeySeq,
 <span class="ln">5</span>        <span class="nv">revs</span> <span class="o">=</span>
-<span class="ln">6</span>            <span class="o">[</span><span class="c1">#rev_info{rev=Rev,seq=Seq,deleted=false,body_sp = Bp} ||
-</span><span class="ln">7</span><span class="c1"></span>                <span class="o">{</span>Rev, Seq, Bp<span class="o">}</span> &lt;- RevInfos<span class="o">]</span> ++
-<span class="ln">8</span>            <span class="o">[</span><span class="c1">#rev_info{rev=Rev,seq=Seq,deleted=true,body_sp = Bp} ||
-</span><span class="ln">9</span><span class="c1"></span>                <span class="o">{</span>Rev, Seq, Bp<span class="o">}</span> &lt;- DeletedRevInfos<span class="o">]}</span>.</code></pre></div></p>
+<span class="ln">6</span>            <span class="o">[</span><span class="c1">#rev_info{rev=Rev,seq=Seq,deleted=false,body_sp = Bp} ||</span>
+<span class="ln">7</span>                <span class="o">{</span>Rev, Seq, Bp<span class="o">}</span> &lt;- RevInfos<span class="o">]</span> ++
+<span class="ln">8</span>            <span class="o">[</span><span class="c1">#rev_info{rev=Rev,seq=Seq,deleted=true,body_sp = Bp} ||</span>
+<span class="ln">9</span>                <span class="o">{</span>Rev, Seq, Bp<span class="o">}</span> &lt;- DeletedRevInfos<span class="o">]}</span>.</code></pre></div></p>
 
 <h2 id="couch-db-updater-btree-by-seq-reduce-2">couch_db_updater:btree_by_seq_reduce/2</h2>
 
@@ -463,7 +463,7 @@
 
 <p>couch_btree.erl:
 <div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>open<span class="o">(</span>State, Fd, Options<span class="o">)</span> -&gt;
-<span class="ln">2</span>    <span class="o">{</span>ok, set_options<span class="o">(</span>#btree<span class="o">{</span><span class="nv">root</span><span class="o">=</span>State, <span class="nv">fd</span><span class="o">=</span>Fd<span class="o">}</span>, Options<span class="o">)}</span>.</code></pre></div></p>
+<span class="ln">2</span>    <span class="o">{</span>ok, set_options<span class="o">(</span><span class="c1">#btree{root=State, fd=Fd}, Options)}.</span></code></pre></div></p>
 
 <p><code>State</code>は<code>IdBtree</code>、<code>SeqBtree</code>、<code>LocalDocsBtree</code>毎に異なる値が設定されています。<code>set_options/2</code>も見てみます。</p>
 
@@ -490,7 +490,7 @@
     <footer class="post-footer">
       
       <p class="post-copyright">
-        This post was published <strong>1843</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+        This post was published <strong>1942</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
       </p>
     </footer>
     

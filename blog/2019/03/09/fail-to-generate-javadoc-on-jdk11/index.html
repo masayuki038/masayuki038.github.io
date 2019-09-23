@@ -37,7 +37,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.32" />
+<meta name="generator" content="Hugo 0.55.6" />
 
 
 <link rel="canonical" href="/blog/2019/03/09/fail-to-generate-javadoc-on-jdk11/" />
@@ -228,7 +228,7 @@
 
 <p>私達の場合は source/target が 8 だったので、<a href="maven-javadoc-plugin">https://maven.apache.org/plugins/maven-javadoc-plugin/</a> に以下の設定を入れることで回避できました。</p>
 
-<p><div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">root@e6c75c575b52:/work/sqlline# git diff
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">root@e6c75c575b52:/work/sqlline# git diff
 diff --git a/pom.xml b/pom.xml
 index b8ff859..5992824 100644
 --- a/pom.xml
@@ -240,7 +240,7 @@ index b8ff859..5992824 100644
 +          &lt;source&gt;${maven.compiler.source}&lt;/source&gt;
          &lt;/configuration&gt;
          &lt;executions&gt;
-           &lt;execution&gt;</code></pre></div></p>
+           &lt;execution&gt;</code></pre></div>
 
 <p>JDK 本体の修正は以下の Commit で行われています。</p>
 
@@ -253,7 +253,7 @@ index b8ff859..5992824 100644
     <footer class="post-footer">
       
       <p class="post-copyright">
-        
+        This post was published <strong>198</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
       </p>
     </footer>
     

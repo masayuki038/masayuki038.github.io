@@ -37,7 +37,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.32" />
+<meta name="generator" content="Hugo 0.55.6" />
 
 
 <link rel="canonical" href="/blog/2014/05/25/couchdb-code-reading2/" />
@@ -262,8 +262,8 @@
 <span class="ln">12</span>            <span class="nv">ok</span> <span class="o">=</span> file:close<span class="o">(</span>Fd_Read<span class="o">)</span>,
 <span class="ln">13</span>            maybe_track_open_os_files<span class="o">(</span>Options<span class="o">)</span>,
 <span class="ln">14</span>            <span class="o">{</span>ok, Eof<span class="o">}</span> <span class="o">=</span> file:position<span class="o">(</span>Fd, eof<span class="o">)</span>,
-<span class="ln">15</span>            <span class="o">{</span>ok, <span class="c1">#file{fd=Fd, eof=Eof}};
-</span><span class="ln">16</span><span class="c1"></span>        Error -&gt;
+<span class="ln">15</span>            <span class="o">{</span>ok, <span class="c1">#file{fd=Fd, eof=Eof}};</span>
+<span class="ln">16</span>        Error -&gt;
 <span class="ln">17</span>            init_status_error<span class="o">(</span>ReturnPid, Ref, Error<span class="o">)</span>
 <span class="ln">18</span>        end
 <span class="ln">19</span>    end.</code></pre></div></p>
@@ -318,15 +318,15 @@
 <div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>init<span class="o">({</span>Pid, ChildProcs<span class="o">})</span> -&gt;
 <span class="ln">2</span>    <span class="o">[</span>link<span class="o">(</span>ChildProc<span class="o">)</span> <span class="o">||</span> ChildProc &lt;- ChildProcs<span class="o">]</span>,
 <span class="ln">3</span>    <span class="nv">Referrers</span> <span class="o">=</span> dict:from_list<span class="o">([{</span>Pid, <span class="o">{</span>erlang:monitor<span class="o">(</span>process, Pid<span class="o">)</span>, <span class="m">1</span><span class="o">}}])</span>,
-<span class="ln">4</span>    <span class="o">{</span>ok, #srv<span class="o">{</span><span class="nv">referrers</span><span class="o">=</span>Referrers, <span class="nv">child_procs</span><span class="o">=</span>ChildProcs<span class="o">}}</span>.</code></pre></div></p>
+<span class="ln">4</span>    <span class="o">{</span>ok, <span class="c1">#srv{referrers=Referrers, child_procs=ChildProcs}}.</span></code></pre></div></p>
 
 <p><code>ChildProcs</code>に対して、<code>link/1</code>でリンクを生成しています。<code>couch_db_updater:open_reader_fd/2</code>の最後にオープンしたFdを指定して<code>unlink/1</code>を呼び出していたのは、<code>couch_ref_counter</code>でリンクするという意図なのかな。</p>
 
 <p>その後、<code>erlang:monitor/2</code>で<code>couch_ref_counter</code>のプロセスをモニターして<code>dict</code>に登録しています。一緒に登録している<code>1</code>は何だろう。リクエストを処理する関数を見てみます。</p>
 
 <p>couch_ref_counter.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>handle_call<span class="o">({</span>add, Pid<span class="o">}</span>,_From, <span class="c1">#srv{referrers=Referrers}=Srv) -&gt;
-</span><span class="ln"> 2</span><span class="c1"></span>    <span class="nv">Referrers2</span> <span class="o">=</span>
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>handle_call<span class="o">({</span>add, Pid<span class="o">}</span>,_From, <span class="c1">#srv{referrers=Referrers}=Srv) -&gt;</span>
+<span class="ln"> 2</span>    <span class="nv">Referrers2</span> <span class="o">=</span>
 <span class="ln"> 3</span>    <span class="k">case</span> dict:find<span class="o">(</span>Pid, Referrers<span class="o">)</span> of
 <span class="ln"> 4</span>    error -&gt;
 <span class="ln"> 5</span>        dict:store<span class="o">(</span>Pid, <span class="o">{</span>erlang:monitor<span class="o">(</span>process, Pid<span class="o">)</span>, <span class="m">1</span><span class="o">}</span>, Referrers<span class="o">)</span><span class="p">;</span>
@@ -337,8 +337,8 @@
 <span class="ln">10</span>handle_call<span class="o">(</span>count, _From, Srv<span class="o">)</span> -&gt;
 <span class="ln">11</span>    <span class="o">{</span>monitors, Monitors<span class="o">}</span> <span class="o">=</span>  process_info<span class="o">(</span>self<span class="o">()</span>, monitors<span class="o">)</span>,
 <span class="ln">12</span>    <span class="o">{</span>reply, length<span class="o">(</span>Monitors<span class="o">)</span>, Srv<span class="o">}</span><span class="p">;</span>
-<span class="ln">13</span>handle_call<span class="o">({</span>drop, Pid<span class="o">}</span>, _From, <span class="c1">#srv{referrers=Referrers}=Srv) -&gt;
-</span><span class="ln">14</span><span class="c1"></span>    <span class="nv">Referrers2</span> <span class="o">=</span>
+<span class="ln">13</span>handle_call<span class="o">({</span>drop, Pid<span class="o">}</span>, _From, <span class="c1">#srv{referrers=Referrers}=Srv) -&gt;</span>
+<span class="ln">14</span>    <span class="nv">Referrers2</span> <span class="o">=</span>
 <span class="ln">15</span>    <span class="k">case</span> dict:find<span class="o">(</span>Pid, Referrers<span class="o">)</span> of
 <span class="ln">16</span>    <span class="o">{</span>ok, <span class="o">{</span>MonRef, <span class="m">1</span><span class="o">}}</span> -&gt;
 <span class="ln">17</span>        erlang:demonitor<span class="o">(</span>MonRef, <span class="o">[</span>flush<span class="o">])</span>,
@@ -361,8 +361,8 @@
 <p>参照カウンタの管理の開始を確認したので、残りは<code>couch_db_updater:init_db/6</code>の最後のところ。</p>
 
 <p>couch_db_updater.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>    <span class="c1">#db{
-</span><span class="ln"> 2</span><span class="c1"></span>        <span class="nv">update_pid</span><span class="o">=</span>self<span class="o">()</span>,
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>    <span class="c1">#db{</span>
+<span class="ln"> 2</span>        <span class="nv">update_pid</span><span class="o">=</span>self<span class="o">()</span>,
 <span class="ln"> 3</span>        <span class="nv">fd</span> <span class="o">=</span> ReaderFd,
 <span class="ln"> 4</span>        <span class="nv">updater_fd</span> <span class="o">=</span> Fd,
 <span class="ln"> 5</span>        <span class="nv">fd_ref_counter</span> <span class="o">=</span> RefCntr,
@@ -394,7 +394,7 @@
     <footer class="post-footer">
       
       <p class="post-copyright">
-        This post was published <strong>1848</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+        This post was published <strong>1947</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
       </p>
     </footer>
     

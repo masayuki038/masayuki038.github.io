@@ -37,7 +37,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.32" />
+<meta name="generator" content="Hugo 0.55.6" />
 
 
 <link rel="canonical" href="/blog/2013/09/21/package-el-and-init-loader-el/" />
@@ -201,7 +201,7 @@
   <section class="main post-detail">
     <header class="post-header">
       <h1 class="post-title">Package and Init-loader For Emacs</h1>
-      <p class="post-meta">@Masayuki Takahashi · Sep 21, 2013 · 3 min read</p>
+      <p class="post-meta">@Masayuki Takahashi · Sep 21, 2013 · 4 min read</p>
     </header>
     <article class="post-content">
 
@@ -244,32 +244,32 @@
 
 <p>リストが表示されたら、インストールしたいパッケージを選択(i)して、実行(x)します。</p>
 
-<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text"><span class="ln"> 1</span>  <span class="nx">gimme</span>              <span class="mf">2.1</span>          <span class="nx">available</span>  <span class="nx">The</span> <span class="nx">XMMS2</span> <span class="kd">interface</span> <span class="nx">we</span> <span class="nx">all</span> <span class="nx">love</span><span class="p">!</span> <span class="nx">Check</span> <span class="nx">out</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//gimmeplayer.org for m$
-</span><span class="ln"> 2</span><span class="c1"></span><span class="nx">I</span> <span class="nx">gist</span>               <span class="mf">20130315.</span><span class="o">...</span> <span class="nx">available</span>  <span class="nx">Emacs</span> <span class="nx">integration</span> <span class="k">for</span> <span class="nx">gist</span><span class="p">.</span><span class="nx">github</span><span class="p">.</span><span class="nx">com</span> <span class="p">[</span><span class="nx">github</span><span class="p">]</span>
-<span class="ln"> 3</span>  <span class="nx">git</span>                <span class="mf">20130915.932</span> <span class="nx">available</span>  <span class="nx">An</span> <span class="nx">Elisp</span> <span class="nx">API</span> <span class="k">for</span> <span class="nx">programmatically</span> <span class="nx">using</span> <span class="nx">Git</span> <span class="p">[</span><span class="nx">github</span><span class="p">]</span>
-<span class="ln"> 4</span>  <span class="nx">git</span><span class="o">-</span><span class="nx">annex</span>          <span class="mf">20130816.</span><span class="o">...</span> <span class="nx">available</span>  <span class="nx">Mode</span> <span class="k">for</span> <span class="nx">easy</span> <span class="nx">editing</span> <span class="nx">of</span> <span class="nx">git</span><span class="o">-</span><span class="nx">annex</span><span class="err">&#39;</span><span class="nx">d</span> <span class="nx">files</span> <span class="p">[</span><span class="nx">github</span><span class="p">]</span>
-<span class="ln"> 5</span>  <span class="nx">git</span><span class="o">-</span><span class="nx">auto</span><span class="o">-</span><span class="nx">commit</span><span class="o">...</span> <span class="mf">20130410.157</span> <span class="nx">available</span>  <span class="nx">Emacs</span> <span class="nx">Minor</span> <span class="nx">mode</span> <span class="nx">to</span> <span class="nx">automatically</span> <span class="nx">commit</span> <span class="nx">and</span> <span class="nx">push</span> <span class="p">[</span><span class="nx">github</span><span class="p">]</span>
-<span class="ln"> 6</span>  <span class="nx">git</span><span class="o">-</span><span class="nx">blame</span>          <span class="mf">20110509.</span><span class="o">...</span> <span class="nx">available</span>  <span class="nx">Minor</span> <span class="nx">mode</span> <span class="k">for</span> <span class="nx">incremental</span> <span class="nx">blame</span> <span class="k">for</span> <span class="nx">Git</span> <span class="p">[</span><span class="nx">github</span><span class="p">]</span>
-<span class="ln"> 7</span>  <span class="nx">git</span><span class="o">-</span><span class="nx">commit</span>         <span class="mf">0.1</span>          <span class="nx">available</span>  <span class="nx">Major</span> <span class="nx">mode</span> <span class="k">for</span> <span class="nx">editing</span> <span class="nx">git</span> <span class="nx">commit</span> <span class="nx">messages</span>
-<span class="ln"> 8</span>  <span class="nx">git</span><span class="o">-</span><span class="nx">commit</span><span class="o">-</span><span class="nx">mode</span>    <span class="mf">20130919.341</span> <span class="nx">available</span>  <span class="nx">Major</span> <span class="nx">mode</span> <span class="k">for</span> <span class="nx">editing</span> <span class="nx">git</span> <span class="nx">commit</span> <span class="nx">messages</span> <span class="p">[</span><span class="nx">github</span><span class="p">]</span>
-<span class="ln"> 9</span>  <span class="nx">git</span><span class="o">-</span><span class="nx">dwim</span>           <span class="mf">20130130.</span><span class="o">...</span> <span class="nx">available</span>  <span class="nx">Context</span><span class="o">-</span><span class="nx">aware</span> <span class="nx">git</span> <span class="nx">commands</span> <span class="nx">such</span> <span class="nx">as</span> <span class="nx">branch</span> <span class="nx">handling</span> <span class="p">[</span><span class="nx">wiki</span><span class="p">]</span>
-<span class="ln">10</span>  <span class="nx">git</span><span class="o">-</span><span class="nx">gutter</span>         <span class="mf">20130919.</span><span class="o">...</span> <span class="nx">available</span>  <span class="nx">Port</span> <span class="nx">of</span> <span class="nx">Sublime</span> <span class="nx">Text</span> <span class="nx">plugin</span> <span class="nx">GitGutter</span> <span class="p">[</span><span class="nx">github</span><span class="p">]</span>
-<span class="ln">11</span>  <span class="nx">git</span><span class="o">-</span><span class="nx">gutter</span><span class="o">+</span>        <span class="mf">20130918.</span><span class="o">...</span> <span class="nx">available</span>  <span class="nx">Manage</span> <span class="nx">Git</span> <span class="nx">hunks</span> <span class="nx">straight</span> <span class="nx">from</span> <span class="nx">the</span> <span class="nx">buffer</span> <span class="p">[</span><span class="nx">github</span><span class="p">]</span>
-<span class="ln">12</span>  <span class="nx">git</span><span class="o">-</span><span class="nx">gutter</span><span class="o">-</span><span class="nx">fringe</span>  <span class="mf">20130416.</span><span class="o">...</span> <span class="nx">available</span>  <span class="nx">Fringe</span> <span class="nx">version</span> <span class="nx">of</span> <span class="nx">git</span><span class="o">-</span><span class="nx">gutter</span><span class="p">.</span><span class="nx">el</span> <span class="p">[</span><span class="nx">github</span><span class="p">]</span>
-<span class="ln">13</span>  <span class="nx">git</span><span class="o">-</span><span class="nx">gutter</span><span class="o">-</span><span class="nx">fringe</span><span class="o">+</span> <span class="mf">20130902.</span><span class="o">...</span> <span class="nx">available</span>  <span class="nx">Fringe</span> <span class="nx">version</span> <span class="nx">of</span> <span class="nx">git</span><span class="o">-</span><span class="nx">gutter</span><span class="o">+</span><span class="p">.</span><span class="nx">el</span> <span class="p">[</span><span class="nx">github</span><span class="p">]</span>
-<span class="ln">14</span>  <span class="nx">git</span><span class="o">-</span><span class="nx">messenger</span>      <span class="mf">20130718.659</span> <span class="nx">available</span>  <span class="nx">Port</span> <span class="nx">of</span> <span class="nx">gitmessenger</span><span class="p">.</span><span class="nx">vim</span> <span class="p">[</span><span class="nx">github</span><span class="p">]</span>
-<span class="ln">15</span>  <span class="nx">git</span><span class="o">-</span><span class="nx">rebase</span><span class="o">-</span><span class="nx">mode</span>    <span class="mf">20130912.</span><span class="o">...</span> <span class="nx">available</span>  <span class="nx">Major</span> <span class="nx">mode</span> <span class="k">for</span> <span class="nx">editing</span> <span class="nx">git</span> <span class="nx">rebase</span> <span class="nx">files</span> <span class="p">[</span><span class="nx">github</span><span class="p">]</span>
-<span class="ln">16</span><span class="o">-</span><span class="nx">UUU</span><span class="p">:</span><span class="o">%*--</span><span class="nx">F1</span>  <span class="o">*</span><span class="nx">Packages</span><span class="o">*</span>     <span class="mi">27</span><span class="o">%</span> <span class="nx">L545</span>   <span class="p">(</span><span class="nx">Package</span> <span class="nx">Menu</span><span class="p">)</span> <span class="mi">9</span><span class="p">:</span><span class="mi">30</span><span class="nx">午後</span> <span class="o">------------------------------------------------------</span>
-<span class="ln">17</span><span class="nx">Install</span> <span class="kn">package</span> <span class="err">`</span><span class="nx">gist</span><span class="err">&#39;?</span> <span class="p">(</span><span class="nx">yes</span> <span class="nx">or</span> <span class="nx">no</span><span class="p">)</span></code></pre></div>
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text"><span class="ln"> 1</span>  gimme              2.1          available  The XMMS2 interface we all love! Check out http://gimmeplayer.org for m$
+<span class="ln"> 2</span>I gist               20130315.... available  Emacs integration for gist.github.com [github]
+<span class="ln"> 3</span>  git                20130915.932 available  An Elisp API for programmatically using Git [github]
+<span class="ln"> 4</span>  git-annex          20130816.... available  Mode for easy editing of git-annex&#39;d files [github]
+<span class="ln"> 5</span>  git-auto-commit... 20130410.157 available  Emacs Minor mode to automatically commit and push [github]
+<span class="ln"> 6</span>  git-blame          20110509.... available  Minor mode for incremental blame for Git [github]
+<span class="ln"> 7</span>  git-commit         0.1          available  Major mode for editing git commit messages
+<span class="ln"> 8</span>  git-commit-mode    20130919.341 available  Major mode for editing git commit messages [github]
+<span class="ln"> 9</span>  git-dwim           20130130.... available  Context-aware git commands such as branch handling [wiki]
+<span class="ln">10</span>  git-gutter         20130919.... available  Port of Sublime Text plugin GitGutter [github]
+<span class="ln">11</span>  git-gutter+        20130918.... available  Manage Git hunks straight from the buffer [github]
+<span class="ln">12</span>  git-gutter-fringe  20130416.... available  Fringe version of git-gutter.el [github]
+<span class="ln">13</span>  git-gutter-fringe+ 20130902.... available  Fringe version of git-gutter+.el [github]
+<span class="ln">14</span>  git-messenger      20130718.659 available  Port of gitmessenger.vim [github]
+<span class="ln">15</span>  git-rebase-mode    20130912.... available  Major mode for editing git rebase files [github]
+<span class="ln">16</span>-UUU:%*--F1  *Packages*     27% L545   (Package Menu) 9:30午後 ------------------------------------------------------
+<span class="ln">17</span>Install package `gist&#39;? (yes or no)</code></pre></div>
 
 <h1 id="install-init-loader-el">Install init-loader.el</h1>
 
 <p>init-loader.elはinit.elを用途毎に分割配置する為の仕組みです。普段からEmacsを使っているわけではないので、このような仕組みを入れる必要があるほどinit.elに設定を書けてないのですが、用途毎に分かれている方がスッキリするので入れてみました。init-loader.elのインストールは前記のpackage.elを使っています。
 init-loader.elのインストール後、.emacs.d/init.elに以下の設定を追加しています。下記の設定はpackage.elの設定の後に記述する必要があります。</p>
 
-<p><div class="highlight"><pre class="chroma"><code class="language-elisp" data-lang="elisp"><span class="ln">1</span><span class="p">(</span><span class="nb">require</span> <span class="ss">&#39;init-loader</span><span class="p">)</span>
+<div class="highlight"><pre class="chroma"><code class="language-elisp" data-lang="elisp"><span class="ln">1</span><span class="p">(</span><span class="nb">require</span> <span class="ss">&#39;init-loader</span><span class="p">)</span>
 <span class="ln">2</span><span class="p">(</span><span class="nb">setq</span> <span class="nv">init-loader-show-log-after-init</span> <span class="no">nil</span><span class="p">)</span>
-<span class="ln">3</span><span class="p">(</span><span class="nv">init-loader-load</span> <span class="s">&#34;~/.emacs.d/inits&#34;</span><span class="p">)</span></code></pre></div></p>
+<span class="ln">3</span><span class="p">(</span><span class="nv">init-loader-load</span> <span class="s">&#34;~/.emacs.d/inits&#34;</span><span class="p">)</span></code></pre></div>
 
 <h1 id="spliting-init-el">Spliting init.el</h1>
 
@@ -300,7 +300,7 @@ init-loader.elのインストール後、.emacs.d/init.elに以下の設定を�
     <footer class="post-footer">
       
       <p class="post-copyright">
-        This post was published <strong>2094</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+        This post was published <strong>2193</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
       </p>
     </footer>
     

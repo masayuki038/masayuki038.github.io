@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>flask run と uWSGI prefork</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="Flask の起動時に Background で Thread を動かし、そこで値を更新して、HTTP Request でその値を返すようなコードを書いていました。 そのコードは、ローカルで flask run で実行する" />
+
+  
+  
+  <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://masayuki038.github.io/images/tdump/tdump.png"/>
+
+<meta name="twitter:title" content="flask run と uWSGI prefork"/>
+<meta name="twitter:description" content="Flask の起動時に Background で Thread を動かし、そこで値を更新して、HTTP Request でその値を返すようなコードを書いていました。 そのコードは、ローカルで flask run で実行する"/>
+
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="flask run と uWSGI prefork" />
+  <meta property="og:description" content="Flask の起動時に Background で Thread を動かし、そこで値を更新して、HTTP Request でその値を返すようなコードを書いていました。 そのコードは、ローカルで flask run で実行する" />
+  <meta property="og:url" content="/blog/2019/09/23/flask-uwsgi-prefork/" />
+  <meta property="og:image" content="/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="/blog/2019/09/23/flask-uwsgi-prefork/" />
+<link rel="alternative" href="/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="/css/bundle.css" />
+<link rel="stylesheet" href="/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+
+<nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">flask run と uWSGI prefork</h1>
+      <p class="post-meta">@Masayuki Takahashi · Sep 23, 2019 · 4 min read</p>
+    </header>
+    <article class="post-content">
+
+<p><a href="https://palletsprojects.com/p/flask/">Flask</a> の起動時に Background で Thread を動かし、そこで値を更新して、HTTP Request でその値を返すようなコードを書いていました。</p>
+
+<p>そのコードは、ローカルで <code>flask run</code> で実行すると期待通りに動くものの、<a href="https://uwsgi-docs.readthedocs.io/en/latest/">uWSGI</a> に deploy すると Background Thread で更新しているはずの値が取得できない、という問題が発生しました。そこで、調査用のコードを書いて uWSGI と <code>flask run</code> で実行し、どのような値が見えるか確認してみました。</p>
+
+<h1 id="test-code">Test Code</h1>
+
+<p>以下のコードを使って調べてみました。<a href="https://palletsprojects.com/p/flask/">Flask</a> でスレッド等の情報を出力する際に <code>print</code> を使うと HTTP の Response が返ってこなくなるので、JSON で返すようにしています。</p>
+
+<ul>
+<li>app.py on server</li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="ln"> 1</span><span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+<span class="ln"> 2</span><span class="kn">import</span> <span class="nn">json</span>
+<span class="ln"> 3</span><span class="kn">import</span> <span class="nn">os</span>
+<span class="ln"> 4</span><span class="kn">import</span> <span class="nn">threading</span>
+<span class="ln"> 5</span><span class="kn">import</span> <span class="nn">traceback</span>
+<span class="ln"> 6</span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="ln"> 7</span>
+<span class="ln"> 8</span><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">jsonify</span>
+<span class="ln"> 9</span>
+<span class="ln">10</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="ln">11</span><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="ln">12</span>
+<span class="ln">13</span><span class="k">def</span> <span class="nf">process</span><span class="p">():</span>
+<span class="ln">14</span>    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+<span class="ln">15</span>        <span class="k">try</span><span class="p">:</span>
+<span class="ln">16</span>            <span class="k">global</span> <span class="n">i</span>
+<span class="ln">17</span>            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="ln">18</span>            <span class="k">print</span><span class="p">(</span><span class="s2">&#34;--------------- thread dump on background thread --------------&#34;</span><span class="p">)</span>
+<span class="ln">19</span>            <span class="k">for</span> <span class="n">th</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">get_thread_dump</span><span class="p">():</span>
+<span class="ln">20</span>                <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&#34;pid: {os.getpid()}&#34;</span><span class="p">)</span>
+<span class="ln">21</span>                <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&#34;i = {i}&#34;</span><span class="p">)</span>
+<span class="ln">22</span>                <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&#34;{th} id={id(th)}&#34;</span><span class="p">)</span>
+<span class="ln">23</span>                <span class="k">print</span><span class="p">(</span><span class="s2">&#34;&#34;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">format</span><span class="p">()))</span>
+<span class="ln">24</span>                <span class="k">print</span><span class="p">()</span>
+<span class="ln">25</span>
+<span class="ln">26</span>        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+<span class="ln">27</span>            <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&#34;err: {err}&#34;</span><span class="p">)</span>
+<span class="ln">28</span>
+<span class="ln">29</span>        <span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="ln">30</span>
+<span class="ln">31</span>
+<span class="ln">32</span><span class="n">th</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">process</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;test-thread&#39;</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="ln">33</span><span class="n">th</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="ln">34</span>
+<span class="ln">35</span>
+<span class="ln">36</span><span class="nd">@app.route</span><span class="p">(</span><span class="s1">&#39;/hello&#39;</span><span class="p">)</span>
+<span class="ln">37</span><span class="k">def</span> <span class="nf">hello_world</span><span class="p">():</span>
+<span class="ln">38</span>    <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="ln">39</span>    <span class="k">for</span> <span class="n">th</span><span class="p">,</span> <span class="n">frs</span> <span class="ow">in</span> <span class="n">get_thread_dump</span><span class="p">():</span>
+<span class="ln">40</span>        <span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">frs</span><span class="p">]</span>
+<span class="ln">41</span>        <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+<span class="ln">42</span>            <span class="s1">&#39;pid&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">()),</span>
+<span class="ln">43</span>            <span class="s1">&#39;counter&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span>
+<span class="ln">44</span>            <span class="s1">&#39;thread&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">th</span><span class="p">),</span>
+<span class="ln">45</span>            <span class="s1">&#39;thread-id&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">th</span><span class="p">)),</span>
+<span class="ln">46</span>            <span class="s1">&#39;frames&#39;</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">l</span><span class="p">)})</span>
+<span class="ln">47</span>
+<span class="ln">48</span>    <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">})</span>
+<span class="ln">49</span>
+<span class="ln">50</span>
+<span class="ln">51</span><span class="k">def</span> <span class="nf">get_thread_dump</span><span class="p">():</span>
+<span class="ln">52</span>    <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="ln">53</span>    <span class="k">for</span> <span class="n">th</span> <span class="ow">in</span> <span class="n">threading</span><span class="o">.</span><span class="nb">enumerate</span><span class="p">():</span>
+<span class="ln">54</span>        <span class="n">frames</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_current_frames</span><span class="p">()</span>
+<span class="ln">55</span>        <span class="k">if</span> <span class="n">frames</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">th</span><span class="o">.</span><span class="n">ident</span><span class="p">):</span>
+<span class="ln">56</span>            <span class="n">s</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">extract_stack</span><span class="p">(</span><span class="n">frames</span><span class="p">[</span><span class="n">th</span><span class="o">.</span><span class="n">ident</span><span class="p">])</span>
+<span class="ln">57</span>        <span class="k">else</span><span class="p">:</span>
+<span class="ln">58</span>            <span class="n">s</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&#34;th: {th.ident} is not found in current frames&#34;</span>
+<span class="ln">59</span>
+<span class="ln">60</span>        <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">th</span><span class="p">,</span> <span class="n">s</span><span class="p">))</span>
+<span class="ln">61</span>
+<span class="ln">62</span>    <span class="k">return</span> <span class="n">ret</span>
+<span class="ln">63</span>
+<span class="ln">64</span>
+<span class="ln">65</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&#34;__main__&#34;</span><span class="p">:</span>
+<span class="ln">66</span>    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span></code></pre></div>
+
+<ul>
+<li>uwsgi.ini</li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">[uwsgi]
+master = true
+http = 127.0.0.1:5000
+wsgi-file = /root/works/app.py
+callable = app
+enable-threads = true
+workers = 2
+stats = 127.0.0.1:9191
+pidfile=/root/works/app.pid</code></pre></div>
+
+<ul>
+<li>client.py on client</li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="ln"> 1</span><span class="kn">import</span> <span class="nn">urllib.request</span>
+<span class="ln"> 2</span><span class="kn">import</span> <span class="nn">json</span>
+<span class="ln"> 3</span>
+<span class="ln"> 4</span><span class="k">with</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="s1">&#39;http://localhost:5000/hello&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">r</span><span class="p">:</span>
+<span class="ln"> 5</span>    <span class="n">j</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+<span class="ln"> 6</span>    <span class="n">ps</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+<span class="ln"> 7</span>    <span class="k">print</span><span class="p">(</span><span class="s2">&#34;--------------- thread dump on worker ---------------&#34;</span><span class="p">)</span>
+<span class="ln"> 8</span>    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">ps</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">):</span>
+<span class="ln"> 9</span>        <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&#34;pid: {p.get(&#39;pid&#39;)}&#34;</span><span class="p">)</span>
+<span class="ln">10</span>        <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&#34;i = {p.get(&#39;counter&#39;)}&#34;</span><span class="p">)</span>
+<span class="ln">11</span>        <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&#34;{p.get(&#39;thread&#39;)} id={p.get(&#39;thread-id&#39;)}&#34;</span><span class="p">)</span>
+<span class="ln">12</span>        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;frames&#39;</span><span class="p">)):</span>
+<span class="ln">13</span>            <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<span class="ln">14</span>
+<span class="ln">15</span>        <span class="k">print</span><span class="p">()</span></code></pre></div>
+
+<h1 id="uwsgi">uWSGI</h1>
+
+<p>uWSGI prefork で動かした時に、Background Thread の中で thread dump を取得すると、以下のようになります。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">--------------- thread dump on background thread --------------
+pid: 1121
+i = 4
+&lt;_MainThread(MainThread, started 140685885491072)&gt; id=140685882011536
+th: 140685885491072 is not found in current frames
+
+pid: 1121
+i = 4
+&lt;Thread(test-thread, started 140685867824896)&gt; id=140685872997968
+  File &#34;/usr/local/lib/python3.7/threading.py&#34;, line 890, in _bootstrap
+    self._bootstrap_inner()
+  File &#34;/usr/local/lib/python3.7/threading.py&#34;, line 926, in _bootstrap_inner
+    self.run()
+  File &#34;/usr/local/lib/python3.7/threading.py&#34;, line 870, in run
+    self._target(*self._args, **self._kwargs)
+  File &#34;/root/works/app.py&#34;, line 19, in process
+    for th, s in get_thread_dump():
+  File &#34;/root/works/app.py&#34;, line 56, in get_thread_dump
+    s = traceback.extract_stack(frames[th.ident])
+
+
+--------------- thread dump on background thread --------------
+pid: 1121
+i = 5
+&lt;_MainThread(MainThread, started 140685885491072)&gt; id=140685882011536
+th: 140685885491072 is not found in current frames
+
+pid: 1121
+i = 5
+&lt;Thread(test-thread, started 140685867824896)&gt; id=140685872997968
+  File &#34;/usr/local/lib/python3.7/threading.py&#34;, line 890, in _bootstrap
+    self._bootstrap_inner()
+  File &#34;/usr/local/lib/python3.7/threading.py&#34;, line 926, in _bootstrap_inner
+    self.run()
+  File &#34;/usr/local/lib/python3.7/threading.py&#34;, line 870, in run
+    self._target(*self._args, **self._kwargs)
+  File &#34;/root/works/app.py&#34;, line 19, in process
+    for th, s in get_thread_dump():
+  File &#34;/root/works/app.py&#34;, line 56, in get_thread_dump
+    s = traceback.extract_stack(frames[th.ident])</code></pre></div>
+
+<p><code>pid: 1121</code> は uWSGI の master プロセスです。</p>
+
+<p>一方、uWSGI で動かした時、Flask の中で Thread dump を取得すると、以下のようになります。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">--------------- thread dump on worker ---------------
+pid: 1123
+i = 1
+&lt;_MainThread(uWSGIWorker1Core0, started 140685885491072)&gt; id=140685882011536
+&lt;FrameSummary file /usr/local/lib/python3.7/site-packages/flask/app.py, line 2463 in __call__&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/site-packages/flask/app.py, line 2446 in wsgi_app&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/site-packages/flask/app.py, line 1949 in full_dispatch_request&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/site-packages/flask/app.py, line 1935 in dispatch_request&gt;
+&lt;FrameSummary file /root/works/app.py, line 39 in hello_world&gt;
+&lt;FrameSummary file /root/works/app.py, line 56 in get_thread_dump&gt;
+
+pid: 1123
+i = 1
+&lt;Thread(test-thread, started 140685867824896)&gt; id=140685872997968
+&lt;FrameSummary file /usr/local/lib/python3.7/threading.py, line 890 in _bootstrap&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/threading.py, line 926 in _bootstrap_inner&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/threading.py, line 870 in run&gt;
+&lt;FrameSummary file /root/works/app.py, line 18 in process&gt;</code></pre></div>
+
+<p><code>pid: 1123</code> は uWSGI の worker プロセスです。</p>
+
+<p>uWSGI の worker から見ると　<code>i</code> の値は 1 から変化することはありません。<code>i</code> の初期値は 0 ですが、Background Thread 側で1度インクリメントしてから fork した為です。fork 後、master 側でカウンタの値を書き換えた際に Copy On Write でそれぞれでカウンタの値を保持するようになっています。</p>
+
+<h1 id="flask-run">flask run</h1>
+
+<p>ローカルでは <code>flask run</code> で動かしていたので、その時の Thread やカウンタの見え方も確認してみました。Background Thread の中で thread dump を取得すると、以下のようになります。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">--------------- thread dump on background thread --------------
+pid: 1181
+i = 4
+&lt;_MainThread(MainThread, started 140653762594624)&gt; id=140653757725200
+  File &#34;/usr/local/bin/flask&#34;, line 10, in &lt;module&gt;
+    sys.exit(main())
+  File &#34;/usr/local/lib/python3.7/site-packages/flask/cli.py&#34;, line 966, in main
+    cli.main(prog_name=&#34;python -m flask&#34; if as_module else None)
+  File &#34;/usr/local/lib/python3.7/site-packages/flask/cli.py&#34;, line 586, in main
+    return super(FlaskGroup, self).main(*args, **kwargs)
+  File &#34;/usr/local/lib/python3.7/site-packages/click/core.py&#34;, line 680, in main
+    rv = self.invoke(ctx)
+  File &#34;/usr/local/lib/python3.7/site-packages/click/core.py&#34;, line 1027, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+  File &#34;/usr/local/lib/python3.7/site-packages/click/core.py&#34;, line 873, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+  File &#34;/usr/local/lib/python3.7/site-packages/click/core.py&#34;, line 508, in invoke
+    return callback(*args, **kwargs)
+  File &#34;/usr/local/lib/python3.7/site-packages/click/decorators.py&#34;, line 63, in new_func
+    return ctx.invoke(f, obj, *args[1:], **kwargs)
+  File &#34;/usr/local/lib/python3.7/site-packages/click/core.py&#34;, line 508, in invoke
+    return callback(*args, **kwargs)
+  File &#34;/usr/local/lib/python3.7/site-packages/flask/cli.py&#34;, line 860, in run_command
+    extra_files=extra_files,
+  File &#34;/usr/local/lib/python3.7/site-packages/werkzeug/serving.py&#34;, line 1009, in run_simple
+    inner()
+  File &#34;/usr/local/lib/python3.7/site-packages/werkzeug/serving.py&#34;, line 966, in inner
+    srv.serve_forever()
+  File &#34;/usr/local/lib/python3.7/site-packages/werkzeug/serving.py&#34;, line 734, in serve_forever
+    HTTPServer.serve_forever(self)
+  File &#34;/usr/local/lib/python3.7/socketserver.py&#34;, line 232, in serve_forever
+    ready = selector.select(poll_interval)
+  File &#34;/usr/local/lib/python3.7/selectors.py&#34;, line 415, in select
+    fd_event_list = self._selector.poll(timeout)
+
+
+pid: 1181
+i = 4
+&lt;Thread(test-thread, started 140653735167744)&gt; id=140653758109136
+  File &#34;/usr/local/lib/python3.7/threading.py&#34;, line 890, in _bootstrap
+    self._bootstrap_inner()
+  File &#34;/usr/local/lib/python3.7/threading.py&#34;, line 926, in _bootstrap_inner
+    self.run()
+  File &#34;/usr/local/lib/python3.7/threading.py&#34;, line 870, in run
+    self._target(*self._args, **self._kwargs)
+  File &#34;/root/works/app.py&#34;, line 19, in process
+    for th, s in get_thread_dump():
+  File &#34;/root/works/app.py&#34;, line 56, in get_thread_dump
+    s = traceback.extract_stack(frames[th.ident])</code></pre></div>
+
+<p><code>flask run</code> で動かした時、Flask の中で Thread dump を取得すると、以下のようになります。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">--------------- thread dump on worker ---------------
+pid: 1181
+i = 4
+&lt;_MainThread(MainThread, started 140653762594624)&gt; id=140653757725200
+&lt;FrameSummary file /usr/local/bin/flask, line 10 in &lt;module&gt;&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/site-packages/flask/cli.py, line 966 in main&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/site-packages/flask/cli.py, line 586 in main&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/site-packages/click/core.py, line 680 in main&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/site-packages/click/core.py, line 1027 in invoke&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/site-packages/click/core.py, line 873 in invoke&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/site-packages/click/core.py, line 508 in invoke&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/site-packages/click/decorators.py, line 63 in new_func&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/site-packages/click/core.py, line 508 in invoke&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/site-packages/flask/cli.py, line 860 in run_command&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/site-packages/werkzeug/serving.py, line 1009 in run_simple&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/site-packages/werkzeug/serving.py, line 966 in inner&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/site-packages/werkzeug/serving.py, line 734 in serve_forever&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/socketserver.py, line 232 in serve_forever&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/selectors.py, line 415 in select&gt;
+
+pid: 1181
+i = 4
+&lt;Thread(test-thread, started 140653735167744)&gt; id=140653758109136
+&lt;FrameSummary file /usr/local/lib/python3.7/threading.py, line 890 in _bootstrap&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/threading.py, line 926 in _bootstrap_inner&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/threading.py, line 870 in run&gt;
+&lt;FrameSummary file /root/works/app.py, line 29 in process&gt;
+
+pid: 1181
+i = 4
+&lt;Thread(Thread-1, started daemon 140653725640448)&gt; id=140653725752720
+&lt;FrameSummary file /usr/local/lib/python3.7/threading.py, line 890 in _bootstrap&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/threading.py, line 926 in _bootstrap_inner&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/threading.py, line 870 in run&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/socketserver.py, line 650 in process_request_thread&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/socketserver.py, line 360 in finish_request&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/socketserver.py, line 720 in __init__&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/site-packages/werkzeug/serving.py, line 326 in handle&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/http/server.py, line 426 in handle&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/site-packages/werkzeug/serving.py, line 361 in handle_one_request&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/site-packages/werkzeug/serving.py, line 303 in run_wsgi&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/site-packages/werkzeug/serving.py, line 291 in execute&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/site-packages/flask/cli.py, line 337 in __call__&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/site-packages/flask/app.py, line 2463 in __call__&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/site-packages/flask/app.py, line 2446 in wsgi_app&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/site-packages/flask/app.py, line 1949 in full_dispatch_request&gt;
+&lt;FrameSummary file /usr/local/lib/python3.7/site-packages/flask/app.py, line 1935 in dispatch_request&gt;
+&lt;FrameSummary file /root/works/app.py, line 39 in hello_world&gt;
+&lt;FrameSummary file /root/works/app.py, line 56 in get_thread_dump&gt;</code></pre></div>
+
+<p>Flask の worker から見ると Background Thread でインクリメントした <code>i</code> の値が見えています。pid はどちらも <code>1181</code> になっています。</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p><code>flask run</code> は プロセスを Fork せず Thread だけでリクエストを処理しており、Background Thread で更新したカウンタを Flask から参照することができます。uWSGI は master プロセスを Fork して worker を作成しているので、master の Background Thread で更新したカウンタを worker の Flask から参照することができませんでした。</p>
+
+<p>前記の調査用のコードはカウンタ(<code>i</code>)を使いましたが、実際はこの部分が別のライブラリで管理している変数だった為、すぐに原因を特定することはできませんでした。uWSGI に deploy したら思い通りに振る舞いにならなかった時、こういった箇所を疑ってみるのも一案だと思います。</p>
+
+<p>調査用のコードを書いたりしてちょっと時間を使ってしまったので、自戒の念を込めてアップしました。</p>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2019 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>

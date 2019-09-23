@@ -37,7 +37,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.32" />
+<meta name="generator" content="Hugo 0.55.6" />
 
 
 <link rel="canonical" href="/blog/2015/01/03/getting-started-with-quasar/" />
@@ -334,7 +334,7 @@
 <span class="ln">42</span>  <span class="o">}</span>
 <span class="ln">43</span><span class="o">}</span></code></pre></div></p>
 
-<p><div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">sent: foo0
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">sent: foo0
 received: foo0
 sent: foo1
 received: foo1
@@ -346,7 +346,7 @@ sent: foo4
 received: foo4
 sent: foo5
 received: foo5
-...</code></pre></div></p>
+...</code></pre></div>
 
 <p>Channel#receiveを呼び出すと、メッセージを受信するまでブロックします。golangを使ったことが無いのでこれが&rdquo;Go-like channels&rdquo;なのか良く分かりませんが、Fiber間のメッセージ送受信を簡単に書けるようになっていると思います。</p>
 
@@ -472,7 +472,7 @@ received: foo5
 <span class="ln">111</span>  <span class="o">}</span>
 <span class="ln">112</span><span class="o">}</span></code></pre></div></p>
 
-<p><div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">server: init
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">server: init
 client: s.call<span class="o">(</span>new Request<span class="o">(</span><span class="m">3</span>, <span class="m">4</span><span class="o">))</span>
 server: handleCall
 client: s.call<span class="o">(</span>new Request<span class="o">(</span><span class="m">3</span>, <span class="m">4</span><span class="o">))</span>: <span class="m">7</span>
@@ -482,7 +482,7 @@ client: s.cast<span class="o">(</span>new Request<span class="o">(</span><span c
 client: s.send<span class="o">(</span>new Request<span class="o">(</span><span class="m">3</span>, <span class="m">4</span><span class="o">))</span>
 server: handleInfo
 <span class="nv">a</span><span class="o">=</span><span class="m">3</span>, <span class="nv">b</span><span class="o">=</span><span class="m">4</span>
-server: terminate</code></pre></div></p>
+server: terminate</code></pre></div>
 
 <p>Erlangのように、LinkやMonitor、Supervisor、Hot Code Swapping等の機能があるようです。</p>
 
@@ -495,7 +495,7 @@ server: terminate</code></pre></div></p>
     <footer class="post-footer">
       
       <p class="post-copyright">
-        This post was published <strong>1625</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+        This post was published <strong>1724</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
       </p>
     </footer>
     

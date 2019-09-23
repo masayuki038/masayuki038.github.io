@@ -37,7 +37,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.32" />
+<meta name="generator" content="Hugo 0.55.6" />
 
 
 <link rel="canonical" href="/blog/2013/06/09/thrift-hive-part2/" />
@@ -243,9 +243,9 @@ ERROR: eunit failed <span class="k">while</span> processing /home/masayuki/work/
 <div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>%%--------------------------------------------------------------------                            
 <span class="ln"> 2</span>%%% Internal functions                                                                            
 <span class="ln"> 3</span>%%--------------------------------------------------------------------                            
-<span class="ln"> 4</span>-spec send_function_call<span class="o">(</span><span class="c1">#tclient{}, atom(), list()) -&gt; {#tclient{}, ok | {error, any()}}.
-</span><span class="ln"> 5</span><span class="c1"></span>send_function_call<span class="o">(</span><span class="nv">Client</span> <span class="o">=</span> <span class="c1">#tclient{protocol = Proto0,
-</span><span class="ln"> 6</span><span class="c1"></span>                                     <span class="nv">service</span>  <span class="o">=</span> Service,
+<span class="ln"> 4</span>-spec send_function_call<span class="o">(</span><span class="c1">#tclient{}, atom(), list()) -&gt; {#tclient{}, ok | {error, any()}}.</span>
+<span class="ln"> 5</span>send_function_call<span class="o">(</span><span class="nv">Client</span> <span class="o">=</span> <span class="c1">#tclient{protocol = Proto0,</span>
+<span class="ln"> 6</span>                                     <span class="nv">service</span>  <span class="o">=</span> Service,
 <span class="ln"> 7</span>                                     <span class="nv">seqid</span>    <span class="o">=</span> SeqId<span class="o">}</span>,
 <span class="ln"> 8</span>                   Function,
 <span class="ln"> 9</span>                   Args<span class="o">)</span> -&gt;
@@ -279,7 +279,7 @@ ERROR: eunit failed <span class="k">while</span> processing /home/masayuki/work/
 
 <p>エラーメッセージを指定してググってみたところ、HiveのMetadata storeに使用しているderbyのデータファイルに対して権限が足りてない、ということだったので、オーナーを変更しました。</p>
 
-<p><div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">chown -R hive:hive /var/lib/hive/metastore</code></pre></div></p>
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">chown -R hive:hive /var/lib/hive/metastore</code></pre></div>
 
 <p>これでようやくHiveの結果を取得することができました。</p>
 
@@ -341,8 +341,8 @@ ERROR: eunit failed <span class="k">while</span> processing /home/masayuki/work/
 <p>また、何か関数を呼び出した際、その戻り値の型が分からなくて困ることがよくあります。呼び出す関数のコードがあれば追えますが、無い場合はどうするんだろう。関数を定義している1行上に「-spec」を用いてインターフェースを記述するのが一般的なようですが、</p>
 
 <p>deps/thrift_erl/src/thrift_client.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>-spec receive_function_result<span class="o">(</span><span class="c1">#tclient{}, atom()) -&gt; {#tclient{}, {ok, any()} | {error, any()}}.
-</span><span class="ln">2</span><span class="c1"></span>receive_function_result<span class="o">(</span><span class="nv">Client</span> <span class="o">=</span> #tclient<span class="o">{</span><span class="nv">service</span> <span class="o">=</span> Service<span class="o">}</span>, Function<span class="o">)</span> -&gt;</code></pre></div></p>
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>-spec receive_function_result<span class="o">(</span><span class="c1">#tclient{}, atom()) -&gt; {#tclient{}, {ok, any()} | {error, any()}}.</span>
+<span class="ln">2</span>receive_function_result<span class="o">(</span><span class="nv">Client</span> <span class="o">=</span> <span class="c1">#tclient{service = Service}, Function) -&gt;</span></code></pre></div></p>
 
 <p>このようにany()を使われてしまうと動かしてみないことには分からないような。</p>
 
@@ -351,7 +351,7 @@ ERROR: eunit failed <span class="k">while</span> processing /home/masayuki/work/
     <footer class="post-footer">
       
       <p class="post-copyright">
-        This post was published <strong>2198</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+        This post was published <strong>2297</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
       </p>
     </footer>
     

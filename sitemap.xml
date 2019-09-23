@@ -3,8 +3,55 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>/categories/</loc>
+    <lastmod>2019-09-23T00:00:01+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/post/</loc>
+    <lastmod>2019-09-23T00:00:01+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/</loc>
+    <lastmod>2019-09-23T00:00:01+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/flask/</loc>
+    <lastmod>2019-09-23T00:00:01+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/blog/2019/09/23/flask-uwsgi-prefork/</loc>
+    <lastmod>2019-09-23T00:00:01+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/python/</loc>
+    <lastmod>2019-09-23T00:00:01+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/uwsgi/</loc>
+    <lastmod>2019-09-23T00:00:01+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/blog/2019/06/16/voila/</loc>
     <lastmod>2019-06-16T00:00:01+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/jupyternotebook/</loc>
+    <lastmod>2019-06-16T00:00:01+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -13,8 +60,26 @@
   </url>
   
   <url>
+    <loc>/categories/calcite/</loc>
+    <lastmod>2019-06-03T23:00:01+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/blog/2019/04/29/delta-transaction/</loc>
     <lastmod>2019-04-29T00:00:01+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/delta/</loc>
+    <lastmod>2019-04-29T00:00:01+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/parquet/</loc>
+    <lastmod>2019-04-29T00:00:01+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -23,13 +88,43 @@
   </url>
   
   <url>
+    <loc>/categories/arrow/</loc>
+    <lastmod>2019-04-06T00:00:01+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/gandiva/</loc>
+    <lastmod>2019-04-06T00:00:01+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/blog/2019/03/17/hadoop-spark-conference-2019/</loc>
     <lastmod>2019-03-17T00:00:01+00:00</lastmod>
   </url>
   
   <url>
+    <loc>/categories/hadoop/</loc>
+    <lastmod>2019-03-17T00:00:01+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/spark/</loc>
+    <lastmod>2019-03-17T00:00:01+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/blog/2019/03/09/fail-to-generate-javadoc-on-jdk11/</loc>
     <lastmod>2019-03-09T00:00:01+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/java/</loc>
+    <lastmod>2019-03-09T00:00:01+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -53,8 +148,32 @@
   </url>
   
   <url>
+    <loc>/categories/agile/</loc>
+    <lastmod>2019-01-13T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/lean/</loc>
+    <lastmod>2019-01-13T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/rust/</loc>
+    <lastmod>2019-01-13T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/blog/2019/01/20/lean-from-the-trenches/</loc>
     <lastmod>2019-01-13T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/paper/</loc>
+    <lastmod>2019-01-06T00:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -83,6 +202,12 @@
   </url>
   
   <url>
+    <loc>/categories/octopress/</loc>
+    <lastmod>2016-05-04T14:24:20+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/blog/2015/01/03/getting-started-with-quasar/</loc>
     <lastmod>2015-01-03T00:00:00+00:00</lastmod>
   </url>
@@ -93,8 +218,32 @@
   </url>
   
   <url>
+    <loc>/categories/jdb/</loc>
+    <lastmod>2014-08-24T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/maven/</loc>
+    <lastmod>2014-08-24T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/blog/2014/08/17/couchdb-code-reading11/</loc>
     <lastmod>2014-08-17T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/couchdb/</loc>
+    <lastmod>2014-08-17T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/erlang/</loc>
+    <lastmod>2014-08-17T00:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -105,6 +254,12 @@
   <url>
     <loc>/blog/2014/07/27/couchdb-code-reading9/</loc>
     <lastmod>2014-07-27T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/eralng/</loc>
+    <lastmod>2014-07-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -153,8 +308,38 @@
   </url>
   
   <url>
+    <loc>/categories/ansible/</loc>
+    <lastmod>2014-02-22T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/docker/</loc>
+    <lastmod>2014-02-22T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/rails/</loc>
+    <lastmod>2014-02-22T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/ruby/</loc>
+    <lastmod>2014-02-22T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/blog/2014/01/19/serf-code-reading2/</loc>
     <lastmod>2014-01-19T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/serf/</loc>
+    <lastmod>2014-01-19T00:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -173,6 +358,18 @@
   </url>
   
   <url>
+    <loc>/categories/hive/</loc>
+    <lastmod>2013-10-13T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/thrift/</loc>
+    <lastmod>2013-10-13T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/blog/2013/09/23/erlcscope-and-ascope-el/</loc>
     <lastmod>2013-09-23T00:00:00+00:00</lastmod>
   </url>
@@ -180,6 +377,12 @@
   <url>
     <loc>/blog/2013/09/21/package-el-and-init-loader-el/</loc>
     <lastmod>2013-09-21T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/emacs/</loc>
+    <lastmod>2013-09-21T00:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -213,6 +416,12 @@
   </url>
   
   <url>
+    <loc>/categories/scala/</loc>
+    <lastmod>2012-07-23T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/blog/2012/07/16/implicit-conversion-in-scala/</loc>
     <lastmod>2012-07-16T00:00:00+00:00</lastmod>
   </url>
@@ -223,8 +432,20 @@
   </url>
   
   <url>
+    <loc>/categories/redis/</loc>
+    <lastmod>2012-06-24T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/blog/2012/05/13/see-jit-compiled-code/</loc>
     <lastmod>2012-05-13T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/hotspot/</loc>
+    <lastmod>2012-05-13T00:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -248,8 +469,20 @@
   </url>
   
   <url>
+    <loc>/categories/filestoredmap/</loc>
+    <lastmod>2012-05-03T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/blog/2012/04/30/nio2-asyncio/</loc>
     <lastmod>2012-04-30T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/nio/</loc>
+    <lastmod>2012-04-30T00:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -273,8 +506,20 @@
   </url>
   
   <url>
+    <loc>/categories/performance/</loc>
+    <lastmod>2012-04-15T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/blog/2012/04/10/maven-repo-problem/</loc>
     <lastmod>2012-04-10T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/m2eclipse/</loc>
+    <lastmod>2012-04-10T00:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -288,229 +533,7 @@
   </url>
   
   <url>
-    <loc>/categories/agile/</loc>
-    <lastmod>2019-01-13T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/ansible/</loc>
-    <lastmod>2014-02-22T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/arrow/</loc>
-    <lastmod>2019-04-06T00:00:01+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/calcite/</loc>
-    <lastmod>2019-06-03T23:00:01+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/</loc>
-    <lastmod>2019-01-13T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/couchdb/</loc>
-    <lastmod>2014-08-17T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/delta/</loc>
-    <lastmod>2019-04-29T00:00:01+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/docker/</loc>
-    <lastmod>2014-02-22T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/emacs/</loc>
-    <lastmod>2013-09-21T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/eralng/</loc>
-    <lastmod>2014-07-27T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/erlang/</loc>
-    <lastmod>2014-08-17T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/filestoredmap/</loc>
-    <lastmod>2012-05-03T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/gandiva/</loc>
-    <lastmod>2019-04-06T00:00:01+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/hadoop/</loc>
-    <lastmod>2019-03-17T00:00:01+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/hive/</loc>
-    <lastmod>2013-10-13T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/hotspot/</loc>
-    <lastmod>2012-05-13T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/java/</loc>
-    <lastmod>2019-03-09T00:00:01+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/jdb/</loc>
-    <lastmod>2014-08-24T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/jupyternotebook/</loc>
-    <lastmod>2019-06-16T00:00:01+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/lean/</loc>
-    <lastmod>2019-01-13T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/m2eclipse/</loc>
-    <lastmod>2012-04-10T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/maven/</loc>
-    <lastmod>2014-08-24T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/nio/</loc>
-    <lastmod>2012-04-30T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/octopress/</loc>
-    <lastmod>2016-05-04T14:24:20+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/paper/</loc>
-    <lastmod>2019-01-06T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/parquet/</loc>
-    <lastmod>2019-04-29T00:00:01+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/performance/</loc>
-    <lastmod>2012-04-15T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/post/</loc>
-    <lastmod>2019-06-16T00:00:01+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/rails/</loc>
-    <lastmod>2014-02-22T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/redis/</loc>
-    <lastmod>2012-06-24T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/ruby/</loc>
-    <lastmod>2014-02-22T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/rust/</loc>
-    <lastmod>2019-01-13T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/scala/</loc>
-    <lastmod>2012-07-23T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/serf/</loc>
-    <lastmod>2014-01-19T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/spark/</loc>
-    <lastmod>2019-03-17T00:00:01+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>/tags/</loc>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/thrift/</loc>
-    <lastmod>2013-10-13T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/</loc>
-    <lastmod>2019-06-16T00:00:01+00:00</lastmod>
     <priority>0</priority>
   </url>
   

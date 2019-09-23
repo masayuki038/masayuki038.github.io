@@ -37,7 +37,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.32" />
+<meta name="generator" content="Hugo 0.55.6" />
 
 
 <link rel="canonical" href="/blog/2012/04/22/nio-multiplexing/" />
@@ -298,19 +298,19 @@
 
 <p>クライアントは以下のコードです。</p>
 
-<p><div class="highlight"><pre class="chroma"><code class="language-ruby" data-lang="ruby"><span class="ln"> 1</span><span class="c1"># -*- coding: utf-8 -*-</span>
+<div class="highlight"><pre class="chroma"><code class="language-ruby" data-lang="ruby"><span class="ln"> 1</span><span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="ln"> 2</span>
 <span class="ln"> 3</span><span class="nb">require</span> <span class="s1">&#39;socket&#39;</span>
 <span class="ln"> 4</span>
-<span class="ln"> 5</span><span class="n">s</span> <span class="o">=</span> <span class="no">Socket</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">Socket</span><span class="o">::</span><span class="no">AF_INET</span><span class="p">,</span> <span class="no">Socket</span><span class="o">::</span><span class="no">SOCK_STREAM</span><span class="p">,</span> <span class="mi">0</span><span class="o"></span><span class="p">)</span>
-<span class="ln"> 6</span><span class="n">sockaddr</span> <span class="o">=</span> <span class="no">Socket</span><span class="o">.</span><span class="n">sockaddr_in</span><span class="p">(</span><span class="mi">8000</span><span class="o"></span><span class="p">,</span> <span class="s1">&#39;127.0.0.1&#39;</span><span class="p">)</span>
+<span class="ln"> 5</span><span class="n">s</span> <span class="o">=</span> <span class="no">Socket</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">Socket</span><span class="o">::</span><span class="no">AF_INET</span><span class="p">,</span> <span class="no">Socket</span><span class="o">::</span><span class="no">SOCK_STREAM</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="ln"> 6</span><span class="n">sockaddr</span> <span class="o">=</span> <span class="no">Socket</span><span class="o">.</span><span class="n">sockaddr_in</span><span class="p">(</span><span class="mi">8000</span><span class="p">,</span> <span class="s1">&#39;127.0.0.1&#39;</span><span class="p">)</span>
 <span class="ln"> 7</span><span class="n">s</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">sockaddr</span><span class="p">)</span>
 <span class="ln"> 8</span><span class="n">s</span><span class="o">.</span><span class="n">write</span> <span class="s2">&#34;Hello,&#34;</span>
-<span class="ln"> 9</span><span class="nb">puts</span> <span class="s2">&#34;Received </span><span class="si">#{</span><span class="n">s</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="o"></span><span class="p">)</span><span class="si">}</span><span class="s2">&#34;</span>
+<span class="ln"> 9</span><span class="nb">puts</span> <span class="s2">&#34;Received </span><span class="si">#{</span><span class="n">s</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span><span class="si">}</span><span class="s2">&#34;</span>
 <span class="ln">10</span><span class="n">s</span><span class="o">.</span><span class="n">write</span> <span class="s2">&#34;world.&#34;</span>
-<span class="ln">11</span><span class="nb">puts</span> <span class="s2">&#34;Received </span><span class="si">#{</span><span class="n">s</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="o"></span><span class="p">)</span><span class="si">}</span><span class="s2">&#34;</span>
+<span class="ln">11</span><span class="nb">puts</span> <span class="s2">&#34;Received </span><span class="si">#{</span><span class="n">s</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span><span class="si">}</span><span class="s2">&#34;</span>
 <span class="ln">12</span>
-<span class="ln">13</span><span class="n">s</span><span class="o">.</span><span class="n">close</span></code></pre></div></p>
+<span class="ln">13</span><span class="n">s</span><span class="o">.</span><span class="n">close</span></code></pre></div>
 
 <h1 id="run">Run</h1>
 
@@ -358,7 +358,7 @@ Windows nativeの実装の問題かと考え、Linuxで同じコードを実行�
 <p>サーバから見ると、accept後にOP_READで登録した後、すぐにbusy loopになっているように見えます。それを確認する為、クライアント側のコードでconnect後に数秒待つようにし、その間のサーバ側の状態を確認することにしました。</p>
 
 <div class="highlight"><pre class="chroma"><code class="language-ruby" data-lang="ruby"><span class="n">s</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">sockaddr</span><span class="p">)</span>
-<span class="nb">sleep</span> <span class="mi">20</span> <span class="o"></span><span class="c1"># when do the busy loop start?</span>
+<span class="nb">sleep</span> <span class="mi">20</span> <span class="c1"># when do the busy loop start?</span>
 <span class="n">s</span><span class="o">.</span><span class="n">write</span> <span class="s2">&#34;Hello,&#34;</span></code></pre></div>
 
 <p>すると、クライアント側でsleepしてる間、サーバ側の出力は以下となっていました。</p>
@@ -448,7 +448,7 @@ accept</code></pre></div>
     <footer class="post-footer">
       
       <p class="post-copyright">
-        This post was published <strong>2611</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+        This post was published <strong>2710</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
       </p>
     </footer>
     

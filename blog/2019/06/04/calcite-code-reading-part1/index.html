@@ -38,7 +38,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.32" />
+<meta name="generator" content="Hugo 0.55.6" />
 
 
 <link rel="canonical" href="/blog/2019/06/04/calcite-code-reading-part1/" />
@@ -478,7 +478,7 @@
 <li><a href="https://github.com/apache/calcite/blob/73023148e7f37d494f6caf92b01b090f6dde13cd/core/src/main/java/org/apache/calcite/adapter/enumerable/EnumerableInterpretable.java#L133">core/src/main/java/org/apache/calcite/adapter/enumerable/EnumerableInterpretable.java</a></li>
 </ul>
 
-<p><div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln">133</span>  <span class="kd">static</span> <span class="n">Bindable</span> <span class="nf">getBindable</span><span class="o">(</span><span class="n">ClassDeclaration</span> <span class="n">expr</span><span class="o">,</span> <span class="n">String</span> <span class="n">s</span><span class="o">,</span> <span class="kt">int</span> <span class="n">fieldCount</span><span class="o">)</span>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln">133</span>  <span class="kd">static</span> <span class="n">Bindable</span> <span class="nf">getBindable</span><span class="o">(</span><span class="n">ClassDeclaration</span> <span class="n">expr</span><span class="o">,</span> <span class="n">String</span> <span class="n">s</span><span class="o">,</span> <span class="kt">int</span> <span class="n">fieldCount</span><span class="o">)</span>
 <span class="ln">134</span>      <span class="kd">throws</span> <span class="n">CompileException</span><span class="o">,</span> <span class="n">IOException</span> <span class="o">{</span>
 <span class="ln">135</span>    <span class="n">ICompilerFactory</span> <span class="n">compilerFactory</span><span class="o">;</span>
 <span class="ln">136</span>    <span class="k">try</span> <span class="o">{</span>
@@ -500,7 +500,7 @@
 </span><span class="ln">152</span><span class="c1"></span>      <span class="n">cbe</span><span class="o">.</span><span class="na">setDebuggingInformation</span><span class="o">(</span><span class="kc">true</span><span class="o">,</span> <span class="kc">true</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
 <span class="ln">153</span>    <span class="o">}</span>
 <span class="ln">154</span>    <span class="k">return</span> <span class="o">(</span><span class="n">Bindable</span><span class="o">)</span> <span class="n">cbe</span><span class="o">.</span><span class="na">createInstance</span><span class="o">(</span><span class="k">new</span> <span class="n">StringReader</span><span class="o">(</span><span class="n">s</span><span class="o">));</span>
-<span class="ln">155</span>  <span class="o">}</span></code></pre></div></p>
+<span class="ln">155</span>  <span class="o">}</span></code></pre></div>
 
 <p>生成したインスタンス(bindable)を <code>CalciteSignature</code> に詰め、それを Avatica の ResultSet に渡します。</p>
 
@@ -561,7 +561,7 @@
     <footer class="post-footer">
       
       <p class="post-copyright">
-        
+        This post was published <strong>111</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
       </p>
     </footer>
     

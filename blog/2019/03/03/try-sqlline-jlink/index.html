@@ -37,7 +37,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.32" />
+<meta name="generator" content="Hugo 0.55.6" />
 
 
 <link rel="canonical" href="/blog/2019/03/03/try-sqlline-jlink/" />
@@ -261,12 +261,12 @@ index b8ff859..9abfbc9 100644
 
 <p>まずはビルドします。その後、<code>mvn dependency:copy-dependencies</code> を実行して javafx-* を取り出して任意のディレクトリに配置します。そして <a href="https://docs.oracle.com/javase/jp/9/tools/jlink.htm">jlink</a> を実行すると output フォルダに指定したモジュールを含んだ実行環境が生成されます。この output フォルダには fatjar は含まれていないので、自分でコピーします。</p>
 
-<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text"><span class="err">$</span> <span class="nx">mvn</span> <span class="nx">clean</span> <span class="kn">package</span> <span class="o">-</span><span class="nx">DskipTests</span> <span class="o">-</span><span class="nx">Dmaven</span><span class="p">.</span><span class="nx">javadoc</span><span class="p">.</span><span class="nx">skip</span> <span class="o">-</span><span class="nx">Dcheckstyle</span><span class="p">.</span><span class="nx">skip</span>
-<span class="err">$</span> <span class="nx">mvn</span> <span class="nx">dependency</span><span class="p">:</span><span class="nx">copy</span><span class="o">-</span><span class="nx">dependencies</span>
-<span class="err">$</span> <span class="nx">mkdir</span> <span class="nx">modules</span>
-<span class="err">$</span> <span class="nx">cp</span> <span class="o">-</span><span class="nx">ip</span> <span class="nx">target</span><span class="o">/</span><span class="nx">dependency</span><span class="o">/</span><span class="nx">javafx</span><span class="o">-*</span> <span class="nx">modules</span><span class="o">/</span>
-<span class="err">$</span> <span class="nx">jlink</span> <span class="o">--</span><span class="nx">compress</span><span class="p">=</span><span class="mi">2</span> <span class="o">--</span><span class="nx">module</span><span class="o">-</span><span class="nx">path</span> <span class="nx">modules</span> <span class="o">--</span><span class="nx">add</span><span class="o">-</span><span class="nx">modules</span> <span class="nx">java</span><span class="p">.</span><span class="nx">base</span><span class="p">,</span><span class="nx">java</span><span class="p">.</span><span class="nx">sql</span><span class="p">,</span><span class="nx">javafx</span><span class="p">.</span><span class="nx">swing</span><span class="p">,</span><span class="nx">jdk</span><span class="p">.</span><span class="nx">unsupported</span> <span class="o">--</span><span class="nx">output</span> <span class="nx">output</span>
-<span class="err">$</span> <span class="nx">cp</span> <span class="o">-</span><span class="nx">ip</span> <span class="nx">target</span><span class="o">/</span><span class="nx">sqlline</span><span class="o">-</span><span class="mf">1.7.0</span><span class="o">-</span><span class="nx">SNAPSHOT</span><span class="o">-</span><span class="nx">jar</span><span class="o">-</span><span class="nx">with</span><span class="o">-</span><span class="nx">dependencies</span><span class="p">.</span><span class="nx">jar</span> <span class="nx">output</span><span class="o">/</span></code></pre></div>
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">$ mvn clean package -DskipTests -Dmaven.javadoc.skip -Dcheckstyle.skip
+$ mvn dependency:copy-dependencies
+$ mkdir modules
+$ cp -ip target/dependency/javafx-* modules/
+$ jlink --compress=2 --module-path modules --add-modules java.base,java.sql,javafx.swing,jdk.unsupported --output output
+$ cp -ip target/sqlline-1.7.0-SNAPSHOT-jar-with-dependencies.jar output/</code></pre></div>
 
 <p>output フォルダは以下のようになっています。</p>
 
@@ -321,7 +321,7 @@ gleisonsilva/sqlline     latest              d5800d44684a        2 years ago    
     <footer class="post-footer">
       
       <p class="post-copyright">
-        This post was published <strong>105</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+        This post was published <strong>204</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
       </p>
     </footer>
     

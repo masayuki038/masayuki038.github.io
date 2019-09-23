@@ -37,7 +37,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.32" />
+<meta name="generator" content="Hugo 0.55.6" />
 
 
 <link rel="canonical" href="/blog/2012/05/06/get-utf8-bytes2/" />
@@ -254,7 +254,7 @@
 
 <p>ByteBufferの結果から、UTF-8に変換したバイト配列をバッファに格納する箇所が遅いことが分かったので、今度はByteBufferではなくbyte[]に直接格納するようにしてみました。</p>
 
-<p><div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln"> 1</span>    <span class="kd">static</span> <span class="kt">byte</span><span class="o">[]</span> <span class="nf">getUtf8</span><span class="o">(</span><span class="n">String</span> <span class="n">str</span><span class="o">)</span> <span class="o">{</span>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln"> 1</span>    <span class="kd">static</span> <span class="kt">byte</span><span class="o">[]</span> <span class="nf">getUtf8</span><span class="o">(</span><span class="n">String</span> <span class="n">str</span><span class="o">)</span> <span class="o">{</span>
 <span class="ln"> 2</span>        <span class="kt">byte</span><span class="o">[]</span> <span class="n">_buf</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">str</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">*</span> <span class="n">5</span><span class="o">];</span>
 <span class="ln"> 3</span>
 <span class="ln"> 4</span>        <span class="kd">final</span> <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">str</span><span class="o">.</span><span class="na">length</span><span class="o">();</span>
@@ -290,7 +290,7 @@
 <span class="ln">34</span>        <span class="kt">byte</span><span class="o">[]</span> <span class="n">ret</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">idx</span><span class="o">];</span>
 <span class="ln">35</span>        <span class="n">System</span><span class="o">.</span><span class="na">arraycopy</span><span class="o">(</span><span class="n">_buf</span><span class="o">,</span> <span class="n">0</span><span class="o">,</span> <span class="n">ret</span><span class="o">,</span> <span class="n">0</span><span class="o">,</span> <span class="n">ret</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
 <span class="ln">36</span>        <span class="k">return</span> <span class="n">ret</span><span class="o">;</span>
-<span class="ln">37</span>    <span class="o">}</span></code></pre></div></p>
+<span class="ln">37</span>    <span class="o">}</span></code></pre></div>
 
 <p>文字列長が10文字の場合はString#getBytes(&ldquo;UTF-8&rdquo;)の約1.5倍の速さで処理できます。しかし、やはり文字列長が増えるとString#getBytes(&ldquo;UTF-8&rdquo;)の方が速い結果となっています。ByteBuffer、byte[]を加えた処理時間の推移は以下となります。</p>
 
@@ -304,7 +304,7 @@
 
 <p>hprof=cpu=samplesを指定すると、サンプリング用のスレッドが定期的に各スレッドのスタックトレースを取得します。前回は以下の設定でプロファイリングを行いました。</p>
 
-<p><div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">-agentlib:hprof<span class="o">=</span><span class="nv">cpu</span><span class="o">=</span>samples,file<span class="o">=</span>result.hprof,depth<span class="o">=</span><span class="m">20</span></code></pre></div></p>
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">-agentlib:hprof<span class="o">=</span><span class="nv">cpu</span><span class="o">=</span>samples,file<span class="o">=</span>result.hprof,depth<span class="o">=</span><span class="m">20</span></code></pre></div>
 
 <p>samplingの間隔はデフォルトで10msとなっています。この間隔を1msにし、コードをByteArrayOutputStreamを使用する形に戻して、再度プロファイリングしてみました。</p>
 
@@ -333,7 +333,7 @@
 
 <p>hprof=cpu=timesでプロファイリングしてみました。実行回数は、これまでのように1,000,000回とすると1時間以上経っても終わらなかったので1000回とし、文字列長は1000としました。</p>
 
-<p><div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">-agentlib:hprof<span class="o">=</span>times,file<span class="o">=</span>result.hprof,depth<span class="o">=</span><span class="m">20</span></code></pre></div></p>
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">-agentlib:hprof<span class="o">=</span>times,file<span class="o">=</span>result.hprof,depth<span class="o">=</span><span class="m">20</span></code></pre></div>
 
 <p>top 10は以下となります。</p>
 
@@ -426,7 +426,7 @@
     <footer class="post-footer">
       
       <p class="post-copyright">
-        This post was published <strong>2597</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+        This post was published <strong>2696</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
       </p>
     </footer>
     

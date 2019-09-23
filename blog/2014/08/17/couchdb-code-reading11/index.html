@@ -37,7 +37,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.32" />
+<meta name="generator" content="Hugo 0.55.6" />
 
 
 <link rel="canonical" href="/blog/2014/08/17/couchdb-code-reading11/" />
@@ -222,8 +222,8 @@
 <span class="ln">10</span>
 <span class="ln">11</span>        <span class="nv">ResultsDict</span> <span class="o">=</span> dict:from_list<span class="o">(</span>IdRevs ++ CommitResults ++ PreCommitFailures<span class="o">)</span>,
 <span class="ln">12</span>        <span class="o">{</span>ok, lists:map<span class="o">(</span>
-<span class="ln">13</span>            fun<span class="o">({</span><span class="c1">#doc{}, Ref}) -&gt;
-</span><span class="ln">14</span><span class="c1"></span>                <span class="o">{</span>ok, Result<span class="o">}</span> <span class="o">=</span> dict:find<span class="o">(</span>Ref, ResultsDict<span class="o">)</span>,
+<span class="ln">13</span>            fun<span class="o">({</span><span class="c1">#doc{}, Ref}) -&gt;</span>
+<span class="ln">14</span>                <span class="o">{</span>ok, Result<span class="o">}</span> <span class="o">=</span> dict:find<span class="o">(</span>Ref, ResultsDict<span class="o">)</span>,
 <span class="ln">15</span>                Result
 <span class="ln">16</span>            end, Docs2<span class="o">)}</span>
 <span class="ln">17</span>    end.</code></pre></div></p>
@@ -240,8 +240,8 @@
 <span class="ln"> 2</span>    <span class="o">{</span>lists:reverse<span class="o">(</span>OutBuckets<span class="o">)</span>, IdRevsAcc<span class="o">}</span><span class="p">;</span>
 <span class="ln"> 3</span>new_revs<span class="o">([</span>Bucket<span class="p">|</span>RestBuckets<span class="o">]</span>, OutBuckets, IdRevsAcc<span class="o">)</span> -&gt;
 <span class="ln"> 4</span>    <span class="o">{</span>NewBucket, IdRevsAcc3<span class="o">}</span> <span class="o">=</span> lists:mapfoldl<span class="o">(</span>
-<span class="ln"> 5</span>        fun<span class="o">({</span><span class="c1">#doc{revs={Start, RevIds}}=Doc, Ref}, IdRevsAcc2)-&gt;
-</span><span class="ln"> 6</span><span class="c1"></span>        <span class="nv">NewRevId</span> <span class="o">=</span> new_revid<span class="o">(</span>Doc<span class="o">)</span>,
+<span class="ln"> 5</span>        fun<span class="o">({</span><span class="c1">#doc{revs={Start, RevIds}}=Doc, Ref}, IdRevsAcc2)-&gt;</span>
+<span class="ln"> 6</span>        <span class="nv">NewRevId</span> <span class="o">=</span> new_revid<span class="o">(</span>Doc<span class="o">)</span>,
 <span class="ln"> 7</span>        <span class="o">{{</span>Doc#doc<span class="o">{</span><span class="nv">revs</span><span class="o">={</span>Start+1, <span class="o">[</span>NewRevId <span class="p">|</span> RevIds<span class="o">]}}</span>, Ref<span class="o">}</span>,
 <span class="ln"> 8</span>            <span class="o">[{</span>Ref, <span class="o">{</span>ok, <span class="o">{</span>Start+1, NewRevId<span class="o">}}}</span> <span class="p">|</span> IdRevsAcc2<span class="o">]}</span>
 <span class="ln"> 9</span>    end, IdRevsAcc, Bucket<span class="o">)</span>,
@@ -260,8 +260,8 @@
 <p>次に<code>couch_db:write_and_commit/4</code>を見てみます。</p>
 
 <p>couch_db.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>write_and_commit<span class="o">(</span><span class="c1">#db{update_pid=UpdatePid}=Db, DocBuckets1,
-</span><span class="ln"> 2</span><span class="c1"></span>        NonRepDocs, Options0<span class="o">)</span> -&gt;
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>write_and_commit<span class="o">(</span><span class="c1">#db{update_pid=UpdatePid}=Db, DocBuckets1,</span>
+<span class="ln"> 2</span>        NonRepDocs, Options0<span class="o">)</span> -&gt;
 <span class="ln"> 3</span>    <span class="nv">DocBuckets</span> <span class="o">=</span> prepare_doc_summaries<span class="o">(</span>Db, DocBuckets1<span class="o">)</span>,
 <span class="ln"> 4</span>    <span class="nv">Options</span> <span class="o">=</span> set_commit_option<span class="o">(</span>Options0<span class="o">)</span>,
 <span class="ln"> 5</span>    <span class="nv">MergeConflicts</span> <span class="o">=</span> lists:member<span class="o">(</span>merge_conflicts, Options<span class="o">)</span>,
@@ -297,13 +297,13 @@
 <p>couch_db.erl:
 <div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>prepare_doc_summaries<span class="o">(</span>Db, BucketList<span class="o">)</span> -&gt;
 <span class="ln"> 2</span>    <span class="o">[</span>lists:map<span class="o">(</span>
-<span class="ln"> 3</span>        fun<span class="o">({</span><span class="c1">#doc{body = Body, atts = Atts} = Doc, Ref}) -&gt;
-</span><span class="ln"> 4</span><span class="c1"></span>            <span class="nv">DiskAtts</span> <span class="o">=</span> <span class="o">[{</span>N, T, P, AL, DL, R, M, E<span class="o">}</span> <span class="o">||</span>
-<span class="ln"> 5</span>                <span class="c1">#att{name = N, type = T, data = {_, P}, md5 = M, revpos = R,
-</span><span class="ln"> 6</span><span class="c1"></span>                    <span class="nv">att_len</span> <span class="o">=</span> AL, <span class="nv">disk_len</span> <span class="o">=</span> DL, <span class="nv">encoding</span> <span class="o">=</span> E<span class="o">}</span> &lt;- Atts<span class="o">]</span>,
+<span class="ln"> 3</span>        fun<span class="o">({</span><span class="c1">#doc{body = Body, atts = Atts} = Doc, Ref}) -&gt;</span>
+<span class="ln"> 4</span>            <span class="nv">DiskAtts</span> <span class="o">=</span> <span class="o">[{</span>N, T, P, AL, DL, R, M, E<span class="o">}</span> <span class="o">||</span>
+<span class="ln"> 5</span>                <span class="c1">#att{name = N, type = T, data = {_, P}, md5 = M, revpos = R,</span>
+<span class="ln"> 6</span>                    <span class="nv">att_len</span> <span class="o">=</span> AL, <span class="nv">disk_len</span> <span class="o">=</span> DL, <span class="nv">encoding</span> <span class="o">=</span> E<span class="o">}</span> &lt;- Atts<span class="o">]</span>,
 <span class="ln"> 7</span>            <span class="nv">AttsFd</span> <span class="o">=</span> <span class="k">case</span> Atts of
-<span class="ln"> 8</span>            <span class="o">[</span><span class="c1">#att{data = {Fd, _}} | _] -&gt;
-</span><span class="ln"> 9</span><span class="c1"></span>                Fd<span class="p">;</span>
+<span class="ln"> 8</span>            <span class="o">[</span><span class="c1">#att{data = {Fd, _}} | _] -&gt;</span>
+<span class="ln"> 9</span>                Fd<span class="p">;</span>
 <span class="ln">10</span>            <span class="o">[]</span> -&gt;
 <span class="ln">11</span>                nil
 <span class="ln">12</span>            end,
@@ -315,8 +315,8 @@
 <p><code>#doc.atts</code>をディスクに書き込む為に変換し、また<code>#doc.atts</code>から<code>Fd</code>を取り出しています。ディスクに書き込む為に変換した<code>DiskAtts</code>と<code>#doc.body</code>を指定し、<code>couch_db_updater:make_doc_summary/2</code>を呼び出しています。この関数を見てみます。</p>
 
 <p>couch_db.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>make_doc_summary<span class="o">(</span><span class="c1">#db{compression = Comp}, {Body0, Atts0}) -&gt;
-</span><span class="ln"> 2</span><span class="c1"></span>    <span class="nv">Body</span> <span class="o">=</span> <span class="k">case</span> couch_compress:is_compressed<span class="o">(</span>Body0, Comp<span class="o">)</span> of
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>make_doc_summary<span class="o">(</span><span class="c1">#db{compression = Comp}, {Body0, Atts0}) -&gt;</span>
+<span class="ln"> 2</span>    <span class="nv">Body</span> <span class="o">=</span> <span class="k">case</span> couch_compress:is_compressed<span class="o">(</span>Body0, Comp<span class="o">)</span> of
 <span class="ln"> 3</span>    <span class="nb">true</span> -&gt;
 <span class="ln"> 4</span>        Body0<span class="p">;</span>
 <span class="ln"> 5</span>    <span class="nb">false</span> -&gt;
@@ -387,21 +387,21 @@
 
 <p>couch_db_updater.erl:
 <div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>update_docs_int<span class="o">(</span>Db, DocsList, NonRepDocs, MergeConflicts, FullCommit<span class="o">)</span> -&gt;
-<span class="ln"> 2</span>    <span class="c1">#db{
-</span><span class="ln"> 3</span><span class="c1"></span>        <span class="nv">fulldocinfo_by_id_btree</span> <span class="o">=</span> DocInfoByIdBTree,
+<span class="ln"> 2</span>    <span class="c1">#db{</span>
+<span class="ln"> 3</span>        <span class="nv">fulldocinfo_by_id_btree</span> <span class="o">=</span> DocInfoByIdBTree,
 <span class="ln"> 4</span>        <span class="nv">docinfo_by_seq_btree</span> <span class="o">=</span> DocInfoBySeqBTree,
 <span class="ln"> 5</span>        <span class="nv">update_seq</span> <span class="o">=</span> LastSeq,
 <span class="ln"> 6</span>        <span class="nv">revs_limit</span> <span class="o">=</span> RevsLimit
 <span class="ln"> 7</span>        <span class="o">}</span> <span class="o">=</span> Db,
-<span class="ln"> 8</span>    <span class="nv">Ids</span> <span class="o">=</span> <span class="o">[</span>Id <span class="o">||</span> <span class="o">[{</span>_Client, <span class="o">{</span><span class="c1">#doc{id=Id}, _Ref}}|_] &lt;- DocsList],
-</span><span class="ln"> 9</span><span class="c1"></span>    % lookup up the old documents, <span class="k">if</span> they exist.
+<span class="ln"> 8</span>    <span class="nv">Ids</span> <span class="o">=</span> <span class="o">[</span>Id <span class="o">||</span> <span class="o">[{</span>_Client, <span class="o">{</span><span class="c1">#doc{id=Id}, _Ref}}|_] &lt;- DocsList],</span>
+<span class="ln"> 9</span>    % lookup up the old documents, <span class="k">if</span> they exist.
 <span class="ln">10</span>    <span class="nv">OldDocLookups</span> <span class="o">=</span> couch_btree:lookup<span class="o">(</span>DocInfoByIdBTree, Ids<span class="o">)</span>,
 <span class="ln">11</span>    <span class="nv">OldDocInfos</span> <span class="o">=</span> lists:zipwith<span class="o">(</span>
 <span class="ln">12</span>        fun<span class="o">(</span>_Id, <span class="o">{</span>ok, FullDocInfo<span class="o">})</span> -&gt;
 <span class="ln">13</span>            FullDocInfo<span class="p">;</span>
 <span class="ln">14</span>        <span class="o">(</span>Id, not_found<span class="o">)</span> -&gt;
-<span class="ln">15</span>            <span class="c1">#full_doc_info{id=Id}
-</span><span class="ln">16</span><span class="c1"></span>        end,
+<span class="ln">15</span>            <span class="c1">#full_doc_info{id=Id}</span>
+<span class="ln">16</span>        end,
 <span class="ln">17</span>        Ids, OldDocLookups<span class="o">)</span>,
 <span class="ln">18</span>    % Merge the new docs into the revision trees.
 <span class="ln">19</span>    <span class="o">{</span>ok, NewFullDocInfos, RemoveSeqs, NewSeq<span class="o">}</span> <span class="o">=</span> merge_rev_trees<span class="o">(</span>RevsLimit,
@@ -449,11 +449,11 @@
 <span class="ln"> 2</span>    <span class="o">{</span>ok, lists:reverse<span class="o">(</span>AccNewInfos<span class="o">)</span>, AccRemoveSeqs, AccSeq<span class="o">}</span><span class="p">;</span>
 <span class="ln"> 3</span>merge_rev_trees<span class="o">(</span>Limit, MergeConflicts, <span class="o">[</span>NewDocs<span class="p">|</span>RestDocsList<span class="o">]</span>,
 <span class="ln"> 4</span>        <span class="o">[</span>OldDocInfo<span class="p">|</span>RestOldInfo<span class="o">]</span>, AccNewInfos, AccRemoveSeqs, AccSeq<span class="o">)</span> -&gt;
-<span class="ln"> 5</span>    <span class="c1">#full_doc_info{id=Id,rev_tree=OldTree,deleted=OldDeleted0,update_seq=OldSeq}
-</span><span class="ln"> 6</span><span class="c1"></span>            <span class="o">=</span> OldDocInfo,
+<span class="ln"> 5</span>    <span class="c1">#full_doc_info{id=Id,rev_tree=OldTree,deleted=OldDeleted0,update_seq=OldSeq}</span>
+<span class="ln"> 6</span>            <span class="o">=</span> OldDocInfo,
 <span class="ln"> 7</span>    <span class="o">{</span>NewRevTree, _<span class="o">}</span> <span class="o">=</span> lists:foldl<span class="o">(</span>
-<span class="ln"> 8</span>        fun<span class="o">({</span>Client, <span class="o">{</span><span class="c1">#doc{revs={Pos,[_Rev|PrevRevs]}}=NewDoc, Ref}}, {AccTree, OldDeleted}) -&gt;
-</span><span class="ln"> 9</span><span class="c1"></span>            <span class="k">if</span> not MergeConflicts -&gt;
+<span class="ln"> 8</span>        fun<span class="o">({</span>Client, <span class="o">{</span><span class="c1">#doc{revs={Pos,[_Rev|PrevRevs]}}=NewDoc, Ref}}, {AccTree, OldDeleted}) -&gt;</span>
+<span class="ln"> 9</span>            <span class="k">if</span> not MergeConflicts -&gt;
 <span class="ln">10</span>                <span class="k">case</span> couch_key_tree:merge<span class="o">(</span>AccTree, couch_doc:to_path<span class="o">(</span>NewDoc<span class="o">)</span>,
 <span class="ln">11</span>                    Limit<span class="o">)</span> of
 <span class="ln">12</span>                <span class="o">{</span>_NewTree, conflicts<span class="o">}</span> when <span class="o">(</span>not OldDeleted<span class="o">)</span> -&gt;
@@ -480,8 +480,8 @@
 <span class="ln">33</span>                        % this means we are recreating a brand new document
 <span class="ln">34</span>                        % into a state that already existed before.
 <span class="ln">35</span>                        % put the rev into a subsequent edit of the deletion
-<span class="ln">36</span>                        <span class="c1">#doc_info{revs=[#rev_info{rev={OldPos,OldRev}}|_]} =
-</span><span class="ln">37</span><span class="c1"></span>                                couch_doc:to_doc_info<span class="o">(</span>OldDocInfo<span class="o">)</span>,
+<span class="ln">36</span>                        <span class="c1">#doc_info{revs=[#rev_info{rev={OldPos,OldRev}}|_]} =</span>
+<span class="ln">37</span>                                couch_doc:to_doc_info<span class="o">(</span>OldDocInfo<span class="o">)</span>,
 <span class="ln">38</span>                        <span class="nv">NewRevId</span> <span class="o">=</span> couch_db:new_revid<span class="o">(</span>
 <span class="ln">39</span>                                NewDoc#doc<span class="o">{</span><span class="nv">revs</span><span class="o">={</span>OldPos, <span class="o">[</span>OldRev<span class="o">]}})</span>,
 <span class="ln">40</span>                        <span class="nv">NewDoc2</span> <span class="o">=</span> NewDoc#doc<span class="o">{</span><span class="nv">revs</span><span class="o">={</span>OldPos + <span class="m">1</span>, <span class="o">[</span>NewRevId, OldRev<span class="o">]}}</span>,
@@ -509,9 +509,9 @@
 <span class="ln">62</span>        merge_rev_trees<span class="o">(</span>Limit, MergeConflicts, RestDocsList, RestOldInfo,
 <span class="ln">63</span>            AccNewInfos, AccRemoveSeqs, AccSeq<span class="o">)</span><span class="p">;</span>
 <span class="ln">64</span>    <span class="nb">true</span> -&gt;
-<span class="ln">65</span>        % we have updated the document, give it a new seq <span class="c1">#
-</span><span class="ln">66</span><span class="c1"></span>        <span class="nv">NewInfo</span> <span class="o">=</span> <span class="c1">#full_doc_info{id=Id,update_seq=AccSeq+1,rev_tree=NewRevTree},
-</span><span class="ln">67</span><span class="c1"></span>        <span class="nv">RemoveSeqs</span> <span class="o">=</span> <span class="k">case</span> OldSeq of
+<span class="ln">65</span>        % we have updated the document, give it a new seq #
+<span class="ln">66</span>        <span class="nv">NewInfo</span> <span class="o">=</span> <span class="c1">#full_doc_info{id=Id,update_seq=AccSeq+1,rev_tree=NewRevTree},</span>
+<span class="ln">67</span>        <span class="nv">RemoveSeqs</span> <span class="o">=</span> <span class="k">case</span> OldSeq of
 <span class="ln">68</span>            <span class="m">0</span> -&gt; AccRemoveSeqs<span class="p">;</span>
 <span class="ln">69</span>            _ -&gt; <span class="o">[</span>OldSeq <span class="p">|</span> AccRemoveSeqs<span class="o">]</span>
 <span class="ln">70</span>        end,
@@ -522,13 +522,13 @@
 <p>更新対象のドキュメントと、それに対する<code>#full_doc_info</code>をマージする処理で、実際のマージは<code>couch_doc:merge/3</code>を呼び出すことによって実現しています。その関数を呼び出す前に<code>couch_doc:to_path/1</code>を呼び出しているので、先にこの関数を見てみます。</p>
 
 <p>couch_doc.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>-spec to_path<span class="o">(</span><span class="c1">#doc{}) -&gt; path().
-</span><span class="ln"> 2</span><span class="c1"></span>to_path<span class="o">(</span><span class="c1">#doc{revs={Start, RevIds}}=Doc) -&gt;
-</span><span class="ln"> 3</span><span class="c1"></span>    <span class="o">[</span>Branch<span class="o">]</span> <span class="o">=</span> to_branch<span class="o">(</span>Doc, lists:reverse<span class="o">(</span>RevIds<span class="o">))</span>,
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>-spec to_path<span class="o">(</span><span class="c1">#doc{}) -&gt; path().</span>
+<span class="ln"> 2</span>to_path<span class="o">(</span><span class="c1">#doc{revs={Start, RevIds}}=Doc) -&gt;</span>
+<span class="ln"> 3</span>    <span class="o">[</span>Branch<span class="o">]</span> <span class="o">=</span> to_branch<span class="o">(</span>Doc, lists:reverse<span class="o">(</span>RevIds<span class="o">))</span>,
 <span class="ln"> 4</span>    <span class="o">{</span>Start - length<span class="o">(</span>RevIds<span class="o">)</span> + <span class="m">1</span>, Branch<span class="o">}</span>.
 <span class="ln"> 5</span>
-<span class="ln"> 6</span>-spec to_branch<span class="o">(</span><span class="c1">#doc{}, [RevId::binary()]) -&gt; [branch()].
-</span><span class="ln"> 7</span><span class="c1"></span>to_branch<span class="o">(</span>Doc, <span class="o">[</span>RevId<span class="o">])</span> -&gt;
+<span class="ln"> 6</span>-spec to_branch<span class="o">(</span><span class="c1">#doc{}, [RevId::binary()]) -&gt; [branch()].</span>
+<span class="ln"> 7</span>to_branch<span class="o">(</span>Doc, <span class="o">[</span>RevId<span class="o">])</span> -&gt;
 <span class="ln"> 8</span>    <span class="o">[{</span>RevId, Doc, <span class="o">[]}]</span><span class="p">;</span>
 <span class="ln"> 9</span>to_branch<span class="o">(</span>Doc, <span class="o">[</span>RevId <span class="p">|</span> Rest<span class="o">])</span> -&gt;
 <span class="ln">10</span>    <span class="o">[{</span>RevId, ?REV_MISSING, to_branch<span class="o">(</span>Doc, Rest<span class="o">)}]</span>.</code></pre></div></p>
@@ -552,14 +552,14 @@
 <p>couch_db_updater.erl:
 <div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>flush_trees<span class="o">(</span>_Db, <span class="o">[]</span>, AccFlushedTrees<span class="o">)</span> -&gt;
 <span class="ln"> 2</span>    <span class="o">{</span>ok, lists:reverse<span class="o">(</span>AccFlushedTrees<span class="o">)}</span><span class="p">;</span>
-<span class="ln"> 3</span>flush_trees<span class="o">(</span><span class="c1">#db{updater_fd = Fd} = Db,
-</span><span class="ln"> 4</span><span class="c1"></span>        <span class="o">[</span>InfoUnflushed <span class="p">|</span> RestUnflushed<span class="o">]</span>, AccFlushed<span class="o">)</span> -&gt;
-<span class="ln"> 5</span>    <span class="c1">#full_doc_info{update_seq=UpdateSeq, rev_tree=Unflushed} = InfoUnflushed,
-</span><span class="ln"> 6</span><span class="c1"></span>    <span class="o">{</span>Flushed, LeafsSize<span class="o">}</span> <span class="o">=</span> couch_key_tree:mapfold<span class="o">(</span>
+<span class="ln"> 3</span>flush_trees<span class="o">(</span><span class="c1">#db{updater_fd = Fd} = Db,</span>
+<span class="ln"> 4</span>        <span class="o">[</span>InfoUnflushed <span class="p">|</span> RestUnflushed<span class="o">]</span>, AccFlushed<span class="o">)</span> -&gt;
+<span class="ln"> 5</span>    <span class="c1">#full_doc_info{update_seq=UpdateSeq, rev_tree=Unflushed} = InfoUnflushed,</span>
+<span class="ln"> 6</span>    <span class="o">{</span>Flushed, LeafsSize<span class="o">}</span> <span class="o">=</span> couch_key_tree:mapfold<span class="o">(</span>
 <span class="ln"> 7</span>        fun<span class="o">(</span>_Rev, Value, Type, Acc<span class="o">)</span> -&gt;
 <span class="ln"> 8</span>            <span class="k">case</span> Value of
-<span class="ln"> 9</span>            <span class="c1">#doc{deleted = IsDeleted, body = {summary, Summary, AttsFd}} -&gt;
-</span><span class="ln">10</span><span class="c1"></span>                % this node value is actually an unwritten document summary,
+<span class="ln"> 9</span>            <span class="c1">#doc{deleted = IsDeleted, body = {summary, Summary, AttsFd}} -&gt;</span>
+<span class="ln">10</span>                % this node value is actually an unwritten document summary,
 <span class="ln">11</span>                % write to disk.
 <span class="ln">12</span>                % make sure the Fd in the written bins is the same Fd we are
 <span class="ln">13</span>                % and convert bins, removing the FD.
@@ -580,8 +580,8 @@
 <span class="ln">28</span>                <span class="o">{</span>ok, NewSummaryPointer, SummarySize<span class="o">}</span> <span class="o">=</span>
 <span class="ln">29</span>                    couch_file:append_raw_chunk<span class="o">(</span>Fd, Summary<span class="o">)</span>,
 <span class="ln">30</span>                <span class="nv">TotalSize</span> <span class="o">=</span> lists:foldl<span class="o">(</span>
-<span class="ln">31</span>                    fun<span class="o">(</span><span class="c1">#att{att_len = L}, A) -&gt; A + L end,
-</span><span class="ln">32</span><span class="c1"></span>                    SummarySize, Value#doc.atts<span class="o">)</span>,
+<span class="ln">31</span>                    fun<span class="o">(</span><span class="c1">#att{att_len = L}, A) -&gt; A + L end,</span>
+<span class="ln">32</span>                    SummarySize, Value#doc.atts<span class="o">)</span>,
 <span class="ln">33</span>                <span class="nv">NewValue</span> <span class="o">=</span> <span class="o">{</span>IsDeleted, NewSummaryPointer, UpdateSeq, TotalSize<span class="o">}</span>,
 <span class="ln">34</span>                <span class="k">case</span> Type of
 <span class="ln">35</span>                leaf -&gt;
@@ -611,8 +611,8 @@
 <div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>new_index_entries<span class="o">([]</span>, AccById, AccBySeq, AccDDocIds<span class="o">)</span> -&gt;
 <span class="ln"> 2</span>    <span class="o">{</span>AccById, AccBySeq, AccDDocIds<span class="o">}</span><span class="p">;</span>
 <span class="ln"> 3</span>new_index_entries<span class="o">([</span>FullDocInfo<span class="p">|</span>RestInfos<span class="o">]</span>, AccById, AccBySeq, AccDDocIds<span class="o">)</span> -&gt;
-<span class="ln"> 4</span>    <span class="c1">#doc_info{revs=[#rev_info{deleted=Deleted}|_], id=Id} = DocInfo =
-</span><span class="ln"> 5</span><span class="c1"></span>            couch_doc:to_doc_info<span class="o">(</span>FullDocInfo<span class="o">)</span>,
+<span class="ln"> 4</span>    <span class="c1">#doc_info{revs=[#rev_info{deleted=Deleted}|_], id=Id} = DocInfo =</span>
+<span class="ln"> 5</span>            couch_doc:to_doc_info<span class="o">(</span>FullDocInfo<span class="o">)</span>,
 <span class="ln"> 6</span>    <span class="nv">AccDDocIds2</span> <span class="o">=</span> <span class="k">case</span> Id of
 <span class="ln"> 7</span>    &lt;&lt;?DESIGN_DOC_PREFIX, _/binary&gt;&gt; -&gt;
 <span class="ln"> 8</span>        <span class="o">[</span>Id <span class="p">|</span> AccDDocIds<span class="o">]</span><span class="p">;</span>
@@ -636,8 +636,8 @@
 <span class="ln"> 3</span>    <span class="o">{</span>ok, Bt2<span class="o">}</span>.
 <span class="ln"> 4</span>
 <span class="ln"> 5</span>query_modify<span class="o">(</span>Bt, LookupKeys, InsertValues, RemoveKeys<span class="o">)</span> -&gt;
-<span class="ln"> 6</span>    <span class="c1">#btree{root=Root} = Bt,
-</span><span class="ln"> 7</span><span class="c1"></span>    <span class="nv">InsertActions</span> <span class="o">=</span> lists:map<span class="o">(</span>
+<span class="ln"> 6</span>    <span class="c1">#btree{root=Root} = Bt,</span>
+<span class="ln"> 7</span>    <span class="nv">InsertActions</span> <span class="o">=</span> lists:map<span class="o">(</span>
 <span class="ln"> 8</span>        fun<span class="o">(</span>KeyValue<span class="o">)</span> -&gt;
 <span class="ln"> 9</span>            <span class="o">{</span>Key, Value<span class="o">}</span> <span class="o">=</span> extract<span class="o">(</span>Bt, KeyValue<span class="o">)</span>,
 <span class="ln">10</span>            <span class="o">{</span>insert, Key, Value<span class="o">}</span>
@@ -816,8 +816,8 @@
 <p><code>couch_btree:modify_node/4</code>に戻り、<code>couch_btree:write_node/3</code>を見てみます。</p>
 
 <p>couch_btree.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>write_node<span class="o">(</span><span class="c1">#btree{fd = Fd, compression = Comp} = Bt, NodeType, NodeList) -&gt;
-</span><span class="ln"> 2</span><span class="c1"></span>    % split up nodes into smaller sizes
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>write_node<span class="o">(</span><span class="c1">#btree{fd = Fd, compression = Comp} = Bt, NodeType, NodeList) -&gt;</span>
+<span class="ln"> 2</span>    % split up nodes into smaller sizes
 <span class="ln"> 3</span>    <span class="nv">NodeListList</span> <span class="o">=</span> chunkify<span class="o">(</span>NodeList<span class="o">)</span>,
 <span class="ln"> 4</span>    % now write out each chunk and <span class="k">return</span> the KeyPointer pairs <span class="k">for</span> those nodes
 <span class="ln"> 5</span>    <span class="nv">ResultList</span> <span class="o">=</span> <span class="o">[</span>
@@ -880,12 +880,12 @@
 <p>続けて<code>couch_btree:reduce_node/3</code>を見てみます。</p>
 
 <p>couch_btree.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>reduce_node<span class="o">(</span><span class="c1">#btree{reduce=nil}, _NodeType, _NodeList) -&gt;
-</span><span class="ln">2</span><span class="c1"></span>    <span class="o">[]</span><span class="p">;</span>
-<span class="ln">3</span>reduce_node<span class="o">(</span><span class="c1">#btree{reduce=R}, kp_node, NodeList) -&gt;
-</span><span class="ln">4</span><span class="c1"></span>    R<span class="o">(</span>rereduce, <span class="o">[</span>element<span class="o">(</span><span class="m">2</span>, Node<span class="o">)</span> <span class="o">||</span> <span class="o">{</span>_K, Node<span class="o">}</span> &lt;- NodeList<span class="o">])</span><span class="p">;</span>
-<span class="ln">5</span>reduce_node<span class="o">(</span><span class="c1">#btree{reduce=R}=Bt, kv_node, NodeList) -&gt;
-</span><span class="ln">6</span><span class="c1"></span>    R<span class="o">(</span>reduce, <span class="o">[</span>assemble<span class="o">(</span>Bt, K, V<span class="o">)</span> <span class="o">||</span> <span class="o">{</span>K, V<span class="o">}</span> &lt;- NodeList<span class="o">])</span>.</code></pre></div></p>
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>reduce_node<span class="o">(</span><span class="c1">#btree{reduce=nil}, _NodeType, _NodeList) -&gt;</span>
+<span class="ln">2</span>    <span class="o">[]</span><span class="p">;</span>
+<span class="ln">3</span>reduce_node<span class="o">(</span><span class="c1">#btree{reduce=R}, kp_node, NodeList) -&gt;</span>
+<span class="ln">4</span>    R<span class="o">(</span>rereduce, <span class="o">[</span>element<span class="o">(</span><span class="m">2</span>, Node<span class="o">)</span> <span class="o">||</span> <span class="o">{</span>_K, Node<span class="o">}</span> &lt;- NodeList<span class="o">])</span><span class="p">;</span>
+<span class="ln">5</span>reduce_node<span class="o">(</span><span class="c1">#btree{reduce=R}=Bt, kv_node, NodeList) -&gt;</span>
+<span class="ln">6</span>    R<span class="o">(</span>reduce, <span class="o">[</span>assemble<span class="o">(</span>Bt, K, V<span class="o">)</span> <span class="o">||</span> <span class="o">{</span>K, V<span class="o">}</span> &lt;- NodeList<span class="o">])</span>.</code></pre></div></p>
 
 <p>これも<code>NodeType</code>によって処理が分かれています。Bt#btree.reduceにバインドされている関数に関しては、<code>kp_node</code>、<code>kv_node</code>共に<a href="http://masayuki038.github.io/blog/2014/05/30/couchdb-code-reading3/#couchdbupdaterbtreebyidreduce2">以前見ています</a>のでここでは割愛します。</p>
 
@@ -927,13 +927,13 @@
 <span class="ln">10</span>        <span class="nv">security_ptr</span> <span class="o">=</span> Db#db.security_ptr,
 <span class="ln">11</span>        <span class="nv">revs_limit</span> <span class="o">=</span> Db#db.revs_limit<span class="o">}</span>.
 <span class="ln">12</span>
-<span class="ln">13</span>commit_data<span class="o">(</span><span class="c1">#db{waiting_delayed_commit=nil} = Db, true) -&gt;
-</span><span class="ln">14</span><span class="c1"></span>    Db#db<span class="o">{</span><span class="nv">waiting_delayed_commit</span><span class="o">=</span>erlang:send_after<span class="o">(</span><span class="m">1000</span>,self<span class="o">()</span>,delayed_commit<span class="o">)}</span><span class="p">;</span>
+<span class="ln">13</span>commit_data<span class="o">(</span><span class="c1">#db{waiting_delayed_commit=nil} = Db, true) -&gt;</span>
+<span class="ln">14</span>    Db#db<span class="o">{</span><span class="nv">waiting_delayed_commit</span><span class="o">=</span>erlang:send_after<span class="o">(</span><span class="m">1000</span>,self<span class="o">()</span>,delayed_commit<span class="o">)}</span><span class="p">;</span>
 <span class="ln">15</span>commit_data<span class="o">(</span>Db, <span class="nb">true</span><span class="o">)</span> -&gt;
 <span class="ln">16</span>    Db<span class="p">;</span>
 <span class="ln">17</span>commit_data<span class="o">(</span>Db, _<span class="o">)</span> -&gt;
-<span class="ln">18</span>    <span class="c1">#db{
-</span><span class="ln">19</span><span class="c1"></span>        <span class="nv">updater_fd</span> <span class="o">=</span> Fd,
+<span class="ln">18</span>    <span class="c1">#db{</span>
+<span class="ln">19</span>        <span class="nv">updater_fd</span> <span class="o">=</span> Fd,
 <span class="ln">20</span>        <span class="nv">filepath</span> <span class="o">=</span> Filepath,
 <span class="ln">21</span>        <span class="nv">header</span> <span class="o">=</span> OldHeader,
 <span class="ln">22</span>        <span class="nv">fsync_options</span> <span class="o">=</span> FsyncOptions,
@@ -974,7 +974,7 @@
     <footer class="post-footer">
       
       <p class="post-copyright">
-        This post was published <strong>1764</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+        This post was published <strong>1863</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
       </p>
     </footer>
     

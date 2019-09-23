@@ -37,7 +37,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.32" />
+<meta name="generator" content="Hugo 0.55.6" />
 
 
 <link rel="canonical" href="/blog/2012/04/30/nio2-asyncio/" />
@@ -334,7 +334,7 @@
 
 <p>このecho serverを実行すると、標準出力に以下のように出力されます。</p>
 
-<p><div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">    start: name: main
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">    start: name: main
     an acceptor has created.
     accept: name: Thread-3
     an acceptor has created.
@@ -342,7 +342,7 @@
     write: name: Thread-1
     read: name: Thread-1
     write: name: Thread-2
-    read: name: Thread-2</code></pre></div></p>
+    read: name: Thread-2</code></pre></div>
 
 <p>acceot/read/writeのコールバックは、mainスレッド以外のスレッドで実行されています。つまり非同期処理はスレッドを使って実現されていることになります。</p>
 
@@ -357,7 +357,7 @@
     <footer class="post-footer">
       
       <p class="post-copyright">
-        This post was published <strong>2603</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+        This post was published <strong>2702</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
       </p>
     </footer>
     

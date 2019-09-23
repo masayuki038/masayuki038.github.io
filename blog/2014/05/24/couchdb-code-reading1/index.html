@@ -37,7 +37,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.32" />
+<meta name="generator" content="Hugo 0.55.6" />
 
 
 <link rel="canonical" href="/blog/2014/05/24/couchdb-code-reading1/" />
@@ -201,7 +201,7 @@
   <section class="main post-detail">
     <header class="post-header">
       <h1 class="post-title">CouchDB Source Code Reading part1</h1>
-      <p class="post-meta">@Masayuki Takahashi · May 24, 2014 · 4 min read</p>
+      <p class="post-meta">@Masayuki Takahashi · May 24, 2014 · 5 min read</p>
     </header>
     <article class="post-content">
 
@@ -233,8 +233,8 @@
 <span class="ln"> 3</span>    <span class="k">case</span> lists:member<span class="o">(</span>create, Options<span class="o">)</span> of
 <span class="ln"> 4</span>    <span class="nb">true</span> -&gt;
 <span class="ln"> 5</span>        % create a new header and writes it to the file
-<span class="ln"> 6</span>        <span class="nv">Header</span> <span class="o">=</span>  <span class="c1">#db_header{},
-</span><span class="ln"> 7</span><span class="c1"></span>        <span class="nv">ok</span> <span class="o">=</span> couch_file:write_header<span class="o">(</span>Fd, Header<span class="o">)</span>,
+<span class="ln"> 6</span>        <span class="nv">Header</span> <span class="o">=</span>  <span class="c1">#db_header{},</span>
+<span class="ln"> 7</span>        <span class="nv">ok</span> <span class="o">=</span> couch_file:write_header<span class="o">(</span>Fd, Header<span class="o">)</span>,
 <span class="ln"> 8</span>        % delete any old compaction files that might be hanging around
 <span class="ln"> 9</span>        <span class="nv">RootDir</span> <span class="o">=</span> couch_config:get<span class="o">(</span><span class="s2">&#34;couchdb&#34;</span>, <span class="s2">&#34;database_dir&#34;</span>, <span class="s2">&#34;.&#34;</span><span class="o">)</span>,
 <span class="ln">10</span>        couch_file:delete<span class="o">(</span>RootDir, Filepath ++ <span class="s2">&#34;.compact&#34;</span><span class="o">)</span><span class="p">;</span>                                                    
@@ -244,8 +244,8 @@
 <span class="ln">14</span>            ok<span class="p">;</span>
 <span class="ln">15</span>        no_valid_header -&gt;
 <span class="ln">16</span>            % create a new header and writes it to the file
-<span class="ln">17</span>            <span class="nv">Header</span> <span class="o">=</span>  <span class="c1">#db_header{},
-</span><span class="ln">18</span><span class="c1"></span>            <span class="nv">ok</span> <span class="o">=</span> couch_file:write_header<span class="o">(</span>Fd, Header<span class="o">)</span>,
+<span class="ln">17</span>            <span class="nv">Header</span> <span class="o">=</span>  <span class="c1">#db_header{},</span>
+<span class="ln">18</span>            <span class="nv">ok</span> <span class="o">=</span> couch_file:write_header<span class="o">(</span>Fd, Header<span class="o">)</span>,
 <span class="ln">19</span>            % delete any old compaction files that might be hanging around
 <span class="ln">20</span>            file:delete<span class="o">(</span>Filepath ++ <span class="s2">&#34;.compact&#34;</span><span class="o">)</span>
 <span class="ln">21</span>        end
@@ -271,8 +271,8 @@
 <p>couch_file:read_headerを読み進めてみます。と言っても<code>gen_server:call/3</code>でヘッダをバイナリで受け取り、<code>binary_to_term/1</code>でTermに変換して返しているだけです。</p>
 
 <p>couch_file.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>handle_call<span class="o">(</span>find_header, _From, <span class="c1">#file{fd = Fd, eof = Pos} = File) -&gt;
-</span><span class="ln">2</span><span class="c1"></span>    <span class="o">{</span>reply, find_header<span class="o">(</span>Fd, Pos div ?SIZE_BLOCK<span class="o">)</span>, File<span class="o">}</span>.  </code></pre></div></p>
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>handle_call<span class="o">(</span>find_header, _From, <span class="c1">#file{fd = Fd, eof = Pos} = File) -&gt;</span>
+<span class="ln">2</span>    <span class="o">{</span>reply, find_header<span class="o">(</span>Fd, Pos div ?SIZE_BLOCK<span class="o">)</span>, File<span class="o">}</span>.  </code></pre></div></p>
 
 <p>このリクエストを受け取っているのは、先ほどの<code>read_header/1</code>と同じくcouch_fileモジュールです。Fileは、同モジュールの<code>init/1</code>で生成されており、<code>Pos</code>にはEOFのポインタが設定されています。<code>find_header/2</code>は<code>load_header/2</code>を呼び出します。</p>
 
@@ -329,7 +329,7 @@
     <footer class="post-footer">
       
       <p class="post-copyright">
-        This post was published <strong>1849</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+        This post was published <strong>1948</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
       </p>
     </footer>
     

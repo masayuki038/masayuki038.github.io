@@ -37,7 +37,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.32" />
+<meta name="generator" content="Hugo 0.55.6" />
 
 
 <link rel="canonical" href="/blog/2014/07/12/couchdb-code-reading7/" />
@@ -236,8 +236,8 @@
 <span class="ln"> 7</span>    % associate reference with each doc in order to track duplicates
 <span class="ln"> 8</span>    <span class="nv">Docs2</span> <span class="o">=</span> lists:map<span class="o">(</span>fun<span class="o">(</span>Doc<span class="o">)</span> -&gt; <span class="o">{</span>Doc, make_ref<span class="o">()}</span> end,Docs<span class="o">)</span>,
 <span class="ln"> 9</span>    <span class="o">{</span>Docs3, NonRepDocs<span class="o">}</span> <span class="o">=</span> lists:foldl<span class="o">(</span>
-<span class="ln">10</span>         fun<span class="o">({</span><span class="c1">#doc{id=Id},_Ref}=Doc, {DocsAcc, NonRepDocsAcc}) -&gt;
-</span><span class="ln">11</span><span class="c1"></span>            <span class="k">case</span> Id of
+<span class="ln">10</span>         fun<span class="o">({</span><span class="c1">#doc{id=Id},_Ref}=Doc, {DocsAcc, NonRepDocsAcc}) -&gt;</span>
+<span class="ln">11</span>            <span class="k">case</span> Id of
 <span class="ln">12</span>            &lt;&lt;?LOCAL_DOC_PREFIX, _/binary&gt;&gt; -&gt;
 <span class="ln">13</span>                <span class="o">{</span>DocsAcc, <span class="o">[</span>Doc <span class="p">|</span> NonRepDocsAcc<span class="o">]}</span><span class="p">;</span>
 <span class="ln">14</span>            Id-&gt;
@@ -251,8 +251,8 @@
 <p>まずは<code>couch_db:increment_stat/2</code>を見てみます。</p>
 
 <p>couch_db.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>increment_stat<span class="o">(</span><span class="c1">#db{options = Options}, Stat) -&gt;
-</span><span class="ln">2</span><span class="c1"></span>    <span class="k">case</span> lists:member<span class="o">(</span>sys_db, Options<span class="o">)</span> of
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>increment_stat<span class="o">(</span><span class="c1">#db{options = Options}, Stat) -&gt;</span>
+<span class="ln">2</span>    <span class="k">case</span> lists:member<span class="o">(</span>sys_db, Options<span class="o">)</span> of
 <span class="ln">3</span>    <span class="nb">true</span> -&gt;
 <span class="ln">4</span>        ok<span class="p">;</span>
 <span class="ln">5</span>    <span class="nb">false</span> -&gt;
@@ -361,20 +361,20 @@
 <span class="ln"> 3</span>
 <span class="ln"> 4</span>find . -type f -exec grep -nH -e _local/ <span class="o">{}</span> +
 <span class="ln"> 5</span>./couch_db.hrl:13:-define<span class="o">(</span>LOCAL_DOC_PREFIX, <span class="s2">&#34;_local/&#34;</span><span class="o">)</span>.
-<span class="ln"> 6</span>./couch_httpd_db.erl:455:db_req<span class="o">(</span><span class="c1">#httpd{path_parts=[_DbName, &lt;&lt;&#34;_local/&#34;&gt;&gt;]}, _Db) -&gt;
-</span><span class="ln"> 7</span><span class="c1"></span>./couch_httpd_db.erl:459:    db_doc_req<span class="o">(</span>Req, Db, &lt;&lt;<span class="s2">&#34;_local/&#34;</span>, Name/binary&gt;&gt;<span class="o">)</span><span class="p">;</span>
+<span class="ln"> 6</span>./couch_httpd_db.erl:455:db_req<span class="o">(</span><span class="c1">#httpd{path_parts=[_DbName, &lt;&lt;&#34;_local/&#34;&gt;&gt;]}, _Db) -&gt;</span>
+<span class="ln"> 7</span>./couch_httpd_db.erl:459:    db_doc_req<span class="o">(</span>Req, Db, &lt;&lt;<span class="s2">&#34;_local/&#34;</span>, Name/binary&gt;&gt;<span class="o">)</span><span class="p">;</span>
 <span class="ln"> 8</span>./couch_doc.erl:200:    &lt;&lt;<span class="s2">&#34;_local/&#34;</span>, _/binary&gt;&gt; -&gt; ok<span class="p">;</span>
 <span class="ln"> 9</span>./couch_util.erl:431:encode_doc_id<span class="o">(</span>&lt;&lt;<span class="s2">&#34;_local/&#34;</span>, Rest/binary&gt;&gt;<span class="o">)</span> -&gt;
 <span class="ln">10</span>./couch_util.erl:432:    <span class="s2">&#34;_local/&#34;</span> ++ url_encode<span class="o">(</span>Rest<span class="o">)</span><span class="p">;</span>
-<span class="ln">11</span>./couch_db.erl:467:validate_doc_update<span class="o">(</span>_Db, <span class="c1">#doc{id= &lt;&lt;&#34;_local/&#34;,_/binary&gt;&gt;}, _GetDiskDocFun) -&gt;
-</span><span class="ln">12</span><span class="c1"></span>
+<span class="ln">11</span>./couch_db.erl:467:validate_doc_update<span class="o">(</span>_Db, <span class="c1">#doc{id= &lt;&lt;&#34;_local/&#34;,_/binary&gt;&gt;}, _GetDiskDocFun) -&gt;</span>
+<span class="ln">12</span>
 <span class="ln">13</span>Grep finished <span class="o">(</span>matches found<span class="o">)</span> at Sat Jul <span class="m">12</span> <span class="m">22</span>:04:39</code></pre></div>
 
 <p><code>couch_httpd_db</code>モジュールで使用されている箇所を見てみます。</p>
 
 <p>couch_httpd_db.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>db_req<span class="o">(</span><span class="c1">#httpd{path_parts=[_DbName, &lt;&lt;&#34;_local&#34;&gt;&gt;, Name]}=Req, Db) -&gt;
-</span><span class="ln">2</span><span class="c1"></span>    db_doc_req<span class="o">(</span>Req, Db, &lt;&lt;<span class="s2">&#34;_local/&#34;</span>, Name/binary&gt;&gt;<span class="o">)</span><span class="p">;</span></code></pre></div></p>
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>db_req<span class="o">(</span><span class="c1">#httpd{path_parts=[_DbName, &lt;&lt;&#34;_local&#34;&gt;&gt;, Name]}=Req, Db) -&gt;</span>
+<span class="ln">2</span>    db_doc_req<span class="o">(</span>Req, Db, &lt;&lt;<span class="s2">&#34;_local/&#34;</span>, Name/binary&gt;&gt;<span class="o">)</span><span class="p">;</span></code></pre></div></p>
 
 <p>HTTP APIで指定されているようです。<a href="http://wiki.apache.org/couchdb/HTTP_Document_API">HTTP Document API</a>を見てみたところ、<code>&quot;_local/&quot;</code>について以下のように記されていました。</p>
 
@@ -392,16 +392,16 @@
 <div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>% group_alike_docs groups the sorted documents into sublist buckets, by id.
 <span class="ln"> 2</span>% <span class="o">([</span>DocA, DocA, DocB, DocC<span class="o">]</span>, <span class="o">[])</span> -&gt; <span class="o">[[</span>DocA, DocA<span class="o">]</span>, <span class="o">[</span>DocB<span class="o">]</span>, <span class="o">[</span>DocC<span class="o">]]</span>
 <span class="ln"> 3</span><span class="o">=</span>&gt;oup_alike_docs<span class="o">(</span>Docs<span class="o">)</span> -&gt;
-<span class="ln"> 4</span>    <span class="nv">Sorted</span> <span class="o">=</span> lists:sort<span class="o">(</span>fun<span class="o">({</span><span class="c1">#doc{id=A},_},{#doc{id=B},_})-&gt; A &lt; B end, Docs),
-</span><span class="ln"> 5</span><span class="c1"></span>    group_alike_docs<span class="o">(</span>Sorted, <span class="o">[])</span>.
+<span class="ln"> 4</span>    <span class="nv">Sorted</span> <span class="o">=</span> lists:sort<span class="o">(</span>fun<span class="o">({</span><span class="c1">#doc{id=A},_},{#doc{id=B},_})-&gt; A &lt; B end, Docs),</span>
+<span class="ln"> 5</span>    group_alike_docs<span class="o">(</span>Sorted, <span class="o">[])</span>.
 <span class="ln"> 6</span>
 <span class="ln"> 7</span>group_alike_docs<span class="o">([]</span>, Buckets<span class="o">)</span> -&gt;
 <span class="ln"> 8</span>    lists:reverse<span class="o">(</span>lists:map<span class="o">(</span>fun lists:reverse/1, Buckets<span class="o">))</span><span class="p">;</span>
 <span class="ln"> 9</span>group_alike_docs<span class="o">([</span>Doc<span class="p">|</span>Rest<span class="o">]</span>, <span class="o">[])</span> -&gt;
 <span class="ln">10</span>    group_alike_docs<span class="o">(</span>Rest, <span class="o">[[</span>Doc<span class="o">]])</span><span class="p">;</span>
 <span class="ln">11</span>group_alike_docs<span class="o">([{</span>Doc,Ref<span class="o">}</span><span class="p">|</span>Rest<span class="o">]</span>, <span class="o">[</span>Bucket<span class="p">|</span>RestBuckets<span class="o">])</span> -&gt;
-<span class="ln">12</span>    <span class="o">[{</span><span class="c1">#doc{id=BucketId},_Ref}|_] = Bucket,
-</span><span class="ln">13</span><span class="c1"></span>    <span class="k">case</span> Doc#doc.id <span class="o">==</span> BucketId of
+<span class="ln">12</span>    <span class="o">[{</span><span class="c1">#doc{id=BucketId},_Ref}|_] = Bucket,</span>
+<span class="ln">13</span>    <span class="k">case</span> Doc#doc.id <span class="o">==</span> BucketId of
 <span class="ln">14</span>    <span class="nb">true</span> -&gt;
 <span class="ln">15</span>        % add to existing bucket
 <span class="ln">16</span>        group_alike_docs<span class="o">(</span>Rest, <span class="o">[[{</span>Doc,Ref<span class="o">}</span><span class="p">|</span>Bucket<span class="o">]</span><span class="p">|</span>RestBuckets<span class="o">])</span><span class="p">;</span>
@@ -412,10 +412,10 @@
 これはコードを読むよりもコメントの部分が分かりやすいので、そちらを参照してください。次に<code>couch_db:before_docs_update/2</code>を見てみます。</p>
 
 <p>couch_db.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>before_docs_update<span class="o">(</span><span class="c1">#db{before_doc_update = nil}, BucketList) -&gt;
-</span><span class="ln">2</span><span class="c1"></span>    BucketList<span class="p">;</span>
-<span class="ln">3</span>before_docs_update<span class="o">(</span><span class="c1">#db{before_doc_update = Fun} = Db, BucketList) -&gt;
-</span><span class="ln">4</span><span class="c1"></span>    <span class="o">[</span>lists:map<span class="o">(</span>
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>before_docs_update<span class="o">(</span><span class="c1">#db{before_doc_update = nil}, BucketList) -&gt;</span>
+<span class="ln">2</span>    BucketList<span class="p">;</span>
+<span class="ln">3</span>before_docs_update<span class="o">(</span><span class="c1">#db{before_doc_update = Fun} = Db, BucketList) -&gt;</span>
+<span class="ln">4</span>    <span class="o">[</span>lists:map<span class="o">(</span>
 <span class="ln">5</span>        fun<span class="o">({</span>Doc, Ref<span class="o">})</span> -&gt;
 <span class="ln">6</span>            <span class="nv">NewDoc</span> <span class="o">=</span> Fun<span class="o">(</span>couch_doc:with_ejson_body<span class="o">(</span>Doc<span class="o">)</span>, Db<span class="o">)</span>,
 <span class="ln">7</span>            <span class="o">{</span>NewDoc, Ref<span class="o">}</span>
@@ -431,7 +431,7 @@
     <footer class="post-footer">
       
       <p class="post-copyright">
-        This post was published <strong>1800</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+        This post was published <strong>1899</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
       </p>
     </footer>
     

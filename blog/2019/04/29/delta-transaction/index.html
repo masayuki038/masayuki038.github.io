@@ -37,7 +37,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.32" />
+<meta name="generator" content="Hugo 0.55.6" />
 
 
 <link rel="canonical" href="/blog/2019/04/29/delta-transaction/" />
@@ -237,25 +237,25 @@
 <span class="ln"> 4</span>    <span class="nc">Seq</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">).</span><span class="n">toDF</span><span class="o">().</span><span class="n">write</span><span class="o">.</span><span class="n">format</span><span class="o">(</span><span class="s">&#34;delta&#34;</span><span class="o">).</span><span class="n">mode</span><span class="o">(</span><span class="s">&#34;append&#34;</span><span class="o">).</span><span class="n">save</span><span class="o">(</span><span class="n">tempDir</span><span class="o">.</span><span class="n">toString</span><span class="o">)</span>
 <span class="ln"> 5</span>
 <span class="ln"> 6</span>    <span class="k">def</span> <span class="n">data</span><span class="k">:</span> <span class="kt">DataFrame</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="n">format</span><span class="o">(</span><span class="s">&#34;delta&#34;</span><span class="o">).</span><span class="n">load</span><span class="o">(</span><span class="n">tempDir</span><span class="o">.</span><span class="n">toString</span><span class="o">)</span>
-<span class="ln"> 7</span>    <span class="n">checkAnswer</span><span class="o">(</span><span class="n">data</span><span class="o">,</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">2</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">3</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Nil</span><span class="o">)</span>
+<span class="ln"> 7</span>    <span class="n">checkAnswer</span><span class="o">(</span><span class="n">data</span><span class="o">,</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span> <span class="k">:</span><span class="kt">:</span> <span class="kt">Row</span><span class="o">(</span><span class="err">2</span><span class="o">)</span> <span class="kt">::</span> <span class="kt">Row</span><span class="o">(</span><span class="err">3</span><span class="o">)</span> <span class="kt">::</span> <span class="kt">Nil</span><span class="o">)</span>
 <span class="ln"> 8</span>
 <span class="ln"> 9</span>    <span class="c1">// append more
 </span><span class="ln">10</span><span class="c1"></span>    <span class="nc">Seq</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">6</span><span class="o">).</span><span class="n">toDF</span><span class="o">().</span><span class="n">write</span><span class="o">.</span><span class="n">format</span><span class="o">(</span><span class="s">&#34;delta&#34;</span><span class="o">).</span><span class="n">mode</span><span class="o">(</span><span class="s">&#34;append&#34;</span><span class="o">).</span><span class="n">save</span><span class="o">(</span><span class="n">tempDir</span><span class="o">.</span><span class="n">toString</span><span class="o">)</span>
-<span class="ln">11</span>    <span class="n">checkAnswer</span><span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="n">toDF</span><span class="o">(),</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">2</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">3</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">4</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">5</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">6</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Nil</span><span class="o">)</span>
+<span class="ln">11</span>    <span class="n">checkAnswer</span><span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="n">toDF</span><span class="o">(),</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span> <span class="k">:</span><span class="kt">:</span> <span class="kt">Row</span><span class="o">(</span><span class="err">2</span><span class="o">)</span> <span class="kt">::</span> <span class="kt">Row</span><span class="o">(</span><span class="err">3</span><span class="o">)</span> <span class="kt">::</span> <span class="kt">Row</span><span class="o">(</span><span class="err">4</span><span class="o">)</span> <span class="kt">::</span> <span class="kt">Row</span><span class="o">(</span><span class="err">5</span><span class="o">)</span> <span class="kt">::</span> <span class="kt">Row</span><span class="o">(</span><span class="err">6</span><span class="o">)</span> <span class="kt">::</span> <span class="kt">Nil</span><span class="o">)</span>
 <span class="ln">12</span>  <span class="o">}</span></code></pre></div>
 
 <p>上記のテストコードを実行すると、以下のようなファイルが生成されます。</p>
 
-<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt"><span class="p">.</span>
-<span class="o">|</span>-- _delta_log
-<span class="o">|</span>   <span class="o">|</span>-- <span class="mi">00000000000000000000</span><span class="p">.</span>json
-<span class="o">|</span>   <span class="o">|</span>-- <span class="mi">00000000000000000001</span><span class="p">.</span>json
-<span class="o">|</span>   <span class="err">`</span>-- <span class="mi">00000000000000000002</span><span class="p">.</span>json
-<span class="o">|</span>-- part-00000-6217e923-3003-4d3d-9347-78fc9cd4a465-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
-<span class="o">|</span>-- part-00000-bcc5a893-4c8e-46b4-9e37-adbb0e447ccc-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
-<span class="o">|</span>-- part-00000-cafe2cc5-8dd0-4d2d-a362-e9e1efd46628-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
-<span class="o">|</span>-- part-00001-4717e754-ac60-46fd-8e46-bff299965988-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
-<span class="err">`</span>-- part-00001-e61a04d4-e92a-4117-b40e-b6d100af1ad8-c000<span class="p">.</span>snappy<span class="p">.</span>parquet</code></pre></div>
+<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">.
+|-- _delta_log
+|   |-- 00000000000000000000.json
+|   |-- 00000000000000000001.json
+|   `-- 00000000000000000002.json
+|-- part-00000-6217e923-3003-4d3d-9347-78fc9cd4a465-c000.snappy.parquet
+|-- part-00000-bcc5a893-4c8e-46b4-9e37-adbb0e447ccc-c000.snappy.parquet
+|-- part-00000-cafe2cc5-8dd0-4d2d-a362-e9e1efd46628-c000.snappy.parquet
+|-- part-00001-4717e754-ac60-46fd-8e46-bff299965988-c000.snappy.parquet
+`-- part-00001-e61a04d4-e92a-4117-b40e-b6d100af1ad8-c000.snappy.parquet</code></pre></div>
 
 <p>厳密には上記の1ファイル毎に .crc ファイルも生成されますが、ここでは省略しています。</p>
 
@@ -272,8 +272,8 @@
 
 <p><code>commitInfo</code> はコミット時のタイムスタンプや操作が記録されています。<code>protocol</code> には read/write それぞれの min version が、<code>metaData</code> はスキーマ定義が記録されています。 <code>protocol</code> と <code>metaData</code> は version:0 の JSON ファイルにしか出力されません。<code>add</code> はこのトランザクションで追加された Parquet ファイル です。この Parquet ファイルは以下のような値が格納されています。</p>
 
-<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt"><span class="err">$</span> java -cp target/classes;target/dependency/<span class="o">*</span> org<span class="p">.</span>apache<span class="p">.</span>parquet<span class="p">.</span>cli<span class="p">.</span>Main cat D<span class="o">:</span><span class="ss">\</span>tmp<span class="ss">\</span>delta<span class="ss">\</span>append<span class="ss">\</span>part-00000-6217e923-3003-4d3d-9347-78fc9cd4a465-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
-<span class="ss">{</span>&#34;value&#34;<span class="o">:</span> <span class="mi">1</span><span class="ss">}</span></code></pre></div>
+<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">$ java -cp target/classes;target/dependency/* org.apache.parquet.cli.Main cat D:\tmp\delta\append\part-00000-6217e923-3003-4d3d-9347-78fc9cd4a465-c000.snappy.parquet
+{&#34;value&#34;: 1}</code></pre></div>
 
 <p>次に <code>Seq(2,3)</code> を保存したトランザクションの JSON ファイルを確認します。</p>
 
@@ -287,11 +287,11 @@
 
 <p><code>commitInfo</code> の <code>mode</code> が <code>Append</code> になっています。また、<code>add</code> が2つ記録されています。これらのファイルを見てみます。</p>
 
-<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt"><span class="err">$</span> java -cp target/classes;target/dependency/<span class="o">*</span> org<span class="p">.</span>apache<span class="p">.</span>parquet<span class="p">.</span>cli<span class="p">.</span>Main cat D<span class="o">:</span><span class="ss">\</span>tmp<span class="ss">\</span>delta<span class="ss">\</span>append<span class="ss">\</span>part-00000-cafe2cc5-8dd0-4d2d-a362-e9e1efd46628-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
-<span class="ss">{</span>&#34;value&#34;<span class="o">:</span> <span class="mi">2</span><span class="ss">}</span></code></pre></div>
+<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">$ java -cp target/classes;target/dependency/* org.apache.parquet.cli.Main cat D:\tmp\delta\append\part-00000-cafe2cc5-8dd0-4d2d-a362-e9e1efd46628-c000.snappy.parquet
+{&#34;value&#34;: 2}</code></pre></div>
 
-<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt"><span class="err">$</span> java -cp target/classes;target/dependency/<span class="o">*</span> org<span class="p">.</span>apache<span class="p">.</span>parquet<span class="p">.</span>cli<span class="p">.</span>Main cat D<span class="o">:</span><span class="ss">\</span>tmp<span class="ss">\</span>delta<span class="ss">\</span>append<span class="ss">\</span>part-00001-e61a04d4-e92a-4117-b40e-b6d100af1ad8-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
-<span class="ss">{</span>&#34;value&#34;<span class="o">:</span> <span class="mi">3</span><span class="ss">}</span></code></pre></div>
+<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">$ java -cp target/classes;target/dependency/* org.apache.parquet.cli.Main cat D:\tmp\delta\append\part-00001-e61a04d4-e92a-4117-b40e-b6d100af1ad8-c000.snappy.parquet
+{&#34;value&#34;: 3}</code></pre></div>
 
 <p>そして <code>Seq(4,5,6)</code> を保存したトランザクションの JSON ファイルと Parquet ファイルは以下のとおりです。</p>
 
@@ -303,12 +303,12 @@
 <span class="p">{</span><span class="nt">&#34;add&#34;</span><span class="p">:{</span><span class="nt">&#34;path&#34;</span><span class="p">:</span><span class="s2">&#34;part-00000-bcc5a893-4c8e-46b4-9e37-adbb0e447ccc-c000.snappy.parquet&#34;</span><span class="p">,</span><span class="nt">&#34;partitionValues&#34;</span><span class="p">:{},</span><span class="nt">&#34;size&#34;</span><span class="p">:</span><span class="mi">396</span><span class="p">,</span><span class="nt">&#34;modificationTime&#34;</span><span class="p">:</span><span class="mi">1556452472671</span><span class="p">,</span><span class="nt">&#34;dataChange&#34;</span><span class="p">:</span><span class="kc">true</span><span class="p">}}</span>
 <span class="p">{</span><span class="nt">&#34;add&#34;</span><span class="p">:{</span><span class="nt">&#34;path&#34;</span><span class="p">:</span><span class="s2">&#34;part-00001-4717e754-ac60-46fd-8e46-bff299965988-c000.snappy.parquet&#34;</span><span class="p">,</span><span class="nt">&#34;partitionValues&#34;</span><span class="p">:{},</span><span class="nt">&#34;size&#34;</span><span class="p">:</span><span class="mi">400</span><span class="p">,</span><span class="nt">&#34;modificationTime&#34;</span><span class="p">:</span><span class="mi">1556452472679</span><span class="p">,</span><span class="nt">&#34;dataChange&#34;</span><span class="p">:</span><span class="kc">true</span><span class="p">}}</span></code></pre></div>
 
-<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt"><span class="err">$</span> java -cp target/classes;target/dependency/<span class="o">*</span> org<span class="p">.</span>apache<span class="p">.</span>parquet<span class="p">.</span>cli<span class="p">.</span>Main cat D<span class="o">:</span><span class="ss">\</span>tmp<span class="ss">\</span>delta<span class="ss">\</span>append<span class="ss">\</span>part-00000-bcc5a893-4c8e-46b4-9e37-adbb0e447ccc-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
-<span class="ss">{</span>&#34;value&#34;<span class="o">:</span> <span class="mi">4</span><span class="ss">}</span></code></pre></div>
+<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">$ java -cp target/classes;target/dependency/* org.apache.parquet.cli.Main cat D:\tmp\delta\append\part-00000-bcc5a893-4c8e-46b4-9e37-adbb0e447ccc-c000.snappy.parquet
+{&#34;value&#34;: 4}</code></pre></div>
 
-<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt"><span class="err">$</span> java -cp target/classes;target/dependency/<span class="o">*</span> org<span class="p">.</span>apache<span class="p">.</span>parquet<span class="p">.</span>cli<span class="p">.</span>Main cat D<span class="o">:</span><span class="ss">\</span>tmp<span class="ss">\</span>delta<span class="ss">\</span>append<span class="ss">\</span>part-00001-4717e754-ac60-46fd-8e46-bff299965988-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
-<span class="ss">{</span>&#34;value&#34;<span class="o">:</span> <span class="mi">5</span><span class="ss">}</span>
-<span class="ss">{</span>&#34;value&#34;<span class="o">:</span> <span class="mi">6</span><span class="ss">}</span></code></pre></div>
+<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">$ java -cp target/classes;target/dependency/* org.apache.parquet.cli.Main cat D:\tmp\delta\append\part-00001-4717e754-ac60-46fd-8e46-bff299965988-c000.snappy.parquet
+{&#34;value&#34;: 5}
+{&#34;value&#34;: 6}</code></pre></div>
 
 <p>このように <code>_dalta_log</code> 配下の JSON ファイルで version 毎にどの Parquet ファイルが追加されたかを記録しています。</p>
 
@@ -322,24 +322,24 @@
 <span class="ln"> 4</span>    <span class="nc">Seq</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">).</span><span class="n">toDF</span><span class="o">().</span><span class="n">write</span><span class="o">.</span><span class="n">format</span><span class="o">(</span><span class="s">&#34;delta&#34;</span><span class="o">).</span><span class="n">mode</span><span class="o">(</span><span class="s">&#34;overwrite&#34;</span><span class="o">).</span><span class="n">save</span><span class="o">(</span><span class="n">tempDir</span><span class="o">.</span><span class="n">toString</span><span class="o">)</span>
 <span class="ln"> 5</span>
 <span class="ln"> 6</span>    <span class="k">def</span> <span class="n">data</span><span class="k">:</span> <span class="kt">DataFrame</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="n">format</span><span class="o">(</span><span class="s">&#34;delta&#34;</span><span class="o">).</span><span class="n">load</span><span class="o">(</span><span class="n">tempDir</span><span class="o">.</span><span class="n">toString</span><span class="o">)</span>
-<span class="ln"> 7</span>    <span class="n">checkAnswer</span><span class="o">(</span><span class="n">data</span><span class="o">,</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">2</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">3</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Nil</span><span class="o">)</span>
+<span class="ln"> 7</span>    <span class="n">checkAnswer</span><span class="o">(</span><span class="n">data</span><span class="o">,</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">2</span><span class="o">)</span> <span class="k">:</span><span class="kt">:</span> <span class="kt">Row</span><span class="o">(</span><span class="err">3</span><span class="o">)</span> <span class="kt">::</span> <span class="kt">Nil</span><span class="o">)</span>
 <span class="ln"> 8</span>
 <span class="ln"> 9</span>    <span class="nc">Seq</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">6</span><span class="o">).</span><span class="n">toDF</span><span class="o">().</span><span class="n">write</span><span class="o">.</span><span class="n">format</span><span class="o">(</span><span class="s">&#34;delta&#34;</span><span class="o">).</span><span class="n">mode</span><span class="o">(</span><span class="s">&#34;overwrite&#34;</span><span class="o">).</span><span class="n">save</span><span class="o">(</span><span class="n">tempDir</span><span class="o">.</span><span class="n">toString</span><span class="o">)</span>
-<span class="ln">10</span>    <span class="n">checkAnswer</span><span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="n">toDF</span><span class="o">(),</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">4</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">5</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">6</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Nil</span><span class="o">)</span>
+<span class="ln">10</span>    <span class="n">checkAnswer</span><span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="n">toDF</span><span class="o">(),</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">4</span><span class="o">)</span> <span class="k">:</span><span class="kt">:</span> <span class="kt">Row</span><span class="o">(</span><span class="err">5</span><span class="o">)</span> <span class="kt">::</span> <span class="kt">Row</span><span class="o">(</span><span class="err">6</span><span class="o">)</span> <span class="kt">::</span> <span class="kt">Nil</span><span class="o">)</span>
 <span class="ln">11</span>  <span class="o">}</span></code></pre></div>
 
 <p>それぞれ JSON ファイルを見ていきます。Parquet ファイルの内容は <code>append</code> の時と同様なので割愛します。</p>
 
-<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt"><span class="p">.</span>
-<span class="o">|</span>-- _delta_log
-<span class="o">|</span>   <span class="o">|</span>-- <span class="mi">00000000000000000000</span><span class="p">.</span>json
-<span class="o">|</span>   <span class="o">|</span>-- <span class="mi">00000000000000000001</span><span class="p">.</span>json
-<span class="o">|</span>   <span class="err">`</span>-- <span class="mi">00000000000000000002</span><span class="p">.</span>json
-<span class="o">|</span>-- part-00000-0e21921d-2ecb-41d7-80b3-6b7e982b13aa-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
-<span class="o">|</span>-- part-00000-b953f8cb-ac9f-441f-b544-c40a0e329802-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
-<span class="o">|</span>-- part-00000-eef7b120-c3ba-426a-afa3-56e3d3f03f7f-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
-<span class="o">|</span>-- part-00001-0fa56342-4b55-4241-8c82-a76c2d1bcbd3-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
-<span class="err">`</span>-- part-00001-fa0320b6-c11f-4d00-8c9d-aa0c2f1a2066-c000<span class="p">.</span>snappy<span class="p">.</span>parquet</code></pre></div>
+<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">.
+|-- _delta_log
+|   |-- 00000000000000000000.json
+|   |-- 00000000000000000001.json
+|   `-- 00000000000000000002.json
+|-- part-00000-0e21921d-2ecb-41d7-80b3-6b7e982b13aa-c000.snappy.parquet
+|-- part-00000-b953f8cb-ac9f-441f-b544-c40a0e329802-c000.snappy.parquet
+|-- part-00000-eef7b120-c3ba-426a-afa3-56e3d3f03f7f-c000.snappy.parquet
+|-- part-00001-0fa56342-4b55-4241-8c82-a76c2d1bcbd3-c000.snappy.parquet
+`-- part-00001-fa0320b6-c11f-4d00-8c9d-aa0c2f1a2066-c000.snappy.parquet</code></pre></div>
 
 <ul>
 <li>00000000000000000000.json</li>
@@ -388,28 +388,28 @@
 <span class="ln"> 5</span>    <span class="nc">Seq</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">).</span><span class="n">toDF</span><span class="o">().</span><span class="n">write</span><span class="o">.</span><span class="n">format</span><span class="o">(</span><span class="s">&#34;delta&#34;</span><span class="o">).</span><span class="n">mode</span><span class="o">(</span><span class="s">&#34;overwrite&#34;</span><span class="o">).</span><span class="n">save</span><span class="o">(</span><span class="n">tempDir</span><span class="o">.</span><span class="n">toString</span><span class="o">)</span>
 <span class="ln"> 6</span>
 <span class="ln"> 7</span>    <span class="k">def</span> <span class="n">data</span><span class="k">:</span> <span class="kt">DataFrame</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="n">format</span><span class="o">(</span><span class="s">&#34;delta&#34;</span><span class="o">).</span><span class="n">load</span><span class="o">(</span><span class="n">tempDir</span><span class="o">.</span><span class="n">toString</span><span class="o">)</span>
-<span class="ln"> 8</span>    <span class="n">checkAnswer</span><span class="o">(</span><span class="n">data</span><span class="o">,</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">2</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">3</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Nil</span><span class="o">)</span>
+<span class="ln"> 8</span>    <span class="n">checkAnswer</span><span class="o">(</span><span class="n">data</span><span class="o">,</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">2</span><span class="o">)</span> <span class="k">:</span><span class="kt">:</span> <span class="kt">Row</span><span class="o">(</span><span class="err">3</span><span class="o">)</span> <span class="kt">::</span> <span class="kt">Nil</span><span class="o">)</span>
 <span class="ln"> 9</span>    
 <span class="ln">10</span>    <span class="nc">Seq</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">6</span><span class="o">).</span><span class="n">toDF</span><span class="o">().</span><span class="n">write</span><span class="o">.</span><span class="n">format</span><span class="o">(</span><span class="s">&#34;delta&#34;</span><span class="o">).</span><span class="n">mode</span><span class="o">(</span><span class="s">&#34;overwrite&#34;</span><span class="o">).</span><span class="n">save</span><span class="o">(</span><span class="n">tempDir</span><span class="o">.</span><span class="n">toString</span><span class="o">)</span>
 <span class="ln">11</span>    <span class="c1">// Add checkpoint
 </span><span class="ln">12</span><span class="c1"></span>    <span class="n">writersLog</span><span class="o">.</span><span class="n">checkpoint</span><span class="o">()</span>
-<span class="ln">13</span>    <span class="n">checkAnswer</span><span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="n">toDF</span><span class="o">(),</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">4</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">5</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">6</span><span class="o">)</span> <span class="o">::</span> <span class="nc">Nil</span><span class="o">)</span>
+<span class="ln">13</span>    <span class="n">checkAnswer</span><span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="n">toDF</span><span class="o">(),</span> <span class="nc">Row</span><span class="o">(</span><span class="mi">4</span><span class="o">)</span> <span class="k">:</span><span class="kt">:</span> <span class="kt">Row</span><span class="o">(</span><span class="err">5</span><span class="o">)</span> <span class="kt">::</span> <span class="kt">Row</span><span class="o">(</span><span class="err">6</span><span class="o">)</span> <span class="kt">::</span> <span class="kt">Nil</span><span class="o">)</span>
 <span class="ln">14</span>  <span class="o">}</span></code></pre></div>
 
 <p>12行目で <code>checkpoint</code> を記録しています。このコードを実行すると、以下のようなファイルが生成されます。</p>
 
-<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt"><span class="p">.</span>
-<span class="o">|</span>-- _delta_log
-<span class="o">|</span>   <span class="o">|</span>-- <span class="mi">00000000000000000000</span><span class="p">.</span>json
-<span class="o">|</span>   <span class="o">|</span>-- <span class="mi">00000000000000000001</span><span class="p">.</span>json
-<span class="o">|</span>   <span class="o">|</span>-- <span class="mi">00000000000000000002</span><span class="p">.</span>checkpoint<span class="p">.</span>parquet
-<span class="o">|</span>   <span class="o">|</span>-- <span class="mi">00000000000000000002</span><span class="p">.</span>json
-<span class="o">|</span>   <span class="err">`</span>-- _last_checkpoint
-<span class="o">|</span>-- part-00000-0bc9cae4-22ae-4285-810d-50b1837fb343-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
-<span class="o">|</span>-- part-00000-3f35a68e-cf56-4761-8228-996731a810d6-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
-<span class="o">|</span>-- part-00000-6156403c-f8aa-4aa0-a01b-ba1b2763b267-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
-<span class="o">|</span>-- part-00001-83503bcd-7cd3-4f21-9d94-ca70112cfa65-c000<span class="p">.</span>snappy<span class="p">.</span>parquet
-<span class="err">`</span>-- part-00001-9c744388-e8fb-4164-a8e3-a88022e1a25c-c000<span class="p">.</span>snappy<span class="p">.</span>parquet</code></pre></div>
+<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">.
+|-- _delta_log
+|   |-- 00000000000000000000.json
+|   |-- 00000000000000000001.json
+|   |-- 00000000000000000002.checkpoint.parquet
+|   |-- 00000000000000000002.json
+|   `-- _last_checkpoint
+|-- part-00000-0bc9cae4-22ae-4285-810d-50b1837fb343-c000.snappy.parquet
+|-- part-00000-3f35a68e-cf56-4761-8228-996731a810d6-c000.snappy.parquet
+|-- part-00000-6156403c-f8aa-4aa0-a01b-ba1b2763b267-c000.snappy.parquet
+|-- part-00001-83503bcd-7cd3-4f21-9d94-ca70112cfa65-c000.snappy.parquet
+`-- part-00001-9c744388-e8fb-4164-a8e3-a88022e1a25c-c000.snappy.parquet</code></pre></div>
 
 <p><code>_delta_log</code> の配下に <code>_last_checkpoint</code> と <code>00000000000000000002.checkpoint.parquet</code> が追加されていることが分かります。<code>_last_checkpoint</code> は以下のようになっています。</p>
 
@@ -417,7 +417,7 @@
 <li>_last_checkpoint</li>
 </ul>
 
-<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt"><span class="ss">{</span>&#34;version&#34;<span class="o">:</span><span class="mi">2</span><span class="p">,</span>&#34;size&#34;<span class="o">:</span><span class="mi">7</span><span class="ss">}</span></code></pre></div>
+<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">{&#34;version&#34;:2,&#34;size&#34;:7}</code></pre></div>
 
 <p><code>version</code> には <code>checkpoint</code> を実行した時のバージョンが記録されています。<code>size</code> は恐らく <code>00000000000000000002.checkpoint.parquet</code> のフィールドサイズだと思います。</p>
 
@@ -427,16 +427,16 @@
 
 <p>この中の <code>remove.path</code> を見ると version:1 と version:0 のファイルが記録されていることから、この Parquet ファイルを参照することによって過去の JSON ファイルを参照することなく任意のバージョンの状態を取得することができるようになっているようです。</p>
 
-<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">BINARY remove<span class="p">.</span>path
+<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">BINARY remove.path
 --------------------------------------------------------------------------------
-<span class="o">***</span> row group <span class="mi">1</span> of <span class="mi">1</span><span class="p">,</span> values <span class="mi">1</span> to <span class="mi">7</span> <span class="o">***</span>
-value <span class="mi">1</span><span class="o">:</span> R<span class="o">:</span><span class="mi">0</span> D<span class="o">:</span><span class="mi">0</span> V<span class="o">:</span><span class="s">&lt;null&gt;</span>
-value <span class="mi">2</span><span class="o">:</span> R<span class="o">:</span><span class="mi">0</span> D<span class="o">:</span><span class="mi">0</span> V<span class="o">:</span><span class="s">&lt;null&gt;</span>
-value <span class="mi">3</span><span class="o">:</span> R<span class="o">:</span><span class="mi">0</span> D<span class="o">:</span><span class="mi">2</span> V<span class="o">:</span>part-00001-83503bcd-7cd3-4f21-9d94-ca70112cfa65-c00 <span class="ss">[</span>more<span class="ss">]</span><span class="p">...</span>
-value <span class="mi">4</span><span class="o">:</span> R<span class="o">:</span><span class="mi">0</span> D<span class="o">:</span><span class="mi">2</span> V<span class="o">:</span>part-00000-3f35a68e-cf56-4761-8228-996731a810d6-c00 <span class="ss">[</span>more<span class="ss">]</span><span class="p">...</span>
-value <span class="mi">5</span><span class="o">:</span> R<span class="o">:</span><span class="mi">0</span> D<span class="o">:</span><span class="mi">0</span> V<span class="o">:</span><span class="s">&lt;null&gt;</span>
-value <span class="mi">6</span><span class="o">:</span> R<span class="o">:</span><span class="mi">0</span> D<span class="o">:</span><span class="mi">0</span> V<span class="o">:</span><span class="s">&lt;null&gt;</span>
-value <span class="mi">7</span><span class="o">:</span> R<span class="o">:</span><span class="mi">0</span> D<span class="o">:</span><span class="mi">2</span> V<span class="o">:</span>part-00000-6156403c-f8aa-4aa0-a01b-ba1b2763b267-c00 <span class="ss">[</span>more<span class="ss">]</span><span class="p">...</span></code></pre></div>
+*** row group 1 of 1, values 1 to 7 ***
+value 1: R:0 D:0 V:&lt;null&gt;
+value 2: R:0 D:0 V:&lt;null&gt;
+value 3: R:0 D:2 V:part-00001-83503bcd-7cd3-4f21-9d94-ca70112cfa65-c00 [more]...
+value 4: R:0 D:2 V:part-00000-3f35a68e-cf56-4761-8228-996731a810d6-c00 [more]...
+value 5: R:0 D:0 V:&lt;null&gt;
+value 6: R:0 D:0 V:&lt;null&gt;
+value 7: R:0 D:2 V:part-00000-6156403c-f8aa-4aa0-a01b-ba1b2763b267-c00 [more]...</code></pre></div>
 
 <h1 id="conclusion">Conclusion</h1>
 
@@ -445,7 +445,7 @@ value <span class="mi">7</span><span class="o">:</span> R<span class="o">:</span
     <footer class="post-footer">
       
       <p class="post-copyright">
-        
+        This post was published <strong>147</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
       </p>
     </footer>
     

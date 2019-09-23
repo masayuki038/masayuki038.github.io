@@ -37,7 +37,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.32" />
+<meta name="generator" content="Hugo 0.55.6" />
 
 
 <link rel="canonical" href="/blog/2014/08/24/mvndebug/" />
@@ -252,9 +252,9 @@
 
 <p>Mavenプラグインのデバッグについてググったところ、<code>mvnDebug</code>を使うとできるようなので、早速試してみました。この<code>mvnDebug</code>はMavenにバンドルされているので、事前に何かをインストールする必要はありません。</p>
 
-<p><div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">$ mvnDebug eclipse:eclipse
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">$ mvnDebug eclipse:eclipse
 Preparing to Execute Maven in Debug Mode
-Listening <span class="k">for</span> transport dt_socket at address: <span class="m">8000</span></code></pre></div></p>
+Listening <span class="k">for</span> transport dt_socket at address: <span class="m">8000</span></code></pre></div>
 
 <p>なるほど、mvnの実行プロセスにアタッチできるようです。そうなるとこのプラグインのソースコードが欲しいので、<a href="https://oss.sonatype.org/">https://oss.sonatype.org/</a>から<code>com.twitter:scrooge-maven-plugin:3.9.0</code>のソースコードをダウンロードし、<code>jar xvf</code>で展開しておきます。</p>
 
@@ -382,7 +382,7 @@ i$ <span class="o">=</span> instance of java.util.HashMap<span class="nv">$KeyIt
     <footer class="post-footer">
       
       <p class="post-copyright">
-        This post was published <strong>1757</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+        This post was published <strong>1856</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
       </p>
     </footer>
     

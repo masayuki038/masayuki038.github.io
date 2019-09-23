@@ -37,7 +37,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.32" />
+<meta name="generator" content="Hugo 0.55.6" />
 
 
 <link rel="canonical" href="/blog/2014/08/03/couchdb-code-reading10/" />
@@ -212,9 +212,9 @@
 <p>まずHTTPレイヤをエントリとし、GETメソッドを扱う関数を探してみたところ、<code>couch_httpd_db:db_doc_req/3</code>を見つけたので、ここから追っていきます。</p>
 
 <p>couch_httpd_db.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>db_doc_req<span class="o">(</span><span class="c1">#httpd{method = &#39;GET&#39;, mochi_req = MochiReq} = Req, Db, DocId) -&gt;
-</span><span class="ln"> 2</span><span class="c1"></span>    <span class="c1">#doc_query_args{
-</span><span class="ln"> 3</span><span class="c1"></span>        <span class="nv">rev</span> <span class="o">=</span> Rev,
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>db_doc_req<span class="o">(</span><span class="c1">#httpd{method = &#39;GET&#39;, mochi_req = MochiReq} = Req, Db, DocId) -&gt;</span>
+<span class="ln"> 2</span>    <span class="c1">#doc_query_args{</span>
+<span class="ln"> 3</span>        <span class="nv">rev</span> <span class="o">=</span> Rev,
 <span class="ln"> 4</span>        <span class="nv">open_revs</span> <span class="o">=</span> Revs,
 <span class="ln"> 5</span>        <span class="nv">options</span> <span class="o">=</span> Options1,
 <span class="ln"> 6</span>        <span class="nv">atts_since</span> <span class="o">=</span> AttsSince
@@ -260,8 +260,8 @@
 <div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>open_doc<span class="o">(</span>Db, Id, Options<span class="o">)</span> -&gt;
 <span class="ln"> 2</span>    increment_stat<span class="o">(</span>Db, <span class="o">{</span>couchdb, database_reads<span class="o">})</span>,
 <span class="ln"> 3</span>    <span class="k">case</span> open_doc_int<span class="o">(</span>Db, Id, Options<span class="o">)</span> of
-<span class="ln"> 4</span>    <span class="o">{</span>ok, <span class="c1">#doc{deleted=true}=Doc} -&gt;
-</span><span class="ln"> 5</span><span class="c1"></span>        <span class="k">case</span> lists:member<span class="o">(</span>deleted, Options<span class="o">)</span> of
+<span class="ln"> 4</span>    <span class="o">{</span>ok, <span class="c1">#doc{deleted=true}=Doc} -&gt;</span>
+<span class="ln"> 5</span>        <span class="k">case</span> lists:member<span class="o">(</span>deleted, Options<span class="o">)</span> of
 <span class="ln"> 6</span>        <span class="nb">true</span> -&gt;
 <span class="ln"> 7</span>            apply_open_options<span class="o">({</span>ok, Doc<span class="o">}</span>,Options<span class="o">)</span><span class="p">;</span>
 <span class="ln"> 8</span>        <span class="nb">false</span> -&gt;
@@ -284,16 +284,16 @@
 <p><a href="http://masayuki038.github.io/blog/2014/07/27/couchdb-code-reading9/#couchdbdocflushatts2">前回</a>と同様に、<code>couch_db:flush_att/2</code>の<code>when is_binary(Data)</code>というガードがある関数を再度見てみます。</p>
 
 <p>couch_db.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>flush_att<span class="o">(</span>Fd, <span class="c1">#att{data=Data}=Att) when is_binary(Data) -&gt;
-</span><span class="ln">2</span><span class="c1"></span>    with_stream<span class="o">(</span>Fd, Att, fun<span class="o">(</span>OutputStream<span class="o">)</span> -&gt;
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>flush_att<span class="o">(</span>Fd, <span class="c1">#att{data=Data}=Att) when is_binary(Data) -&gt;</span>
+<span class="ln">2</span>    with_stream<span class="o">(</span>Fd, Att, fun<span class="o">(</span>OutputStream<span class="o">)</span> -&gt;
 <span class="ln">3</span>        couch_stream:write<span class="o">(</span>OutputStream, Data<span class="o">)</span>
 <span class="ln">4</span>    end<span class="o">)</span><span class="p">;</span></code></pre></div></p>
 
 <p>この関数の戻り値の<code>#att.data</code>に書き込んだデータのポインタが設定されていることになります。もう一度<code>couch_db:with_stream/3</code>を見てみます。</p>
 
 <p>couch_db.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>with_stream<span class="o">(</span>Fd, <span class="c1">#att{md5=InMd5,type=Type,encoding=Enc}=Att, Fun) -&gt;
-</span><span class="ln"> 2</span><span class="c1"></span>...
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>with_stream<span class="o">(</span>Fd, <span class="c1">#att{md5=InMd5,type=Type,encoding=Enc}=Att, Fun) -&gt;</span>
+<span class="ln"> 2</span>...
 <span class="ln"> 3</span>    <span class="o">{</span>StreamInfo, Len, IdentityLen, Md5, IdentityMd5<span class="o">}</span> <span class="o">=</span>
 <span class="ln"> 4</span>        couch_stream:close<span class="o">(</span>OutputStream<span class="o">)</span>,
 <span class="ln"> 5</span>    check_md5<span class="o">(</span>IdentityMd5, ReqMd5<span class="o">)</span>,
@@ -363,12 +363,12 @@
 <p>最初に<code>couch_file:read_raw_iolist_int/3</code>で約8KB(2ブロック分)を読み込み、<code>NextPos</code>を取得しています。この関数と、この関数の中で呼び出している<code>couch_file:calculate_total_read_len/2</code>を見てみます。</p>
 
 <p>couch_file.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>-spec read_raw_iolist_int<span class="o">(</span><span class="c1">#file{}, Pos::non_neg_integer(), Len::non_neg_integer()) -&gt;
-</span><span class="ln"> 2</span><span class="c1"></span>    <span class="o">{</span>Data::iolist<span class="o">()</span>, CurPos::non_neg_integer<span class="o">()}</span>.
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>-spec read_raw_iolist_int<span class="o">(</span><span class="c1">#file{}, Pos::non_neg_integer(), Len::non_neg_integer()) -&gt;</span>
+<span class="ln"> 2</span>    <span class="o">{</span>Data::iolist<span class="o">()</span>, CurPos::non_neg_integer<span class="o">()}</span>.
 <span class="ln"> 3</span>read_raw_iolist_int<span class="o">(</span>Fd, <span class="o">{</span>Pos, _Size<span class="o">}</span>, Len<span class="o">)</span> -&gt; % <span class="m">0110</span> UPGRADE CODE
 <span class="ln"> 4</span>    read_raw_iolist_int<span class="o">(</span>Fd, Pos, Len<span class="o">)</span><span class="p">;</span>
-<span class="ln"> 5</span>read_raw_iolist_int<span class="o">(</span><span class="c1">#file{fd = Fd}, Pos, Len) -&gt;
-</span><span class="ln"> 6</span><span class="c1"></span>    <span class="nv">BlockOffset</span> <span class="o">=</span> Pos rem ?SIZE_BLOCK,
+<span class="ln"> 5</span>read_raw_iolist_int<span class="o">(</span><span class="c1">#file{fd = Fd}, Pos, Len) -&gt;</span>
+<span class="ln"> 6</span>    <span class="nv">BlockOffset</span> <span class="o">=</span> Pos rem ?SIZE_BLOCK,
 <span class="ln"> 7</span>    <span class="nv">TotalBytes</span> <span class="o">=</span> calculate_total_read_len<span class="o">(</span>BlockOffset, Len<span class="o">)</span>,
 <span class="ln"> 8</span>    <span class="o">{</span>ok, <span class="s">&lt;&lt;RawBin:TotalBytes/binary&gt;&gt;} = file:pread(Fd, Pos, TotalBytes),
 </span><span class="ln"> 9</span><span class="s">    {remove_block_prefixes(BlockOffset, RawBin</span><span class="o">)</span>, Pos + TotalBytes<span class="o">}</span>.
@@ -433,7 +433,7 @@
     <footer class="post-footer">
       
       <p class="post-copyright">
-        This post was published <strong>1778</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+        This post was published <strong>1877</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
       </p>
     </footer>
     

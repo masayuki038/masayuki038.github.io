@@ -46,7 +46,7 @@ pom.xml: 1&amp;lt;dependencies&amp;gt; 2 &amp;lt;!" />
 
 
 
-<meta name="generator" content="Hugo 0.32" />
+<meta name="generator" content="Hugo 0.55.6" />
 
 
 <link rel="canonical" href="/blog/2017/06/17/file-serdes-with-apache-arrow/" />
@@ -263,7 +263,7 @@ pom.xml: 1&amp;lt;dependencies&amp;gt; 2 &amp;lt;!" />
 
 <p>The sample code that reading NullableIntValue from a file is follow:</p>
 
-<p><div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln"> 1</span><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">read</span><span class="o">(</span><span class="n">String</span> <span class="n">path</span><span class="o">,</span> <span class="n">BufferAllocator</span> <span class="n">allocator</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln"> 1</span><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">read</span><span class="o">(</span><span class="n">String</span> <span class="n">path</span><span class="o">,</span> <span class="n">BufferAllocator</span> <span class="n">allocator</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
 <span class="ln"> 2</span>    <span class="kt">byte</span><span class="o">[]</span> <span class="n">byteArray</span> <span class="o">=</span> <span class="n">Files</span><span class="o">.</span><span class="na">readAllBytes</span><span class="o">(</span><span class="n">FileSystems</span><span class="o">.</span><span class="na">getDefault</span><span class="o">().</span><span class="na">getPath</span><span class="o">(</span><span class="n">path</span><span class="o">));</span>
 <span class="ln"> 3</span>    <span class="n">SeekableReadChannel</span> <span class="n">channel</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SeekableReadChannel</span><span class="o">(</span><span class="k">new</span> <span class="n">ByteArrayReadableSeekableByteChannel</span><span class="o">(</span><span class="n">byteArray</span><span class="o">));</span>
 <span class="ln"> 4</span>    <span class="k">try</span> <span class="o">(</span><span class="n">ArrowFileReader</span> <span class="n">reader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrowFileReader</span><span class="o">(</span><span class="n">channel</span><span class="o">,</span> <span class="n">allocator</span><span class="o">))</span> <span class="o">{</span>
@@ -280,16 +280,16 @@ pom.xml: 1&amp;lt;dependencies&amp;gt; 2 &amp;lt;!" />
 <span class="ln">15</span>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;buf[3]: &#34;</span> <span class="o">+</span> <span class="n">fieldReader</span><span class="o">.</span><span class="na">readInteger</span><span class="o">());</span>
 <span class="ln">16</span>        <span class="o">}</span>
 <span class="ln">17</span>    <span class="o">}</span>
-<span class="ln">18</span><span class="o">}</span></code></pre></div></p>
+<span class="ln">18</span><span class="o">}</span></code></pre></div>
 
 <h3 id="caller">Caller</h3>
 
 <p>The sample code that calling these write/read methods are follow:</p>
 
-<p><div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln">1</span><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln">1</span><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
 <span class="ln">2</span>    <span class="n">write</span><span class="o">(</span><span class="s">&#34;test&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="n">RootAllocator</span><span class="o">(</span><span class="n">Long</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">));</span>
 <span class="ln">3</span>    <span class="n">read</span><span class="o">(</span><span class="s">&#34;test&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="n">RootAllocator</span><span class="o">(</span><span class="n">Long</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">));</span>
-<span class="ln">4</span><span class="o">}</span></code></pre></div></p>
+<span class="ln">4</span><span class="o">}</span></code></pre></div>
 
 <p>And run this&hellip;</p>
 
@@ -305,7 +305,7 @@ pom.xml: 1&amp;lt;dependencies&amp;gt; 2 &amp;lt;!" />
     <footer class="post-footer">
       
       <p class="post-copyright">
-        This post was published <strong>728</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+        This post was published <strong>827</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
       </p>
     </footer>
     

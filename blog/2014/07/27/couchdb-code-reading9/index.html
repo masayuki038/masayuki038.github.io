@@ -37,7 +37,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.32" />
+<meta name="generator" content="Hugo 0.55.6" />
 
 
 <link rel="canonical" href="/blog/2014/07/27/couchdb-code-reading9/" />
@@ -212,8 +212,8 @@
 <p>couch_db.erl:
 <div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>    <span class="k">if</span> <span class="o">(</span>AllOrNothing<span class="o">)</span> and <span class="o">(</span>PreCommitFailures /<span class="o">=</span> <span class="o">[])</span> -&gt;
 <span class="ln"> 2</span>        <span class="o">{</span>aborted,
-<span class="ln"> 3</span>         lists:foldl<span class="o">(</span>fun<span class="o">({</span><span class="c1">#doc{id=Id,revs=Revs}, Ref},Acc) -&gt;
-</span><span class="ln"> 4</span><span class="c1"></span>                         <span class="k">case</span> lists:keyfind<span class="o">(</span>Ref,1,PreCommitFailures<span class="o">)</span> of
+<span class="ln"> 3</span>         lists:foldl<span class="o">(</span>fun<span class="o">({</span><span class="c1">#doc{id=Id,revs=Revs}, Ref},Acc) -&gt;</span>
+<span class="ln"> 4</span>                         <span class="k">case</span> lists:keyfind<span class="o">(</span>Ref,1,PreCommitFailures<span class="o">)</span> of
 <span class="ln"> 5</span>                         <span class="o">{</span>Ref, Error<span class="o">}</span> -&gt;
 <span class="ln"> 6</span>                             <span class="k">case</span> Revs of
 <span class="ln"> 7</span>                             <span class="o">{</span>Pos, <span class="o">[</span>RevId<span class="p">|</span>_<span class="o">]}</span> -&gt;
@@ -242,8 +242,8 @@
 <span class="ln">11</span>
 <span class="ln">12</span>        <span class="nv">ResultsDict</span> <span class="o">=</span> dict:from_list<span class="o">(</span>IdRevs ++ CommitResults ++ PreCommitFailures<span class="o">)</span>,
 <span class="ln">13</span>        <span class="o">{</span>ok, lists:map<span class="o">(</span>
-<span class="ln">14</span>            fun<span class="o">({</span><span class="c1">#doc{}, Ref}) -&gt;
-</span><span class="ln">15</span><span class="c1"></span>                <span class="o">{</span>ok, Result<span class="o">}</span> <span class="o">=</span> dict:find<span class="o">(</span>Ref, ResultsDict<span class="o">)</span>,
+<span class="ln">14</span>            fun<span class="o">({</span><span class="c1">#doc{}, Ref}) -&gt;</span>
+<span class="ln">15</span>                <span class="o">{</span>ok, Result<span class="o">}</span> <span class="o">=</span> dict:find<span class="o">(</span>Ref, ResultsDict<span class="o">)</span>,
 <span class="ln">16</span>                Result
 <span class="ln">17</span>            end, Docs2<span class="o">)}</span>
 <span class="ln">18</span>    end.</code></pre></div></p>
@@ -254,13 +254,13 @@
 その次に、リスト内包表記で<code>DocBucket2</code>をドキュメントに展開します。展開されたドキュメントに対して、<code>check_dup_atts/1</code>を呼び出します。</p>
 
 <p>couch_db.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>check_dup_atts<span class="o">(</span><span class="c1">#doc{atts=Atts}=Doc) -&gt;
-</span><span class="ln"> 2</span><span class="c1"></span>    <span class="nv">Atts2</span> <span class="o">=</span> lists:sort<span class="o">(</span>fun<span class="o">(</span><span class="c1">#att{name=N1}, #att{name=N2}) -&gt; N1 &lt; N2 end, Atts),
-</span><span class="ln"> 3</span><span class="c1"></span>    check_dup_atts2<span class="o">(</span>Atts2<span class="o">)</span>,
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>check_dup_atts<span class="o">(</span><span class="c1">#doc{atts=Atts}=Doc) -&gt;</span>
+<span class="ln"> 2</span>    <span class="nv">Atts2</span> <span class="o">=</span> lists:sort<span class="o">(</span>fun<span class="o">(</span><span class="c1">#att{name=N1}, #att{name=N2}) -&gt; N1 &lt; N2 end, Atts),</span>
+<span class="ln"> 3</span>    check_dup_atts2<span class="o">(</span>Atts2<span class="o">)</span>,
 <span class="ln"> 4</span>    Doc.
 <span class="ln"> 5</span>
-<span class="ln"> 6</span>check_dup_atts2<span class="o">([</span><span class="c1">#att{name=N}, #att{name=N} | _]) -&gt;
-</span><span class="ln"> 7</span><span class="c1"></span>    throw<span class="o">({</span>bad_request, &lt;&lt;<span class="s2">&#34;Duplicate attachments&#34;</span>&gt;&gt;<span class="o">})</span><span class="p">;</span>
+<span class="ln"> 6</span>check_dup_atts2<span class="o">([</span><span class="c1">#att{name=N}, #att{name=N} | _]) -&gt;</span>
+<span class="ln"> 7</span>    throw<span class="o">({</span>bad_request, &lt;&lt;<span class="s2">&#34;Duplicate attachments&#34;</span>&gt;&gt;<span class="o">})</span><span class="p">;</span>
 <span class="ln"> 8</span>check_dup_atts2<span class="o">([</span>_ <span class="p">|</span> Rest<span class="o">])</span> -&gt;
 <span class="ln"> 9</span>    check_dup_atts2<span class="o">(</span>Rest<span class="o">)</span><span class="p">;</span>
 <span class="ln">10</span>check_dup_atts2<span class="o">(</span>_<span class="o">)</span> -&gt;
@@ -271,9 +271,9 @@
 <p>その次に<code>set_new_att_revpos/1</code>を呼び出します。</p>
 
 <p>couch_db.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>set_new_att_revpos<span class="o">(</span><span class="c1">#doc{revs={RevPos,_Revs},atts=Atts}=Doc) -&gt;
-</span><span class="ln">2</span><span class="c1"></span>    Doc#doc<span class="o">{</span><span class="nv">atts</span><span class="o">=</span> lists:map<span class="o">(</span>fun<span class="o">(</span><span class="c1">#att{data={_Fd,_Sp}}=Att) -&gt;
-</span><span class="ln">3</span><span class="c1"></span>            % already commited to disk, <span class="k">do</span> not <span class="nb">set</span> new rev
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>set_new_att_revpos<span class="o">(</span><span class="c1">#doc{revs={RevPos,_Revs},atts=Atts}=Doc) -&gt;</span>
+<span class="ln">2</span>    Doc#doc<span class="o">{</span><span class="nv">atts</span><span class="o">=</span> lists:map<span class="o">(</span>fun<span class="o">(</span><span class="c1">#att{data={_Fd,_Sp}}=Att) -&gt;</span>
+<span class="ln">3</span>            % already commited to disk, <span class="k">do</span> not <span class="nb">set</span> new rev
 <span class="ln">4</span>            Att<span class="p">;</span>
 <span class="ln">5</span>        <span class="o">(</span>Att<span class="o">)</span> -&gt;
 <span class="ln">6</span>            Att#att<span class="o">{</span><span class="nv">revpos</span><span class="o">=</span>RevPos+1<span class="o">}</span>
@@ -286,8 +286,8 @@
 <p>その次に<code>doc_flush_atts/2</code>を呼び出すのですが、第二引数の<code>Db#db.updater_fd</code>が何だか分からないのでチェックしてみます。この値を設定しているのは、<code>couch_db_updater:init_db/6</code>の最後の方。</p>
 
 <p>couch_db_updater.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span><span class="c1">#db{
-</span><span class="ln">2</span><span class="c1"></span>    <span class="nv">update_pid</span><span class="o">=</span>self<span class="o">()</span>,
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span><span class="c1">#db{</span>
+<span class="ln">2</span>    <span class="nv">update_pid</span><span class="o">=</span>self<span class="o">()</span>,
 <span class="ln">3</span>    <span class="nv">fd</span> <span class="o">=</span> ReaderFd,
 <span class="ln">4</span>    <span class="nv">updater_fd</span> <span class="o">=</span> Fd,
 <span class="ln">5</span>    <span class="nv">fd_ref_counter</span> <span class="o">=</span> RefCntr,
@@ -327,11 +327,11 @@
 <p>データベースファイルは、<code>DbName</code>.couchというファイル名になっていました。次に<code>maybe_close_lru_db/1</code>を見てみます。</p>
 
 <p>couch_server.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>maybe_close_lru_db<span class="o">(</span><span class="c1">#server{dbs_open=NumOpen, max_dbs_open=MaxOpen}=Server)
-</span><span class="ln"> 2</span><span class="c1"></span>        when NumOpen &lt; MaxOpen -&gt;
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>maybe_close_lru_db<span class="o">(</span><span class="c1">#server{dbs_open=NumOpen, max_dbs_open=MaxOpen}=Server)</span>
+<span class="ln"> 2</span>        when NumOpen &lt; MaxOpen -&gt;
 <span class="ln"> 3</span>    <span class="o">{</span>ok, Server<span class="o">}</span><span class="p">;</span>
-<span class="ln"> 4</span>maybe_close_lru_db<span class="o">(</span><span class="c1">#server{dbs_open=NumOpen}=Server) -&gt;
-</span><span class="ln"> 5</span><span class="c1"></span>    % must free up the lru db.
+<span class="ln"> 4</span>maybe_close_lru_db<span class="o">(</span><span class="c1">#server{dbs_open=NumOpen}=Server) -&gt;</span>
+<span class="ln"> 5</span>    % must free up the lru db.
 <span class="ln"> 6</span>    <span class="k">case</span> try_close_lru<span class="o">(</span>now<span class="o">())</span> of
 <span class="ln"> 7</span>    ok -&gt;
 <span class="ln"> 8</span>        <span class="o">{</span>ok, Server#server<span class="o">{</span><span class="nv">dbs_open</span><span class="o">=</span>NumOpen - <span class="m">1</span><span class="o">}}</span><span class="p">;</span>
@@ -410,8 +410,8 @@
 <p>couch_db.erl:
 <div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>init<span class="o">({</span>DbName, Filepath, Fd, Options<span class="o">})</span> -&gt;
 <span class="ln"> 2</span>    <span class="o">{</span>ok, UpdaterPid<span class="o">}</span> <span class="o">=</span> gen_server:start_link<span class="o">(</span>couch_db_updater, <span class="o">{</span>self<span class="o">()</span>, DbName, Filepath, Fd, Options<span class="o">}</span>, <span class="o">[])</span>,
-<span class="ln"> 3</span>    <span class="o">{</span>ok, <span class="c1">#db{fd_ref_counter=RefCntr}=Db} = gen_server:call(UpdaterPid, get_db),
-</span><span class="ln"> 4</span><span class="c1"></span>    couch_ref_counter:add<span class="o">(</span>RefCntr<span class="o">)</span>,
+<span class="ln"> 3</span>    <span class="o">{</span>ok, <span class="c1">#db{fd_ref_counter=RefCntr}=Db} = gen_server:call(UpdaterPid, get_db),</span>
+<span class="ln"> 4</span>    couch_ref_counter:add<span class="o">(</span>RefCntr<span class="o">)</span>,
 <span class="ln"> 5</span>    <span class="k">case</span> lists:member<span class="o">(</span>sys_db, Options<span class="o">)</span> of
 <span class="ln"> 6</span>    <span class="nb">true</span> -&gt;
 <span class="ln"> 7</span>        ok<span class="p">;</span>
@@ -436,24 +436,24 @@
 <p>そのまま<code>couch_db:flush_att/2</code>を見ていきます。</p>
 
 <p>couch_db.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>flush_att<span class="o">(</span>Fd, <span class="c1">#att{data={Fd0, _}}=Att) when Fd0 == Fd -&gt;
-</span><span class="ln"> 2</span><span class="c1"></span>    % already written to our file, nothing to write
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>flush_att<span class="o">(</span>Fd, <span class="c1">#att{data={Fd0, _}}=Att) when Fd0 == Fd -&gt;</span>
+<span class="ln"> 2</span>    % already written to our file, nothing to write
 <span class="ln"> 3</span>    Att<span class="p">;</span>
 <span class="ln"> 4</span>
-<span class="ln"> 5</span>flush_att<span class="o">(</span>Fd, <span class="c1">#att{data={OtherFd,StreamPointer}, md5=InMd5,
-</span><span class="ln"> 6</span><span class="c1"></span>    <span class="nv">disk_len</span><span class="o">=</span>InDiskLen<span class="o">}</span> <span class="o">=</span> Att<span class="o">)</span> -&gt;
+<span class="ln"> 5</span>flush_att<span class="o">(</span>Fd, <span class="c1">#att{data={OtherFd,StreamPointer}, md5=InMd5,</span>
+<span class="ln"> 6</span>    <span class="nv">disk_len</span><span class="o">=</span>InDiskLen<span class="o">}</span> <span class="o">=</span> Att<span class="o">)</span> -&gt;
 <span class="ln"> 7</span>    <span class="o">{</span>NewStreamData, Len, _IdentityLen, Md5, IdentityMd5<span class="o">}</span> <span class="o">=</span>
 <span class="ln"> 8</span>            couch_stream:copy_to_new_stream<span class="o">(</span>OtherFd, StreamPointer, Fd<span class="o">)</span>,
 <span class="ln"> 9</span>    check_md5<span class="o">(</span>IdentityMd5, InMd5<span class="o">)</span>,
 <span class="ln">10</span>    Att#att<span class="o">{</span><span class="nv">data</span><span class="o">={</span>Fd, NewStreamData<span class="o">}</span>, <span class="nv">md5</span><span class="o">=</span>Md5, <span class="nv">att_len</span><span class="o">=</span>Len, <span class="nv">disk_len</span><span class="o">=</span>InDiskLen<span class="o">}</span><span class="p">;</span>
 <span class="ln">11</span>
-<span class="ln">12</span>flush_att<span class="o">(</span>Fd, <span class="c1">#att{data=Data}=Att) when is_binary(Data) -&gt;
-</span><span class="ln">13</span><span class="c1"></span>    with_stream<span class="o">(</span>Fd, Att, fun<span class="o">(</span>OutputStream<span class="o">)</span> -&gt;
+<span class="ln">12</span>flush_att<span class="o">(</span>Fd, <span class="c1">#att{data=Data}=Att) when is_binary(Data) -&gt;</span>
+<span class="ln">13</span>    with_stream<span class="o">(</span>Fd, Att, fun<span class="o">(</span>OutputStream<span class="o">)</span> -&gt;
 <span class="ln">14</span>        couch_stream:write<span class="o">(</span>OutputStream, Data<span class="o">)</span>
 <span class="ln">15</span>    end<span class="o">)</span><span class="p">;</span>
 <span class="ln">16</span>
-<span class="ln">17</span>flush_att<span class="o">(</span>Fd, <span class="c1">#att{data=Fun,att_len=undefined}=Att) when is_function(Fun) -&gt;
-</span><span class="ln">18</span><span class="c1"></span>    <span class="nv">MaxChunkSize</span> <span class="o">=</span> list_to_integer<span class="o">(</span>
+<span class="ln">17</span>flush_att<span class="o">(</span>Fd, <span class="c1">#att{data=Fun,att_len=undefined}=Att) when is_function(Fun) -&gt;</span>
+<span class="ln">18</span>    <span class="nv">MaxChunkSize</span> <span class="o">=</span> list_to_integer<span class="o">(</span>
 <span class="ln">19</span>        couch_config:get<span class="o">(</span><span class="s2">&#34;couchdb&#34;</span>, <span class="s2">&#34;attachment_stream_buffer_size&#34;</span>, <span class="s2">&#34;4096&#34;</span><span class="o">))</span>,
 <span class="ln">20</span>    with_stream<span class="o">(</span>Fd, Att, fun<span class="o">(</span>OutputStream<span class="o">)</span> -&gt;
 <span class="ln">21</span>        % Fun<span class="o">(</span>MaxChunkSize, WriterFun<span class="o">)</span> must call WriterFun
@@ -476,8 +476,8 @@
 <span class="ln">38</span>            end, ok<span class="o">)</span>
 <span class="ln">39</span>    end<span class="o">)</span><span class="p">;</span>
 <span class="ln">40</span>
-<span class="ln">41</span>flush_att<span class="o">(</span>Fd, <span class="c1">#att{data=Fun,att_len=AttLen}=Att) when is_function(Fun) -&gt;
-</span><span class="ln">42</span><span class="c1"></span>    with_stream<span class="o">(</span>Fd, Att, fun<span class="o">(</span>OutputStream<span class="o">)</span> -&gt;
+<span class="ln">41</span>flush_att<span class="o">(</span>Fd, <span class="c1">#att{data=Fun,att_len=AttLen}=Att) when is_function(Fun) -&gt;</span>
+<span class="ln">42</span>    with_stream<span class="o">(</span>Fd, Att, fun<span class="o">(</span>OutputStream<span class="o">)</span> -&gt;
 <span class="ln">43</span>        write_streamed_attachment<span class="o">(</span>OutputStream, Fun, AttLen<span class="o">)</span>
 <span class="ln">44</span>    end<span class="o">)</span>.</code></pre></div></p>
 
@@ -501,8 +501,8 @@
 <p>3つ目の<code>#att.data</code>がbinaryの関数がシンプルなので、この関数の内容を追ってアタッチメントがファイルへの書き込まれるシーケンスを見ていきます。まずは<code>couch_stream:with_stream/3</code>から。</p>
 
 <p>couch_stream.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>with_stream<span class="o">(</span>Fd, <span class="c1">#att{md5=InMd5,type=Type,encoding=Enc}=Att, Fun) -&gt;
-</span><span class="ln"> 2</span><span class="c1"></span>    <span class="nv">BufferSize</span> <span class="o">=</span> list_to_integer<span class="o">(</span>
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>with_stream<span class="o">(</span>Fd, <span class="c1">#att{md5=InMd5,type=Type,encoding=Enc}=Att, Fun) -&gt;</span>
+<span class="ln"> 2</span>    <span class="nv">BufferSize</span> <span class="o">=</span> list_to_integer<span class="o">(</span>
 <span class="ln"> 3</span>        couch_config:get<span class="o">(</span><span class="s2">&#34;couchdb&#34;</span>, <span class="s2">&#34;attachment_stream_buffer_size&#34;</span>, <span class="s2">&#34;4096&#34;</span><span class="o">))</span>,
 <span class="ln"> 4</span>    <span class="o">{</span>ok, OutputStream<span class="o">}</span> <span class="o">=</span> <span class="k">case</span> <span class="o">(</span><span class="nv">Enc</span> <span class="o">=</span>:<span class="o">=</span> identity<span class="o">)</span> andalso
 <span class="ln"> 5</span>        compressible_att_type<span class="o">(</span>Type<span class="o">)</span> of
@@ -545,8 +545,8 @@
 <span class="ln"> 6</span>    gzip -&gt;
 <span class="ln"> 7</span>        gzip_init<span class="o">(</span>Options<span class="o">)</span>
 <span class="ln"> 8</span>    end,
-<span class="ln"> 9</span>    <span class="o">{</span>ok, <span class="c1">#stream{
-</span><span class="ln">10</span><span class="c1"></span>            <span class="nv">fd</span><span class="o">=</span>Fd,
+<span class="ln"> 9</span>    <span class="o">{</span>ok, <span class="c1">#stream{</span>
+<span class="ln">10</span>            <span class="nv">fd</span><span class="o">=</span>Fd,
 <span class="ln">11</span>            <span class="nv">md5</span><span class="o">=</span>couch_util:md5_init<span class="o">()</span>,
 <span class="ln">12</span>            <span class="nv">identity_md5</span><span class="o">=</span>couch_util:md5_init<span class="o">()</span>,
 <span class="ln">13</span>            <span class="nv">encoding_fun</span><span class="o">=</span>EncodingFun,
@@ -569,8 +569,8 @@
 <p>couch_stream.erl:
 <div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>handle_call<span class="o">({</span>write, Bin<span class="o">}</span>, _From, Stream<span class="o">)</span> -&gt;
 <span class="ln"> 2</span>    <span class="nv">BinSize</span> <span class="o">=</span> iolist_size<span class="o">(</span>Bin<span class="o">)</span>,
-<span class="ln"> 3</span>    <span class="c1">#stream{
-</span><span class="ln"> 4</span><span class="c1"></span>        <span class="nv">fd</span> <span class="o">=</span> Fd,
+<span class="ln"> 3</span>    <span class="c1">#stream{</span>
+<span class="ln"> 4</span>        <span class="nv">fd</span> <span class="o">=</span> Fd,
 <span class="ln"> 5</span>        <span class="nv">written_len</span> <span class="o">=</span> WrittenLen,
 <span class="ln"> 6</span>        <span class="nv">written_pointers</span> <span class="o">=</span> Written,
 <span class="ln"> 7</span>        <span class="nv">buffer_len</span> <span class="o">=</span> BufferLen,
@@ -627,8 +627,8 @@
 <p>先頭が<code>0</code>とデータのサイズを記したバイナリを構築し、データと共にリストに格納されて返されます。<code>couch_file:handle_call/3</code>を見ていきます。</p>
 
 <p>couch_file.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>handle_call<span class="o">({</span>append_bin, Bin<span class="o">}</span>, _From, <span class="c1">#file{fd = Fd, eof = Pos} = File) -&gt;
-</span><span class="ln">2</span><span class="c1"></span>    <span class="nv">Blocks</span> <span class="o">=</span> make_blocks<span class="o">(</span>Pos rem ?SIZE_BLOCK, Bin<span class="o">)</span>,
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>handle_call<span class="o">({</span>append_bin, Bin<span class="o">}</span>, _From, <span class="c1">#file{fd = Fd, eof = Pos} = File) -&gt;</span>
+<span class="ln">2</span>    <span class="nv">Blocks</span> <span class="o">=</span> make_blocks<span class="o">(</span>Pos rem ?SIZE_BLOCK, Bin<span class="o">)</span>,
 <span class="ln">3</span>    <span class="nv">Size</span> <span class="o">=</span> iolist_size<span class="o">(</span>Blocks<span class="o">)</span>,
 <span class="ln">4</span>    <span class="k">case</span> file:write<span class="o">(</span>Fd, Blocks<span class="o">)</span> of
 <span class="ln">5</span>    ok -&gt;
@@ -709,8 +709,8 @@
 
 <p>couch_stream.erl:
 <div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>handle_call<span class="o">(</span>close, _From, Stream<span class="o">)</span> -&gt;
-<span class="ln"> 2</span>    <span class="c1">#stream{
-</span><span class="ln"> 3</span><span class="c1"></span>        <span class="nv">fd</span> <span class="o">=</span> Fd,
+<span class="ln"> 2</span>    <span class="c1">#stream{</span>
+<span class="ln"> 3</span>        <span class="nv">fd</span> <span class="o">=</span> Fd,
 <span class="ln"> 4</span>        <span class="nv">written_len</span> <span class="o">=</span> WrittenLen,
 <span class="ln"> 5</span>        <span class="nv">written_pointers</span> <span class="o">=</span> Written,
 <span class="ln"> 6</span>        <span class="nv">buffer_list</span> <span class="o">=</span> Buffer,
@@ -745,7 +745,7 @@
     <footer class="post-footer">
       
       <p class="post-copyright">
-        This post was published <strong>1785</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+        This post was published <strong>1884</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
       </p>
     </footer>
     

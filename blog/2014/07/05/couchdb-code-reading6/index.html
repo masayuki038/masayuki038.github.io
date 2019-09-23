@@ -37,7 +37,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.32" />
+<meta name="generator" content="Hugo 0.55.6" />
 
 
 <link rel="canonical" href="/blog/2014/07/05/couchdb-code-reading6/" />
@@ -210,8 +210,8 @@
 <p>前回までドキュメントの取得の流れを見てきたので、次に更新まわりを見ていこうと思います。</p>
 
 <p>couch_httpd_db.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>db_req<span class="o">(</span><span class="c1">#httpd{method=&#39;POST&#39;,path_parts=[_DbName]}=Req, Db) -&gt;
-</span><span class="ln"> 2</span><span class="c1"></span>    couch_httpd:validate_ctype<span class="o">(</span>Req, <span class="s2">&#34;application/json&#34;</span><span class="o">)</span>,
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>db_req<span class="o">(</span><span class="c1">#httpd{method=&#39;POST&#39;,path_parts=[_DbName]}=Req, Db) -&gt;</span>
+<span class="ln"> 2</span>    couch_httpd:validate_ctype<span class="o">(</span>Req, <span class="s2">&#34;application/json&#34;</span><span class="o">)</span>,
 <span class="ln"> 3</span>    <span class="nv">Doc</span> <span class="o">=</span> couch_doc:from_json_obj<span class="o">(</span>couch_httpd:json_body<span class="o">(</span>Req<span class="o">))</span>,
 <span class="ln"> 4</span>    validate_attachment_names<span class="o">(</span>Doc<span class="o">)</span>,
 <span class="ln"> 5</span>    <span class="nv">Doc2</span> <span class="o">=</span> <span class="k">case</span> Doc#doc.id of
@@ -241,12 +241,12 @@
 <p>といったように、JSONをErlangのタプルとリストに変換する関数です。次に<code>couch_httpd:body/1</code>を見てみます。</p>
 
 <p>couch_httpd.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>body<span class="o">(</span><span class="c1">#httpd{mochi_req=MochiReq, req_body=undefined}) -&gt;
-</span><span class="ln">2</span><span class="c1"></span>    <span class="nv">MaxSize</span> <span class="o">=</span> list_to_integer<span class="o">(</span>
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>body<span class="o">(</span><span class="c1">#httpd{mochi_req=MochiReq, req_body=undefined}) -&gt;</span>
+<span class="ln">2</span>    <span class="nv">MaxSize</span> <span class="o">=</span> list_to_integer<span class="o">(</span>
 <span class="ln">3</span>        couch_config:get<span class="o">(</span><span class="s2">&#34;couchdb&#34;</span>, <span class="s2">&#34;max_document_size&#34;</span>, <span class="s2">&#34;4294967296&#34;</span><span class="o">))</span>,
 <span class="ln">4</span>    MochiReq:recv_body<span class="o">(</span>MaxSize<span class="o">)</span><span class="p">;</span>
-<span class="ln">5</span>body<span class="o">(</span><span class="c1">#httpd{req_body=ReqBody}) -&gt;
-</span><span class="ln">6</span><span class="c1"></span>    ReqBody.</code></pre></div></p>
+<span class="ln">5</span>body<span class="o">(</span><span class="c1">#httpd{req_body=ReqBody}) -&gt;</span>
+<span class="ln">6</span>    ReqBody.</code></pre></div></p>
 
 <p>Bodyのサイズの上限は4GBとなってました。変数の名前から、HTTPの部分は<a href="https://github.com/mochi/MochiWeb">mochiweb</a>が使われているようです。</p>
 
@@ -254,24 +254,24 @@
 
 <p>couch_doc.erl:
 <div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>from_json_obj<span class="o">({</span>Props<span class="o">})</span> -&gt;
-<span class="ln">2</span>    transfer_fields<span class="o">(</span>Props, <span class="c1">#doc{body=[]});
-</span><span class="ln">3</span><span class="c1"></span>
+<span class="ln">2</span>    transfer_fields<span class="o">(</span>Props, <span class="c1">#doc{body=[]});</span>
+<span class="ln">3</span>
 <span class="ln">4</span>from_json_obj<span class="o">(</span>_Other<span class="o">)</span> -&gt;
 <span class="ln">5</span>    throw<span class="o">({</span>bad_request, <span class="s2">&#34;Document must be a JSON object&#34;</span><span class="o">})</span>.</code></pre></div></p>
 
 <p>指定されたJSONオブジェクトがタプルでなければエラーとしています。そのまま<code>transfer_fields/2</code>を見てみます。</p>
 
 <p>couch_doc.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>transfer_fields<span class="o">([]</span>, <span class="c1">#doc{body=Fields}=Doc) -&gt;
-</span><span class="ln"> 2</span><span class="c1"></span>    % convert fields back to json object
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>transfer_fields<span class="o">([]</span>, <span class="c1">#doc{body=Fields}=Doc) -&gt;</span>
+<span class="ln"> 2</span>    % convert fields back to json object
 <span class="ln"> 3</span>    Doc#doc<span class="o">{</span><span class="nv">body</span><span class="o">={</span>lists:reverse<span class="o">(</span>Fields<span class="o">)}}</span><span class="p">;</span>
 <span class="ln"> 4</span>
 <span class="ln"> 5</span>transfer_fields<span class="o">([{</span>&lt;&lt;<span class="s2">&#34;_id&#34;</span>&gt;&gt;, Id<span class="o">}</span> <span class="p">|</span> Rest<span class="o">]</span>, Doc<span class="o">)</span> -&gt;
 <span class="ln"> 6</span>    validate_docid<span class="o">(</span>Id<span class="o">)</span>,
 <span class="ln"> 7</span>    transfer_fields<span class="o">(</span>Rest, Doc#doc<span class="o">{</span><span class="nv">id</span><span class="o">=</span>Id<span class="o">})</span><span class="p">;</span>
 <span class="ln"> 8</span>
-<span class="ln"> 9</span>transfer_fields<span class="o">([{</span>&lt;&lt;<span class="s2">&#34;_rev&#34;</span>&gt;&gt;, Rev<span class="o">}</span> <span class="p">|</span> Rest<span class="o">]</span>, <span class="c1">#doc{revs={0, []}}=Doc) -&gt;
-</span><span class="ln">10</span><span class="c1"></span>    <span class="o">{</span>Pos, RevId<span class="o">}</span> <span class="o">=</span> parse_rev<span class="o">(</span>Rev<span class="o">)</span>,
+<span class="ln"> 9</span>transfer_fields<span class="o">([{</span>&lt;&lt;<span class="s2">&#34;_rev&#34;</span>&gt;&gt;, Rev<span class="o">}</span> <span class="p">|</span> Rest<span class="o">]</span>, <span class="c1">#doc{revs={0, []}}=Doc) -&gt;</span>
+<span class="ln">10</span>    <span class="o">{</span>Pos, RevId<span class="o">}</span> <span class="o">=</span> parse_rev<span class="o">(</span>Rev<span class="o">)</span>,
 <span class="ln">11</span>    transfer_fields<span class="o">(</span>Rest,
 <span class="ln">12</span>            Doc#doc<span class="o">{</span><span class="nv">revs</span><span class="o">={</span>Pos, <span class="o">[</span>RevId<span class="o">]}})</span><span class="p">;</span>
 <span class="ln">13</span>...</code></pre></div></p>
@@ -283,8 +283,8 @@
 <p><code>#doc.id</code>が設定されていなければUUIDを生成して#doc.idに設定してrevを初期化し、<code>couch_httpd_db:update_doc/4</code>を呼び出します。</p>
 
 <p>couch_httpd_db.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>update_doc<span class="o">(</span>Req, Db, DocId, <span class="c1">#doc{deleted=false}=Doc) -&gt;
-</span><span class="ln">2</span><span class="c1"></span>    <span class="nv">Loc</span> <span class="o">=</span> absolute_uri<span class="o">(</span>Req, <span class="s2">&#34;/&#34;</span> ++ ?b2l<span class="o">(</span>Db#db.name<span class="o">)</span> ++ <span class="s2">&#34;/&#34;</span> ++ ?b2l<span class="o">(</span>DocId<span class="o">))</span>,
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>update_doc<span class="o">(</span>Req, Db, DocId, <span class="c1">#doc{deleted=false}=Doc) -&gt;</span>
+<span class="ln">2</span>    <span class="nv">Loc</span> <span class="o">=</span> absolute_uri<span class="o">(</span>Req, <span class="s2">&#34;/&#34;</span> ++ ?b2l<span class="o">(</span>Db#db.name<span class="o">)</span> ++ <span class="s2">&#34;/&#34;</span> ++ ?b2l<span class="o">(</span>DocId<span class="o">))</span>,
 <span class="ln">3</span>    update_doc<span class="o">(</span>Req, Db, DocId, Doc, <span class="o">[{</span><span class="s2">&#34;Location&#34;</span>, Loc<span class="o">}])</span><span class="p">;</span>
 <span class="ln">4</span>update_doc<span class="o">(</span>Req, Db, DocId, Doc<span class="o">)</span> -&gt;
 <span class="ln">5</span>    update_doc<span class="o">(</span>Req, Db, DocId, Doc, <span class="o">[])</span>.</code></pre></div></p>
@@ -293,8 +293,8 @@
 
 <p>couch_httpd_db.erl:
 <div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>update_doc<span class="o">(</span>Req, Db, DocId, Doc, Headers<span class="o">)</span> -&gt;
-<span class="ln">2</span>    <span class="c1">#doc_query_args{
-</span><span class="ln">3</span><span class="c1"></span>        <span class="nv">update_type</span> <span class="o">=</span> UpdateType
+<span class="ln">2</span>    <span class="c1">#doc_query_args{</span>
+<span class="ln">3</span>        <span class="nv">update_type</span> <span class="o">=</span> UpdateType
 <span class="ln">4</span>    <span class="o">}</span> <span class="o">=</span> parse_doc_query<span class="o">(</span>Req<span class="o">)</span>,
 <span class="ln">5</span>    update_doc<span class="o">(</span>Req, Db, DocId, Doc, Headers, UpdateType<span class="o">)</span>.</code></pre></div></p>
 
@@ -348,13 +348,13 @@
 <span class="ln">45</span>        _Else -&gt; % unknown key value pair, ignore.
 <span class="ln">46</span>            Args
 <span class="ln">47</span>        end
-<span class="ln">48</span>    end, #doc_query_args<span class="o">{}</span>, couch_httpd:qs<span class="o">(</span>Req<span class="o">))</span>.</code></pre></div></p>
+<span class="ln">48</span>    end, <span class="c1">#doc_query_args{}, couch_httpd:qs(Req)).</span></code></pre></div></p>
 
 <p>クエリパラメータからオプションに変換しているようですが、この関数内では<code>update_type</code>が出てこないので<code>_Else</code>に落ち、このパラメータは<code>#doc_query_args.options</code>には設定されないようです。ちょっと変な感じもするけど、あってるのかな…。<code>update_type</code>が取得できなかったと想定して、<code>update_doc/6</code>を見ていきます。</p>
 
 <p>couch_httpd_db.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>update_doc<span class="o">(</span>Req, Db, DocId, <span class="c1">#doc{deleted=Deleted}=Doc, Headers, UpdateType) -&gt;
-</span><span class="ln"> 2</span><span class="c1"></span>    <span class="k">case</span> couch_httpd:header_value<span class="o">(</span>Req, <span class="s2">&#34;X-Couch-Full-Commit&#34;</span><span class="o">)</span> of
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>update_doc<span class="o">(</span>Req, Db, DocId, <span class="c1">#doc{deleted=Deleted}=Doc, Headers, UpdateType) -&gt;</span>
+<span class="ln"> 2</span>    <span class="k">case</span> couch_httpd:header_value<span class="o">(</span>Req, <span class="s2">&#34;X-Couch-Full-Commit&#34;</span><span class="o">)</span> of
 <span class="ln"> 3</span>    <span class="s2">&#34;true&#34;</span> -&gt;
 <span class="ln"> 4</span>        <span class="nv">Options</span> <span class="o">=</span> <span class="o">[</span>full_commit<span class="o">]</span><span class="p">;</span>
 <span class="ln"> 5</span>    <span class="s2">&#34;false&#34;</span> -&gt;
@@ -399,7 +399,7 @@
     <footer class="post-footer">
       
       <p class="post-copyright">
-        This post was published <strong>1807</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+        This post was published <strong>1906</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
       </p>
     </footer>
     

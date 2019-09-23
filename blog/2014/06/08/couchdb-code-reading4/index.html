@@ -37,7 +37,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.32" />
+<meta name="generator" content="Hugo 0.55.6" />
 
 
 <link rel="canonical" href="/blog/2014/06/08/couchdb-code-reading4/" />
@@ -211,8 +211,8 @@
 
 <p>couch_db_updater.erl:
 <div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>refresh_validate_doc_funs<span class="o">(</span>Db0<span class="o">)</span> -&gt;
-<span class="ln"> 2</span>    <span class="nv">Db</span> <span class="o">=</span> Db0#db<span class="o">{</span><span class="nv">user_ctx</span> <span class="o">=</span> <span class="c1">#user_ctx{roles=[&lt;&lt;&#34;_admin&#34;&gt;&gt;]}},
-</span><span class="ln"> 3</span><span class="c1"></span>    <span class="nv">DesignDocs</span> <span class="o">=</span> couch_db:get_design_docs<span class="o">(</span>Db<span class="o">)</span>,
+<span class="ln"> 2</span>    <span class="nv">Db</span> <span class="o">=</span> Db0#db<span class="o">{</span><span class="nv">user_ctx</span> <span class="o">=</span> <span class="c1">#user_ctx{roles=[&lt;&lt;&#34;_admin&#34;&gt;&gt;]}},</span>
+<span class="ln"> 3</span>    <span class="nv">DesignDocs</span> <span class="o">=</span> couch_db:get_design_docs<span class="o">(</span>Db<span class="o">)</span>,
 <span class="ln"> 4</span>    <span class="nv">ProcessDocFuns</span> <span class="o">=</span> lists:flatmap<span class="o">(</span>
 <span class="ln"> 5</span>        fun<span class="o">(</span>DesignDocInfo<span class="o">)</span> -&gt;
 <span class="ln"> 6</span>            <span class="o">{</span>ok, DesignDoc<span class="o">}</span> <span class="o">=</span> couch_db:open_doc_int<span class="o">(</span>
@@ -229,10 +229,10 @@
 <p>couch_db.erl:
 <div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>get_design_docs<span class="o">(</span>Db<span class="o">)</span> -&gt;
 <span class="ln"> 2</span>    <span class="nv">FoldFun</span> <span class="o">=</span> skip_deleted<span class="o">(</span>fun
-<span class="ln"> 3</span>        <span class="o">(</span><span class="c1">#full_doc_info{deleted = true}, _Reds, Acc) -&gt;
-</span><span class="ln"> 4</span><span class="c1"></span>            <span class="o">{</span>ok, Acc<span class="o">}</span><span class="p">;</span>
-<span class="ln"> 5</span>        <span class="o">(</span><span class="c1">#full_doc_info{id= &lt;&lt;&#34;_design/&#34;,_/binary&gt;&gt;}=FullDocInfo, _Reds, Acc) -&gt;
-</span><span class="ln"> 6</span><span class="c1"></span>            <span class="o">{</span>ok, <span class="o">[</span>FullDocInfo <span class="p">|</span> Acc<span class="o">]}</span><span class="p">;</span>k
+<span class="ln"> 3</span>        <span class="o">(</span><span class="c1">#full_doc_info{deleted = true}, _Reds, Acc) -&gt;</span>
+<span class="ln"> 4</span>            <span class="o">{</span>ok, Acc<span class="o">}</span><span class="p">;</span>
+<span class="ln"> 5</span>        <span class="o">(</span><span class="c1">#full_doc_info{id= &lt;&lt;&#34;_design/&#34;,_/binary&gt;&gt;}=FullDocInfo, _Reds, Acc) -&gt;</span>
+<span class="ln"> 6</span>            <span class="o">{</span>ok, <span class="o">[</span>FullDocInfo <span class="p">|</span> Acc<span class="o">]}</span><span class="p">;</span>k
 <span class="ln"> 7</span>        <span class="o">(</span>_, _Reds, Acc<span class="o">)</span> -&gt;
 <span class="ln"> 8</span>            <span class="o">{</span>stop, Acc<span class="o">}</span>
 <span class="ln"> 9</span>    end<span class="o">)</span>,
@@ -262,10 +262,10 @@
 <p>残りは、<code>start_key</code>と<code>end_key_gt</code>を定義して<code>couch_btree:fold/4</code>を呼び出す部分。ここまでのところは、Btreeをトラバースする際のフィルタ条件の設定を行ってきたように見えます。</p>
 
 <p>couch_btree.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>fold<span class="o">(</span><span class="c1">#btree{root=nil}, _Fun, Acc, _Options) -&gt;
-</span><span class="ln"> 2</span><span class="c1"></span>    <span class="o">{</span>ok, <span class="o">{[]</span>, <span class="o">[]}</span>, Acc<span class="o">}</span><span class="p">;</span>
-<span class="ln"> 3</span>fold<span class="o">(</span><span class="c1">#btree{root=Root}=Bt, Fun, Acc, Options) -&gt;
-</span><span class="ln"> 4</span><span class="c1"></span>    <span class="nv">Dir</span> <span class="o">=</span> couch_util:get_value<span class="o">(</span>dir, Options, fwd<span class="o">)</span>,
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>fold<span class="o">(</span><span class="c1">#btree{root=nil}, _Fun, Acc, _Options) -&gt;</span>
+<span class="ln"> 2</span>    <span class="o">{</span>ok, <span class="o">{[]</span>, <span class="o">[]}</span>, Acc<span class="o">}</span><span class="p">;</span>
+<span class="ln"> 3</span>fold<span class="o">(</span><span class="c1">#btree{root=Root}=Bt, Fun, Acc, Options) -&gt;</span>
+<span class="ln"> 4</span>    <span class="nv">Dir</span> <span class="o">=</span> couch_util:get_value<span class="o">(</span>dir, Options, fwd<span class="o">)</span>,
 <span class="ln"> 5</span>    <span class="nv">InRange</span> <span class="o">=</span> make_key_in_end_range_function<span class="o">(</span>Bt, Dir, Options<span class="o">)</span>,
 <span class="ln"> 6</span>    <span class="nv">Result</span> <span class="o">=</span>
 <span class="ln"> 7</span>    <span class="k">case</span> couch_util:get_value<span class="o">(</span>start_key, Options<span class="o">)</span> of
@@ -287,8 +287,8 @@
 <p><code>couch_util:get_value(dir, Options, fwd)</code>は第二引数の{key, value}のリストの中に第一引数で指定したkeyがあればそのvalueを、なければ第三引数を返します。今回のコンテキストでは<code>fwd</code>が<code>Dir</code>に設定し、<code>make_key_in_end_range_function/3</code>を呼び出します。</p>
 
 <p>couch_btree.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>make_key_in_end_range_function<span class="o">(</span><span class="c1">#btree{less=Less}, fwd, Options) -&gt;
-</span><span class="ln"> 2</span><span class="c1"></span>    <span class="k">case</span> couch_util:get_value<span class="o">(</span>end_key_gt, Options<span class="o">)</span> of
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>make_key_in_end_range_function<span class="o">(</span><span class="c1">#btree{less=Less}, fwd, Options) -&gt;</span>
+<span class="ln"> 2</span>    <span class="k">case</span> couch_util:get_value<span class="o">(</span>end_key_gt, Options<span class="o">)</span> of
 <span class="ln"> 3</span>    undefined -&gt;
 <span class="ln"> 4</span>        <span class="k">case</span> couch_util:get_value<span class="o">(</span>end_key, Options<span class="o">)</span> of
 <span class="ln"> 5</span>        undefined -&gt;
@@ -324,19 +324,19 @@
 <p>1行目で<code>Node</code>の1つ目の要素を取り出しています。この<code>Node</code>は前記のように<code>#btree.root</code>にあたるので、<code>root</code>の第一要素を取得することになります。これまで<code>#btree.root</code>がどういう構成になっているのか見ていなかったので探してみたところ、以下のような箇所がありました。</p>
 
 <p>couch_btree.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>size<span class="o">(</span><span class="c1">#btree{root = nil}) -&gt;
-</span><span class="ln">2</span><span class="c1"></span>    <span class="m">0</span><span class="p">;</span>
-<span class="ln">3</span>size<span class="o">(</span><span class="c1">#btree{root = {_P, _Red}}) -&gt;
-</span><span class="ln">4</span><span class="c1"></span>    % pre <span class="m">1</span>.2 format
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>size<span class="o">(</span><span class="c1">#btree{root = nil}) -&gt;</span>
+<span class="ln">2</span>    <span class="m">0</span><span class="p">;</span>
+<span class="ln">3</span>size<span class="o">(</span><span class="c1">#btree{root = {_P, _Red}}) -&gt;</span>
+<span class="ln">4</span>    % pre <span class="m">1</span>.2 format
 <span class="ln">5</span>    nil<span class="p">;</span>
-<span class="ln">6</span>size<span class="o">(</span><span class="c1">#btree{root = {_P, _Red, Size}}) -&gt;
-</span><span class="ln">7</span><span class="c1"></span>    Size.</code></pre></div></p>
+<span class="ln">6</span>size<span class="o">(</span><span class="c1">#btree{root = {_P, _Red, Size}}) -&gt;</span>
+<span class="ln">7</span>    Size.</code></pre></div></p>
 
 <p>上記のコードだけでは分からないので想像ですが、<code>#btree.root</code>の第一要素<code>_P</code>は恐らくBtreeのファイルポインタなのではないかと思います。そう仮定して読み進めてみます。<code>stream_node/8</code>に戻ると、<code>#btree.root</code>からポインタを取り出し、<code>get_node/2</code>を呼び出します。</p>
 
 <p>couch_btree.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>get_node<span class="o">(</span><span class="c1">#btree{fd = Fd}, NodePos) -&gt;
-</span><span class="ln">2</span><span class="c1"></span>    <span class="o">{</span>ok, <span class="o">{</span>NodeType, NodeList<span class="o">}}</span> <span class="o">=</span> couch_file:pread_term<span class="o">(</span>Fd, NodePos<span class="o">)</span>,
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>get_node<span class="o">(</span><span class="c1">#btree{fd = Fd}, NodePos) -&gt;</span>
+<span class="ln">2</span>    <span class="o">{</span>ok, <span class="o">{</span>NodeType, NodeList<span class="o">}}</span> <span class="o">=</span> couch_file:pread_term<span class="o">(</span>Fd, NodePos<span class="o">)</span>,
 <span class="ln">3</span>    <span class="o">{</span>NodeType, NodeList<span class="o">}</span>.</code></pre></div></p>
 
 <p>続けて<code>couch_file:pread_term/2</code>を読んでみます。</p>
@@ -457,8 +457,8 @@
 <p><code>less/3</code>が呼び出されてます。<code>#btree.less</code>に設定される関数をまだ読んでないのでこの時点では何とも。</p>
 
 <p>couch_btree.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>less<span class="o">(</span><span class="c1">#btree{less=Less}, A, B) -&gt;
-</span><span class="ln">2</span><span class="c1"></span>    Less<span class="o">(</span>A, B<span class="o">)</span>.</code></pre></div></p>
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>less<span class="o">(</span><span class="c1">#btree{less=Less}, A, B) -&gt;</span>
+<span class="ln">2</span>    Less<span class="o">(</span>A, B<span class="o">)</span>.</code></pre></div></p>
 
 <p>ですよね。<code>DropFun</code>は<code>IdBtree</code>の<code>less</code>に設定された関数を呼び出す関数です。次の<code>lists:splitwith/2</code>で<code>DropFun</code>を指定していることから、<code>NodeList</code>は</p>
 
@@ -504,7 +504,7 @@
     <footer class="post-footer">
       
       <p class="post-copyright">
-        This post was published <strong>1834</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+        This post was published <strong>1933</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
       </p>
     </footer>
     

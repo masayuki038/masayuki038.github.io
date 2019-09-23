@@ -37,7 +37,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.32" />
+<meta name="generator" content="Hugo 0.55.6" />
 
 
 <link rel="canonical" href="/blog/2014/06/21/couchdb-code-reading5/" />
@@ -211,8 +211,8 @@
 
 <p>couch_db_updater.erl:
 <div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>refresh_validate_doc_funs<span class="o">(</span>Db0<span class="o">)</span> -&gt;
-<span class="ln"> 2</span>    <span class="nv">Db</span> <span class="o">=</span> Db0#db<span class="o">{</span><span class="nv">user_ctx</span> <span class="o">=</span> <span class="c1">#user_ctx{roles=[&lt;&lt;&#34;_admin&#34;&gt;&gt;]}},
-</span><span class="ln"> 3</span><span class="c1"></span>    <span class="nv">DesignDocs</span> <span class="o">=</span> couch_db:get_design_docs<span class="o">(</span>Db<span class="o">)</span>,
+<span class="ln"> 2</span>    <span class="nv">Db</span> <span class="o">=</span> Db0#db<span class="o">{</span><span class="nv">user_ctx</span> <span class="o">=</span> <span class="c1">#user_ctx{roles=[&lt;&lt;&#34;_admin&#34;&gt;&gt;]}},</span>
+<span class="ln"> 3</span>    <span class="nv">DesignDocs</span> <span class="o">=</span> couch_db:get_design_docs<span class="o">(</span>Db<span class="o">)</span>,
 <span class="ln"> 4</span>    <span class="nv">ProcessDocFuns</span> <span class="o">=</span> lists:flatmap<span class="o">(</span>
 <span class="ln"> 5</span>        fun<span class="o">(</span>DesignDocInfo<span class="o">)</span> -&gt;
 <span class="ln"> 6</span>            <span class="o">{</span>ok, DesignDoc<span class="o">}</span> <span class="o">=</span> couch_db:open_doc_int<span class="o">(</span>
@@ -241,19 +241,19 @@
 <span class="ln"> 2</span>open_doc_int<span class="o">(</span>Db, &lt;&lt;?LOCAL_DOC_PREFIX, _/binary&gt;&gt; <span class="o">=</span> Id, Options<span class="o">)</span> -&gt;
 <span class="ln"> 3</span>    <span class="k">case</span> couch_btree:lookup<span class="o">(</span>local_btree<span class="o">(</span>Db<span class="o">)</span>, <span class="o">[</span>Id<span class="o">])</span> of
 <span class="ln"> 4</span>    <span class="o">[{</span>ok, <span class="o">{</span>_, <span class="o">{</span>Rev, BodyData<span class="o">}}}]</span> -&gt;
-<span class="ln"> 5</span>        <span class="nv">Doc</span> <span class="o">=</span> <span class="c1">#doc{id=Id, revs={0, [?l2b(integer_to_list(Rev))]}, body=BodyData},
-</span><span class="ln"> 6</span><span class="c1"></span>        apply_open_options<span class="o">({</span>ok, Doc<span class="o">}</span>, Options<span class="o">)</span><span class="p">;</span>
+<span class="ln"> 5</span>        <span class="nv">Doc</span> <span class="o">=</span> <span class="c1">#doc{id=Id, revs={0, [?l2b(integer_to_list(Rev))]}, body=BodyData},</span>
+<span class="ln"> 6</span>        apply_open_options<span class="o">({</span>ok, Doc<span class="o">}</span>, Options<span class="o">)</span><span class="p">;</span>
 <span class="ln"> 7</span>    <span class="o">[</span>not_found<span class="o">]</span> -&gt;
 <span class="ln"> 8</span>        <span class="o">{</span>not_found, missing<span class="o">}</span>
 <span class="ln"> 9</span>    end<span class="p">;</span>
-<span class="ln">10</span>open_doc_int<span class="o">(</span>Db, <span class="c1">#doc_info{id=Id,revs=[RevInfo|_]}=DocInfo, Options) -&gt;
-</span><span class="ln">11</span><span class="c1"></span>    <span class="c1">#rev_info{deleted=IsDeleted,rev={Pos,RevId},body_sp=Bp} = RevInfo,
-</span><span class="ln">12</span><span class="c1"></span>    <span class="nv">Doc</span> <span class="o">=</span> make_doc<span class="o">(</span>Db, Id, IsDeleted, Bp, <span class="o">{</span>Pos,<span class="o">[</span>RevId<span class="o">]})</span>,
+<span class="ln">10</span>open_doc_int<span class="o">(</span>Db, <span class="c1">#doc_info{id=Id,revs=[RevInfo|_]}=DocInfo, Options) -&gt;</span>
+<span class="ln">11</span>    <span class="c1">#rev_info{deleted=IsDeleted,rev={Pos,RevId},body_sp=Bp} = RevInfo,</span>
+<span class="ln">12</span>    <span class="nv">Doc</span> <span class="o">=</span> make_doc<span class="o">(</span>Db, Id, IsDeleted, Bp, <span class="o">{</span>Pos,<span class="o">[</span>RevId<span class="o">]})</span>,
 <span class="ln">13</span>    apply_open_options<span class="o">(</span>
 <span class="ln">14</span>       <span class="o">{</span>ok, Doc#doc<span class="o">{</span><span class="nv">meta</span><span class="o">=</span>doc_meta_info<span class="o">(</span>DocInfo, <span class="o">[]</span>, Options<span class="o">)}}</span>, Options<span class="o">)</span><span class="p">;</span>
-<span class="ln">15</span>open_doc_int<span class="o">(</span>Db, <span class="c1">#full_doc_info{id=Id,rev_tree=RevTree}=FullDocInfo, Options) -&gt;
-</span><span class="ln">16</span><span class="c1"></span>    <span class="c1">#doc_info{revs=[#rev_info{deleted=IsDeleted,rev=Rev,body_sp=Bp}|_]} =
-</span><span class="ln">17</span><span class="c1"></span>        <span class="nv">DocInfo</span> <span class="o">=</span> couch_doc:to_doc_info<span class="o">(</span>FullDocInfo<span class="o">)</span>,
+<span class="ln">15</span>open_doc_int<span class="o">(</span>Db, <span class="c1">#full_doc_info{id=Id,rev_tree=RevTree}=FullDocInfo, Options) -&gt;</span>
+<span class="ln">16</span>    <span class="c1">#doc_info{revs=[#rev_info{deleted=IsDeleted,rev=Rev,body_sp=Bp}|_]} =</span>
+<span class="ln">17</span>        <span class="nv">DocInfo</span> <span class="o">=</span> couch_doc:to_doc_info<span class="o">(</span>FullDocInfo<span class="o">)</span>,
 <span class="ln">18</span>    <span class="o">{[{</span>_, RevPath<span class="o">}]</span>, <span class="o">[]}</span> <span class="o">=</span> couch_key_tree:get<span class="o">(</span>RevTree, <span class="o">[</span>Rev<span class="o">])</span>,
 <span class="ln">19</span>    <span class="nv">Doc</span> <span class="o">=</span> make_doc<span class="o">(</span>Db, Id, IsDeleted, Bp, RevPath<span class="o">)</span>,
 <span class="ln">20</span>    apply_open_options<span class="o">(</span>
@@ -324,11 +324,11 @@
 <p>になるはずです。この<code>RevPath</code>を指定して呼び出している<code>make_doc/5</code>を見てみます。</p>
 
 <p>couch_db.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>read_doc<span class="o">(</span><span class="c1">#db{fd=Fd}, Pos) -&gt;
-</span><span class="ln"> 2</span><span class="c1"></span>    couch_file:pread_term<span class="o">(</span>Fd, Pos<span class="o">)</span>.
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>read_doc<span class="o">(</span><span class="c1">#db{fd=Fd}, Pos) -&gt;</span>
+<span class="ln"> 2</span>    couch_file:pread_term<span class="o">(</span>Fd, Pos<span class="o">)</span>.
 <span class="ln"> 3</span>
-<span class="ln"> 4</span>make_doc<span class="o">(</span><span class="c1">#db{updater_fd = Fd} = Db, Id, Deleted, Bp, RevisionPath) -&gt;
-</span><span class="ln"> 5</span><span class="c1"></span>    <span class="o">{</span>BodyData, Atts<span class="o">}</span> <span class="o">=</span>
+<span class="ln"> 4</span>make_doc<span class="o">(</span><span class="c1">#db{updater_fd = Fd} = Db, Id, Deleted, Bp, RevisionPath) -&gt;</span>
+<span class="ln"> 5</span>    <span class="o">{</span>BodyData, Atts<span class="o">}</span> <span class="o">=</span>
 <span class="ln"> 6</span>    <span class="k">case</span> Bp of
 <span class="ln"> 7</span>    nil -&gt;
 <span class="ln"> 8</span>        <span class="o">{[]</span>, <span class="o">[]}</span><span class="p">;</span>
@@ -344,8 +344,8 @@
 <span class="ln">18</span>        <span class="o">{</span>BodyData0,
 <span class="ln">19</span>            lists:map<span class="o">(</span>
 <span class="ln">20</span>                fun<span class="o">({</span>Name,Type,Sp,AttLen,DiskLen,RevPos,Md5,Enc<span class="o">})</span> -&gt;
-<span class="ln">21</span>                    <span class="c1">#att{name=Name,
-</span><span class="ln">22</span><span class="c1"></span>                        <span class="nv">type</span><span class="o">=</span>Type,
+<span class="ln">21</span>                    <span class="c1">#att{name=Name,</span>
+<span class="ln">22</span>                        <span class="nv">type</span><span class="o">=</span>Type,
 <span class="ln">23</span>                        <span class="nv">att_len</span><span class="o">=</span>AttLen,
 <span class="ln">24</span>                        <span class="nv">disk_len</span><span class="o">=</span>DiskLen,
 <span class="ln">25</span>                        <span class="nv">md5</span><span class="o">=</span>Md5,
@@ -364,8 +364,8 @@
 <span class="ln">38</span>                            end
 <span class="ln">39</span>                    <span class="o">}</span><span class="p">;</span>
 <span class="ln">40</span>                <span class="o">({</span>Name,Type,Sp,AttLen,RevPos,Md5<span class="o">})</span> -&gt;
-<span class="ln">41</span>                    <span class="c1">#att{name=Name,
-</span><span class="ln">42</span><span class="c1"></span>                        <span class="nv">type</span><span class="o">=</span>Type,
+<span class="ln">41</span>                    <span class="c1">#att{name=Name,</span>
+<span class="ln">42</span>                        <span class="nv">type</span><span class="o">=</span>Type,
 <span class="ln">43</span>                        <span class="nv">att_len</span><span class="o">=</span>AttLen,
 <span class="ln">44</span>                        <span class="nv">disk_len</span><span class="o">=</span>DiskLen,
 <span class="ln">45</span>                        <span class="nv">md5</span><span class="o">=</span>Md5,
@@ -384,16 +384,16 @@
 <span class="ln">58</span>                            end
 <span class="ln">59</span>                    <span class="o">}</span><span class="p">;</span>
 <span class="ln">60</span>                <span class="o">({</span>Name,Type,Sp,AttLen,RevPos,Md5<span class="o">})</span> -&gt;
-<span class="ln">61</span>                    <span class="c1">#att{name=Name,
-</span><span class="ln">62</span><span class="c1"></span>                        <span class="nv">type</span><span class="o">=</span>Type,
+<span class="ln">61</span>                    <span class="c1">#att{name=Name,</span>
+<span class="ln">62</span>                        <span class="nv">type</span><span class="o">=</span>Type,
 <span class="ln">63</span>                        <span class="nv">att_len</span><span class="o">=</span>AttLen,
 <span class="ln">64</span>                        <span class="nv">disk_len</span><span class="o">=</span>AttLen,
 <span class="ln">65</span>                        <span class="nv">md5</span><span class="o">=</span>Md5,
 <span class="ln">66</span>                        <span class="nv">revpos</span><span class="o">=</span>RevPos,
 <span class="ln">67</span>                        <span class="nv">data</span><span class="o">={</span>Fd,Sp<span class="o">}}</span><span class="p">;</span>
 <span class="ln">68</span>                <span class="o">({</span>Name,<span class="o">{</span>Type,Sp,AttLen<span class="o">}})</span> -&gt;
-<span class="ln">69</span>                    <span class="c1">#att{name=Name,
-</span><span class="ln">70</span><span class="c1"></span>                        <span class="nv">type</span><span class="o">=</span>Type,
+<span class="ln">69</span>                    <span class="c1">#att{name=Name,</span>
+<span class="ln">70</span>                        <span class="nv">type</span><span class="o">=</span>Type,
 <span class="ln">71</span>                        <span class="nv">att_len</span><span class="o">=</span>AttLen,
 <span class="ln">72</span>                        <span class="nv">disk_len</span><span class="o">=</span>AttLen,
 <span class="ln">73</span>                        <span class="nv">md5</span><span class="o">=</span> &lt;&lt;&gt;&gt;,
@@ -401,8 +401,8 @@
 <span class="ln">75</span>                        <span class="nv">data</span><span class="o">={</span>Fd,Sp<span class="o">}}</span>
 <span class="ln">76</span>                end, Atts0<span class="o">)}</span>
 <span class="ln">77</span>    end,
-<span class="ln">78</span>    <span class="nv">Doc</span> <span class="o">=</span> <span class="c1">#doc{
-</span><span class="ln">79</span><span class="c1"></span>        <span class="nv">id</span> <span class="o">=</span> Id,
+<span class="ln">78</span>    <span class="nv">Doc</span> <span class="o">=</span> <span class="c1">#doc{</span>
+<span class="ln">79</span>        <span class="nv">id</span> <span class="o">=</span> Id,
 <span class="ln">80</span>        <span class="nv">revs</span> <span class="o">=</span> RevisionPath,
 <span class="ln">81</span>        <span class="nv">body</span> <span class="o">=</span> BodyData,
 <span class="ln">82</span>        <span class="nv">atts</span> <span class="o">=</span> Atts,
@@ -415,18 +415,18 @@
 <p>そのまま<code>after_doc_read/2</code>を見てみます。</p>
 
 <p>couch_db.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>after_doc_read<span class="o">(</span><span class="c1">#db{after_doc_read = nil}, Doc) -&gt;
-</span><span class="ln">2</span><span class="c1"></span>    Doc<span class="p">;</span>
-<span class="ln">3</span>after_doc_read<span class="o">(</span><span class="c1">#db{after_doc_read = Fun} = Db, Doc) -&gt;
-</span><span class="ln">4</span><span class="c1"></span>    Fun<span class="o">(</span>couch_doc:with_ejson_body<span class="o">(</span>Doc<span class="o">)</span>, Db<span class="o">)</span>.</code></pre></div></p>
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>after_doc_read<span class="o">(</span><span class="c1">#db{after_doc_read = nil}, Doc) -&gt;</span>
+<span class="ln">2</span>    Doc<span class="p">;</span>
+<span class="ln">3</span>after_doc_read<span class="o">(</span><span class="c1">#db{after_doc_read = Fun} = Db, Doc) -&gt;</span>
+<span class="ln">4</span>    Fun<span class="o">(</span>couch_doc:with_ejson_body<span class="o">(</span>Doc<span class="o">)</span>, Db<span class="o">)</span>.</code></pre></div></p>
 
 <p><code>#db.after_doc_read</code>に関数が設定されていれば、その関数を実行するようになっています。そのまま<code>couch_doc:with_ejson_body/1</code>を読んでみます。</p>
 
 <p>couch_doc.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>with_ejson_body<span class="o">(</span><span class="c1">#doc{body = Body} = Doc) when is_binary(Body) -&gt;
-</span><span class="ln">2</span><span class="c1"></span>    Doc#doc<span class="o">{</span><span class="nv">body</span> <span class="o">=</span> couch_compress:decompress<span class="o">(</span>Body<span class="o">)}</span><span class="p">;</span>
-<span class="ln">3</span>with_ejson_body<span class="o">(</span><span class="c1">#doc{body = {_}} = Doc) -&gt;
-</span><span class="ln">4</span><span class="c1"></span>    Doc.</code></pre></div></p>
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>with_ejson_body<span class="o">(</span><span class="c1">#doc{body = Body} = Doc) when is_binary(Body) -&gt;</span>
+<span class="ln">2</span>    Doc#doc<span class="o">{</span><span class="nv">body</span> <span class="o">=</span> couch_compress:decompress<span class="o">(</span>Body<span class="o">)}</span><span class="p">;</span>
+<span class="ln">3</span>with_ejson_body<span class="o">(</span><span class="c1">#doc{body = {_}} = Doc) -&gt;</span>
+<span class="ln">4</span>    Doc.</code></pre></div></p>
 
 <p><code>#doc.body</code>がbinaryであればdecompressしていました。</p>
 
@@ -448,13 +448,13 @@
 <span class="ln"> 5</span>
 <span class="ln"> 6</span>apply_open_options2<span class="o">(</span>Doc,<span class="o">[])</span> -&gt;
 <span class="ln"> 7</span>    <span class="o">{</span>ok, Doc<span class="o">}</span><span class="p">;</span>
-<span class="ln"> 8</span>apply_open_options2<span class="o">(</span><span class="c1">#doc{atts=Atts,revs=Revs}=Doc,
-</span><span class="ln"> 9</span><span class="c1"></span>        <span class="o">[{</span>atts_since, PossibleAncestors<span class="o">}</span><span class="p">|</span>Rest<span class="o">])</span> -&gt;
+<span class="ln"> 8</span>apply_open_options2<span class="o">(</span><span class="c1">#doc{atts=Atts,revs=Revs}=Doc,</span>
+<span class="ln"> 9</span>        <span class="o">[{</span>atts_since, PossibleAncestors<span class="o">}</span><span class="p">|</span>Rest<span class="o">])</span> -&gt;
 <span class="ln">10</span>    <span class="nv">RevPos</span> <span class="o">=</span> find_ancestor_rev_pos<span class="o">(</span>Revs, PossibleAncestors<span class="o">)</span>,
 <span class="ln">11</span>    apply_open_options2<span class="o">(</span>Doc#doc<span class="o">{</span><span class="nv">atts</span><span class="o">=[</span>A#att<span class="o">{</span><span class="nv">data</span><span class="o">=</span>
 <span class="ln">12</span>        <span class="k">if</span> AttPos&gt;RevPos -&gt; Data<span class="p">;</span> <span class="nb">true</span> -&gt; stub end<span class="o">}</span>
-<span class="ln">13</span>        <span class="o">||</span> <span class="c1">#att{revpos=AttPos,data=Data}=A &lt;- Atts]}, Rest);
-</span><span class="ln">14</span><span class="c1"></span>apply_open_options2<span class="o">(</span>Doc, <span class="o">[</span>ejson_body <span class="p">|</span> Rest<span class="o">])</span> -&gt;
+<span class="ln">13</span>        <span class="o">||</span> <span class="c1">#att{revpos=AttPos,data=Data}=A &lt;- Atts]}, Rest);</span>
+<span class="ln">14</span>apply_open_options2<span class="o">(</span>Doc, <span class="o">[</span>ejson_body <span class="p">|</span> Rest<span class="o">])</span> -&gt;
 <span class="ln">15</span>    apply_open_options2<span class="o">(</span>couch_doc:with_ejson_body<span class="o">(</span>Doc<span class="o">)</span>, Rest<span class="o">)</span><span class="p">;</span>
 <span class="ln">16</span>apply_open_options2<span class="o">(</span>Doc,<span class="o">[</span>_<span class="p">|</span>Rest<span class="o">])</span> -&gt;
 <span class="ln">17</span>    apply_open_options2<span class="o">(</span>Doc,Rest<span class="o">)</span>.</code></pre></div></p>
@@ -470,8 +470,8 @@
 <p><code>couch_db_updater:refresh_validate_doc_funs/1</code>に戻り、<code>couch_doc:get_validate_doc_fun/1</code>を見てみます。</p>
 
 <p>couch_doc.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>get_validate_doc_fun<span class="o">(</span><span class="c1">#doc{body={Props}}=DDoc) -&gt;
-</span><span class="ln">2</span><span class="c1"></span>    <span class="k">case</span> couch_util:get_value<span class="o">(</span>&lt;&lt;<span class="s2">&#34;validate_doc_update&#34;</span>&gt;&gt;, Props<span class="o">)</span> of
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>get_validate_doc_fun<span class="o">(</span><span class="c1">#doc{body={Props}}=DDoc) -&gt;</span>
+<span class="ln">2</span>    <span class="k">case</span> couch_util:get_value<span class="o">(</span>&lt;&lt;<span class="s2">&#34;validate_doc_update&#34;</span>&gt;&gt;, Props<span class="o">)</span> of
 <span class="ln">3</span>    undefined -&gt;
 <span class="ln">4</span>        nil<span class="p">;</span>
 <span class="ln">5</span>    _Else -&gt;
@@ -523,7 +523,7 @@
     <footer class="post-footer">
       
       <p class="post-copyright">
-        This post was published <strong>1821</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+        This post was published <strong>1920</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
       </p>
     </footer>
     

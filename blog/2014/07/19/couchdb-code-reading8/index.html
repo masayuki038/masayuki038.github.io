@@ -37,7 +37,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.32" />
+<meta name="generator" content="Hugo 0.55.6" />
 
 
 <link rel="canonical" href="/blog/2014/07/19/couchdb-code-reading8/" />
@@ -212,15 +212,15 @@
 <p>couch_db.erl:
 <div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>    <span class="k">case</span> <span class="o">(</span>Db#db.validate_doc_funs /<span class="o">=</span> <span class="o">[])</span> orelse
 <span class="ln"> 2</span>        lists:any<span class="o">(</span>
-<span class="ln"> 3</span>            fun<span class="o">({</span><span class="c1">#doc{id= &lt;&lt;?DESIGN_DOC_PREFIX, _/binary&gt;&gt;}, _Ref}) -&gt;
-</span><span class="ln"> 4</span><span class="c1"></span>                true<span class="p">;</span>
-<span class="ln"> 5</span>            <span class="o">({</span><span class="c1">#doc{atts=Atts}, _Ref}) -&gt;
-</span><span class="ln"> 6</span><span class="c1"></span>                Atts /<span class="o">=</span> <span class="o">[]</span>
+<span class="ln"> 3</span>            fun<span class="o">({</span><span class="c1">#doc{id= &lt;&lt;?DESIGN_DOC_PREFIX, _/binary&gt;&gt;}, _Ref}) -&gt;</span>
+<span class="ln"> 4</span>                true<span class="p">;</span>
+<span class="ln"> 5</span>            <span class="o">({</span><span class="c1">#doc{atts=Atts}, _Ref}) -&gt;</span>
+<span class="ln"> 6</span>                Atts /<span class="o">=</span> <span class="o">[]</span>
 <span class="ln"> 7</span>            end, Docs3<span class="o">)</span> of
 <span class="ln"> 8</span>    <span class="nb">true</span> -&gt;
 <span class="ln"> 9</span>        % lookup the doc by id and get the most recent
-<span class="ln">10</span>        <span class="nv">Ids</span> <span class="o">=</span> <span class="o">[</span>Id <span class="o">||</span> <span class="o">[{</span><span class="c1">#doc{id=Id}, _Ref}|_] &lt;- DocBuckets],
-</span><span class="ln">11</span><span class="c1"></span>        <span class="nv">ExistingDocInfos</span> <span class="o">=</span> get_full_doc_infos<span class="o">(</span>Db, Ids<span class="o">)</span>,
+<span class="ln">10</span>        <span class="nv">Ids</span> <span class="o">=</span> <span class="o">[</span>Id <span class="o">||</span> <span class="o">[{</span><span class="c1">#doc{id=Id}, _Ref}|_] &lt;- DocBuckets],</span>
+<span class="ln">11</span>        <span class="nv">ExistingDocInfos</span> <span class="o">=</span> get_full_doc_infos<span class="o">(</span>Db, Ids<span class="o">)</span>,
 <span class="ln">12</span>
 <span class="ln">13</span>        <span class="o">{</span>DocBucketsPrepped, PreCommitFailures<span class="o">}</span> <span class="o">=</span> prep_and_validate_updates<span class="o">(</span>Db,
 <span class="ln">14</span>                DocBuckets, ExistingDocInfos, AllOrNothing, <span class="o">[]</span>, <span class="o">[])</span>,
@@ -247,11 +247,11 @@
 <span class="ln"> 5</span>prep_and_validate_updates<span class="o">(</span>Db, <span class="o">[</span>DocBucket<span class="p">|</span>RestBuckets<span class="o">]</span>, <span class="o">[</span>not_found<span class="p">|</span>RestLookups<span class="o">]</span>,
 <span class="ln"> 6</span>        AllowConflict, AccPrepped, AccErrors<span class="o">)</span> -&gt;
 <span class="ln"> 7</span>    <span class="o">{</span>PreppedBucket, AccErrors3<span class="o">}</span> <span class="o">=</span> lists:foldl<span class="o">(</span>
-<span class="ln"> 8</span>        fun<span class="o">({</span><span class="c1">#doc{revs=Revs}=Doc,Ref}, {AccBucket, AccErrors2}) -&gt;
-</span><span class="ln"> 9</span><span class="c1"></span>            <span class="k">case</span> couch_doc:has_stubs<span class="o">(</span>Doc<span class="o">)</span> of
+<span class="ln"> 8</span>        fun<span class="o">({</span><span class="c1">#doc{revs=Revs}=Doc,Ref}, {AccBucket, AccErrors2}) -&gt;</span>
+<span class="ln"> 9</span>            <span class="k">case</span> couch_doc:has_stubs<span class="o">(</span>Doc<span class="o">)</span> of
 <span class="ln">10</span>            <span class="nb">true</span> -&gt;
-<span class="ln">11</span>                couch_doc:merge_stubs<span class="o">(</span>Doc, <span class="c1">#doc{}); % will throw exception
-</span><span class="ln">12</span><span class="c1"></span>            <span class="nb">false</span> -&gt; ok
+<span class="ln">11</span>                couch_doc:merge_stubs<span class="o">(</span>Doc, <span class="c1">#doc{}); % will throw exception</span>
+<span class="ln">12</span>            <span class="nb">false</span> -&gt; ok
 <span class="ln">13</span>            end,
 <span class="ln">14</span>            <span class="k">case</span> Revs of
 <span class="ln">15</span>            <span class="o">{</span><span class="m">0</span>, <span class="o">[]}</span> -&gt;
@@ -271,8 +271,8 @@
 <span class="ln">29</span>    prep_and_validate_updates<span class="o">(</span>Db, RestBuckets, RestLookups, AllowConflict,
 <span class="ln">30</span>            <span class="o">[</span>lists:reverse<span class="o">(</span>PreppedBucket<span class="o">)</span> <span class="p">|</span> AccPrepped<span class="o">]</span>, AccErrors3<span class="o">)</span><span class="p">;</span>
 <span class="ln">31</span>prep_and_validate_updates<span class="o">(</span>Db, <span class="o">[</span>DocBucket<span class="p">|</span>RestBuckets<span class="o">]</span>,
-<span class="ln">32</span>        <span class="o">[{</span>ok, <span class="c1">#full_doc_info{rev_tree=OldRevTree}=OldFullDocInfo}|RestLookups],
-</span><span class="ln">33</span><span class="c1"></span>        AllowConflict, AccPrepped, AccErrors<span class="o">)</span> -&gt;
+<span class="ln">32</span>        <span class="o">[{</span>ok, <span class="c1">#full_doc_info{rev_tree=OldRevTree}=OldFullDocInfo}|RestLookups],</span>
+<span class="ln">33</span>        AllowConflict, AccPrepped, AccErrors<span class="o">)</span> -&gt;
 <span class="ln">34</span>    <span class="nv">Leafs</span> <span class="o">=</span> couch_key_tree:get_all_leafs<span class="o">(</span>OldRevTree<span class="o">)</span>,
 <span class="ln">35</span>    <span class="nv">LeafRevsDict</span> <span class="o">=</span> dict:from_list<span class="o">([</span>
 <span class="ln">36</span>        begin
@@ -289,8 +289,8 @@
 <span class="ln">47</span>                    LeafRevsDict, AllowConflict<span class="o">)</span> of
 <span class="ln">48</span>            <span class="o">{</span>ok, Doc2<span class="o">}</span> -&gt;
 <span class="ln">49</span>                <span class="o">{[{</span>Doc2, Ref<span class="o">}</span> <span class="p">|</span> Docs2Acc<span class="o">]</span>, AccErrors2<span class="o">}</span><span class="p">;</span>
-<span class="ln">50</span>            <span class="o">{</span>Error, <span class="c1">#doc{}} -&gt;
-</span><span class="ln">51</span><span class="c1"></span>                % Record the error
+<span class="ln">50</span>            <span class="o">{</span>Error, <span class="c1">#doc{}} -&gt;</span>
+<span class="ln">51</span>                % Record the error
 <span class="ln">52</span>                <span class="o">{</span>Docs2Acc, <span class="o">[{</span>Ref, Error<span class="o">}</span> <span class="p">|</span>AccErrors2<span class="o">]}</span>
 <span class="ln">53</span>            end
 <span class="ln">54</span>        end,
@@ -304,27 +304,27 @@
 <p><code>couch_doc:has_stubs/1</code>を呼び出し、その結果が<code>true</code>であれば<code>couch_doc:merge_stubs/2</code>を呼び出して空のドキュメント(#doc{})とマージしているように見えます。stubとは何かを見たいので、<code>couch_doc:has_stubs/1</code>のコードを見てみます。</p>
 
 <p>couch_doc.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>has_stubs<span class="o">(</span><span class="c1">#doc{atts=Atts}) -&gt;
-</span><span class="ln">2</span><span class="c1"></span>    has_stubs<span class="o">(</span>Atts<span class="o">)</span><span class="p">;</span>
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln">1</span>has_stubs<span class="o">(</span><span class="c1">#doc{atts=Atts}) -&gt;</span>
+<span class="ln">2</span>    has_stubs<span class="o">(</span>Atts<span class="o">)</span><span class="p">;</span>
 <span class="ln">3</span>has_stubs<span class="o">([])</span> -&gt;
 <span class="ln">4</span>    false<span class="p">;</span>
-<span class="ln">5</span>has_stubs<span class="o">([</span><span class="c1">#att{data=stub}|_]) -&gt;
-</span><span class="ln">6</span><span class="c1"></span>    true<span class="p">;</span>
+<span class="ln">5</span>has_stubs<span class="o">([</span><span class="c1">#att{data=stub}|_]) -&gt;</span>
+<span class="ln">6</span>    true<span class="p">;</span>
 <span class="ln">7</span>has_stubs<span class="o">([</span>_Att<span class="p">|</span>Rest<span class="o">])</span> -&gt;
 <span class="ln">8</span>    has_stubs<span class="o">(</span>Rest<span class="o">)</span>.</code></pre></div></p>
 
 <p>ドキュメントのアタッチメントの<code>data</code>が<code>stub</code>のものが1つでもあれば<code>true</code>が返るようになっています。そのまま<code>couch_doc:merge_stubs/2</code>を見てみます。</p>
 
 <p>couch_db.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>merge_stubs<span class="o">(</span><span class="c1">#doc{id = Id}, nil) -&gt;
-</span><span class="ln"> 2</span><span class="c1"></span>    throw<span class="o">({</span>missing_stub, &lt;&lt;<span class="s2">&#34;Previous revision missing for document &#34;</span>, Id/binary&gt;&gt;<span class="o">})</span><span class="p">;</span>
-<span class="ln"> 3</span>merge_stubs<span class="o">(</span><span class="c1">#doc{id=Id,atts=MemBins}=StubsDoc, #doc{atts=DiskBins}) -&gt;
-</span><span class="ln"> 4</span><span class="c1"></span>    <span class="nv">BinDict</span> <span class="o">=</span> dict:from_list<span class="o">([{</span>Name, Att<span class="o">}</span> <span class="o">||</span> <span class="c1">#att{name=Name}=Att &lt;- DiskBins]),
-</span><span class="ln"> 5</span><span class="c1"></span>    <span class="nv">MergedBins</span> <span class="o">=</span> lists:map<span class="o">(</span>
-<span class="ln"> 6</span>        fun<span class="o">(</span><span class="c1">#att{name=Name, data=stub, revpos=StubRevPos}) -&gt;
-</span><span class="ln"> 7</span><span class="c1"></span>            <span class="k">case</span> dict:find<span class="o">(</span>Name, BinDict<span class="o">)</span> of
-<span class="ln"> 8</span>            <span class="o">{</span>ok, <span class="c1">#att{revpos=DiskRevPos}=DiskAtt}
-</span><span class="ln"> 9</span><span class="c1"></span>                    when <span class="nv">DiskRevPos</span> <span class="o">==</span> StubRevPos orelse <span class="nv">StubRevPos</span> <span class="o">==</span> nil -&gt;
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>merge_stubs<span class="o">(</span><span class="c1">#doc{id = Id}, nil) -&gt;</span>
+<span class="ln"> 2</span>    throw<span class="o">({</span>missing_stub, &lt;&lt;<span class="s2">&#34;Previous revision missing for document &#34;</span>, Id/binary&gt;&gt;<span class="o">})</span><span class="p">;</span>
+<span class="ln"> 3</span>merge_stubs<span class="o">(</span><span class="c1">#doc{id=Id,atts=MemBins}=StubsDoc, #doc{atts=DiskBins}) -&gt;</span>
+<span class="ln"> 4</span>    <span class="nv">BinDict</span> <span class="o">=</span> dict:from_list<span class="o">([{</span>Name, Att<span class="o">}</span> <span class="o">||</span> <span class="c1">#att{name=Name}=Att &lt;- DiskBins]),</span>
+<span class="ln"> 5</span>    <span class="nv">MergedBins</span> <span class="o">=</span> lists:map<span class="o">(</span>
+<span class="ln"> 6</span>        fun<span class="o">(</span><span class="c1">#att{name=Name, data=stub, revpos=StubRevPos}) -&gt;</span>
+<span class="ln"> 7</span>            <span class="k">case</span> dict:find<span class="o">(</span>Name, BinDict<span class="o">)</span> of
+<span class="ln"> 8</span>            <span class="o">{</span>ok, <span class="c1">#att{revpos=DiskRevPos}=DiskAtt}</span>
+<span class="ln"> 9</span>                    when <span class="nv">DiskRevPos</span> <span class="o">==</span> StubRevPos orelse <span class="nv">StubRevPos</span> <span class="o">==</span> nil -&gt;
 <span class="ln">10</span>                DiskAtt<span class="p">;</span>
 <span class="ln">11</span>            _ -&gt;
 <span class="ln">12</span>                throw<span class="o">({</span>missing_stub,
@@ -368,8 +368,8 @@
 <p>というリストに変換した後、<code>dict:from_list/1</code>でdictionaryに変換します。それを<code>FullDocInfo</code>と共に<code>prep_and_validate_update/5</code>に渡してバリデーションチェック等を行い、ドキュメントが更新OKかNGかを判定しているようです。<code>not_found</code>が指定された場合と比較すると、<code>OldFullDocInfo</code>からleafの値を取り出して、バリデーションチェックを行っているであろう<code>prep_and_validate_update/5</code>に渡しているところが異なります。<code>prep_and_validate_update/5</code>を見てみます。</p>
 
 <p>couch_db.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>prep_and_validate_update<span class="o">(</span>Db, <span class="c1">#doc{id=Id,revs={RevStart, Revs}}=Doc,
-</span><span class="ln"> 2</span><span class="c1"></span>        OldFullDocInfo, LeafRevsDict, AllowConflict<span class="o">)</span> -&gt;
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>prep_and_validate_update<span class="o">(</span>Db, <span class="c1">#doc{id=Id,revs={RevStart, Revs}}=Doc,</span>
+<span class="ln"> 2</span>        OldFullDocInfo, LeafRevsDict, AllowConflict<span class="o">)</span> -&gt;
 <span class="ln"> 3</span>    <span class="k">case</span> Revs of
 <span class="ln"> 4</span>    <span class="o">[</span>PrevRev<span class="p">|</span>_<span class="o">]</span> -&gt;
 <span class="ln"> 5</span>        <span class="k">case</span> dict:find<span class="o">({</span>RevStart, PrevRev<span class="o">}</span>, LeafRevsDict<span class="o">)</span> of
@@ -384,8 +384,8 @@
 <span class="ln">14</span>                <span class="o">{</span>validate_doc_update<span class="o">(</span>Db, Doc, LoadDiskDoc<span class="o">)</span>, Doc<span class="o">}</span>
 <span class="ln">15</span>            end<span class="p">;</span>
 <span class="ln">16</span>        error when AllowConflict -&gt;
-<span class="ln">17</span>            couch_doc:merge_stubs<span class="o">(</span>Doc, <span class="c1">#doc{}), % will generate error if
-</span><span class="ln">18</span><span class="c1"></span>                                                        % there are stubs
+<span class="ln">17</span>            couch_doc:merge_stubs<span class="o">(</span>Doc, <span class="c1">#doc{}), % will generate error if</span>
+<span class="ln">18</span>                                                        % there are stubs
 <span class="ln">19</span>            <span class="o">{</span>validate_doc_update<span class="o">(</span>Db, Doc, fun<span class="o">()</span> -&gt; nil end<span class="o">)</span>, Doc<span class="o">}</span><span class="p">;</span>
 <span class="ln">20</span>        error -&gt;
 <span class="ln">21</span>            <span class="o">{</span>conflict, Doc<span class="o">}</span>
@@ -407,12 +407,12 @@
 <p><code>couch_db:validate_doc_update/3</code>を見てみます。</p>
 
 <p>couch_db.erl:
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>validate_doc_update<span class="o">(</span><span class="c1">#db{}=Db, #doc{id= &lt;&lt;&#34;_design/&#34;,_/binary&gt;&gt;}, _GetDiskDocFun) -&gt;
-</span><span class="ln"> 2</span><span class="c1"></span>    catch check_is_admin<span class="o">(</span>Db<span class="o">)</span><span class="p">;</span>
-<span class="ln"> 3</span>validate_doc_update<span class="o">(</span><span class="c1">#db{validate_doc_funs=[]}, _Doc, _GetDiskDocFun) -&gt;
-</span><span class="ln"> 4</span><span class="c1"></span>    ok<span class="p">;</span>
-<span class="ln"> 5</span>validate_doc_update<span class="o">(</span>_Db, <span class="c1">#doc{id= &lt;&lt;&#34;_local/&#34;,_/binary&gt;&gt;}, _GetDiskDocFun) -&gt;
-</span><span class="ln"> 6</span><span class="c1"></span>    ok<span class="p">;</span>
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="ln"> 1</span>validate_doc_update<span class="o">(</span><span class="c1">#db{}=Db, #doc{id= &lt;&lt;&#34;_design/&#34;,_/binary&gt;&gt;}, _GetDiskDocFun) -&gt;</span>
+<span class="ln"> 2</span>    catch check_is_admin<span class="o">(</span>Db<span class="o">)</span><span class="p">;</span>
+<span class="ln"> 3</span>validate_doc_update<span class="o">(</span><span class="c1">#db{validate_doc_funs=[]}, _Doc, _GetDiskDocFun) -&gt;</span>
+<span class="ln"> 4</span>    ok<span class="p">;</span>
+<span class="ln"> 5</span>validate_doc_update<span class="o">(</span>_Db, <span class="c1">#doc{id= &lt;&lt;&#34;_local/&#34;,_/binary&gt;&gt;}, _GetDiskDocFun) -&gt;</span>
+<span class="ln"> 6</span>    ok<span class="p">;</span>
 <span class="ln"> 7</span>validate_doc_update<span class="o">(</span>Db, Doc, GetDiskDocFun<span class="o">)</span> -&gt;
 <span class="ln"> 8</span>    <span class="nv">DiskDoc</span> <span class="o">=</span> GetDiskDocFun<span class="o">()</span>,
 <span class="ln"> 9</span>    <span class="nv">JsonCtx</span> <span class="o">=</span> couch_util:json_user_ctx<span class="o">(</span>Db<span class="o">)</span>,
@@ -472,7 +472,7 @@
     <footer class="post-footer">
       
       <p class="post-copyright">
-        This post was published <strong>1793</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+        This post was published <strong>1892</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
       </p>
     </footer>
     
