@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>uWSGI の 各プロセスのスレッドダンプを見る</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="前回 uWSGI の prefork を調べた際に、任意の Worker のスレッドダンプを出力する方法を見つけられなかったので、スレッドダンプを JSON として返す function を書きました。 しかし、" />
+
+  
+  
+  <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://masayuki038.github.io/images/tdump/tdump.png"/>
+
+<meta name="twitter:title" content="uWSGI の 各プロセスのスレッドダンプを見る"/>
+<meta name="twitter:description" content="前回 uWSGI の prefork を調べた際に、任意の Worker のスレッドダンプを出力する方法を見つけられなかったので、スレッドダンプを JSON として返す function を書きました。 しかし、"/>
+
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="uWSGI の 各プロセスのスレッドダンプを見る" />
+  <meta property="og:description" content="前回 uWSGI の prefork を調べた際に、任意の Worker のスレッドダンプを出力する方法を見つけられなかったので、スレッドダンプを JSON として返す function を書きました。 しかし、" />
+  <meta property="og:url" content="/blog/2019/10/01/thread-dump-uwsgi/" />
+  <meta property="og:image" content="/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="/blog/2019/10/01/thread-dump-uwsgi/" />
+<link rel="alternative" href="/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="/css/bundle.css" />
+<link rel="stylesheet" href="/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+
+<nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">uWSGI の 各プロセスのスレッドダンプを見る</h1>
+      <p class="post-meta">@Masayuki Takahashi · Oct 1, 2019 · 3 min read</p>
+    </header>
+    <article class="post-content">
+
+<p><a href="https://masayuki038.github.io/blog/2019/09/23/flask-uwsgi-prefork/">前回</a> uWSGI の prefork を調べた際に、任意の Worker のスレッドダンプを出力する方法を見つけられなかったので、スレッドダンプを JSON として返す function を書きました。</p>
+
+<p>しかし、Master / Worker で統一的にスレッドダンプを取りたかったので色々と試した結果、<a href="https://github.com/alonho/pystuck">pystuck</a> を使ってそれぞれのスレッドダンプを取得することができました。</p>
+
+<h1 id="pystuck-https-github-com-alonho-pystuck"><a href="https://github.com/alonho/pystuck">pystuck</a></h1>
+
+<p><a href="https://github.com/alonho/pystuck">pystuck</a> は、<a href="https://en.wikipedia.org/wiki/RPyC">RPyC</a> というリモートプロシージャコールを使って、<a href="https://en.wikipedia.org/wiki/RPyC">RPyC</a> のサーバー側のスレッドダンプを返します。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">pystuck</span>
+<span class="n">pystuck</span><span class="o">.</span><span class="n">run_server</span><span class="p">()</span></code></pre></div>
+
+<p>サーバー側で上記のように記載すると <code>host=127.0.0.1</code> , <code>port=6666</code> で <a href="https://en.wikipedia.org/wiki/RPyC">RPyC</a> のリクエストを待ちます。</p>
+
+<p><a href="https://github.com/alonho/pystuck">pystuck</a> コマンドを実行すると、クライアントが起動します。<code>--host</code> や <code>--port</code> を指定することで、接続する Server の IP と Port を変更できます。クライアントが起動すると以下のように表示されます。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text"># pystuck
+Welcome to the pystuck interactive shell.
+Use the &#39;modules&#39; dictionary to access remote modules (like &#39;os&#39;, or &#39;__main__&#39;)
+Use the `%show threads` magic to display all thread stack traces.
+
+In [1]: </code></pre></div>
+
+<p>あとは <code>%show threads</code> とタイプすれば、Server のスレッドダンプを見ることができます(後述)。</p>
+
+<h1 id="worker">Worker</h1>
+
+<p>uWSGI の Master プロセスで <a href="https://github.com/alonho/pystuck">pystuck</a> の Server を起動するには <code>app.py</code> や <code>__init__.py</code> で <code>pystuck.run_server()</code> を実行すれば良いのですが、それぞれの Worker のスレッドダンプを取得するには、Worker 側でも <a href="https://github.com/alonho/pystuck">pystuck</a> の Server を起動する必要もあります。uWSGI の場合は <code>@postfork</code> という <a href="https://uwsgi-docs.readthedocs.io/en/latest/PythonDecorators.html#uwsgidecorators.postfork">decorator</a> を使い、 fork 後に Server を起動するようにしました。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="nd">@postfork</span>
+<span class="k">def</span> <span class="nf">worker_init</span><span class="p">():</span>
+    <span class="n">pystuck</span><span class="o">.</span><span class="n">run_server</span><span class="p">()</span></code></pre></div>
+
+<h1 id="unix-domain-socket">Unix Domain Socket</h1>
+
+<p><code>pystuck.run_server()</code> を実行する際に、Master / Worker 間で同じ port を使わないようにする必要があるのですが、調整がちょっと面倒なので Unix Domain Socket を使います。<a href="https://github.com/alonho/pystuck">pystuck</a> では Server は Unix Domain Socket が使えるのですが、Client は使えるようになっていなかったので、使えるように修正しました。</p>
+
+<ul>
+<li><a href="https://github.com/masayuki038/pystuck/tree/unix-domain-socket-on-client">https://github.com/masayuki038/pystuck/tree/unix-domain-socket-on-client</a></li>
+</ul>
+
+<p>Master と Worker でファイルパスが重複しないように、Worker 側のファイル名には PID を入れました。</p>
+
+<h1 id="code">Code</h1>
+
+<p>サンプルコードは以下のとおりです。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="ln"> 1</span><span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+<span class="ln"> 2</span><span class="kn">import</span> <span class="nn">os</span>
+<span class="ln"> 3</span><span class="kn">import</span> <span class="nn">json</span>
+<span class="ln"> 4</span><span class="kn">import</span> <span class="nn">threading</span>
+<span class="ln"> 5</span>
+<span class="ln"> 6</span><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">jsonify</span>
+<span class="ln"> 7</span>
+<span class="ln"> 8</span><span class="kn">from</span> <span class="nn">uwsgidecorators</span> <span class="kn">import</span> <span class="n">postfork</span>
+<span class="ln"> 9</span><span class="kn">import</span> <span class="nn">pystuck</span>
+<span class="ln">10</span><span class="n">pystuck</span><span class="o">.</span><span class="n">run_server</span><span class="p">(</span><span class="n">unix_socket</span><span class="o">=</span><span class="s1">&#39;/tmp/utd-master&#39;</span><span class="p">)</span>
+<span class="ln">11</span>
+<span class="ln">12</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="ln">13</span><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="ln">14</span>
+<span class="ln">15</span><span class="nd">@postfork</span>
+<span class="ln">16</span><span class="k">def</span> <span class="nf">worker_init</span><span class="p">():</span>
+<span class="ln">17</span>    <span class="n">pystuck</span><span class="o">.</span><span class="n">run_server</span><span class="p">(</span><span class="n">unix_socket</span><span class="o">=</span><span class="n">f</span><span class="s1">&#39;/tmp/utd-{os.getpid()}&#39;</span><span class="p">)</span>
+<span class="ln">18</span>
+<span class="ln">19</span>
+<span class="ln">20</span><span class="k">def</span> <span class="nf">process</span><span class="p">():</span>
+<span class="ln">21</span>    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+<span class="ln">22</span>        <span class="k">try</span><span class="p">:</span>
+<span class="ln">23</span>            <span class="k">global</span> <span class="n">i</span>
+<span class="ln">24</span>            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="ln">25</span>            <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&#34;i: {i}&#34;</span><span class="p">)</span>
+<span class="ln">26</span>        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+<span class="ln">27</span>            <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&#34;err: {err}&#34;</span><span class="p">)</span>
+<span class="ln">28</span>
+<span class="ln">29</span>        <span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="ln">30</span>
+<span class="ln">31</span>
+<span class="ln">32</span><span class="n">th</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">process</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;test-thread&#39;</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="ln">33</span><span class="n">th</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="ln">34</span>
+<span class="ln">35</span>
+<span class="ln">36</span><span class="nd">@app.route</span><span class="p">(</span><span class="s1">&#39;/hello&#39;</span><span class="p">)</span>
+<span class="ln">37</span><span class="k">def</span> <span class="nf">hello_world</span><span class="p">():</span>
+<span class="ln">38</span>    <span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="ln">39</span>    <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="n">f</span><span class="s1">&#39;Hello World, {i}, {threading.currentThread().ident}&#39;</span><span class="p">})</span></code></pre></div>
+
+<p>これを実行する(worker=2)と、uWSGI のプロセスが以下のように起動します。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">root@6caf7639d198:/# ps afx
+  PID TTY      STAT   TIME COMMAND
+  575 pts/4    Ss     0:00 bash
+  589 pts/4    R+     0:00  \_ ps afx
+    6 pts/1    Ss     0:00 bash
+  523 pts/1    Sl+    0:01  \_ uwsgi uwsgi.ini
+  526 pts/1    Sl+    0:00      \_ uwsgi uwsgi.ini
+  527 pts/1    Sl+    0:00      \_ uwsgi uwsgi.ini
+  528 pts/1    S+     0:00      \_ uwsgi uwsgi.ini
+    1 pts/0    Ss+    0:00 /bin/bash</code></pre></div>
+
+<p>そして以下のようにファイルが生成されます。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">root@6caf7639d198:/# ls -l /tmp
+total 0
+srwxr-xr-x 1 root root 0 Sep 29 15:53 utd-526
+srwxr-xr-x 1 root root 0 Sep 29 15:53 utd-527
+srwxr-xr-x 1 root root 0 Sep 29 15:53 utd-master</code></pre></div>
+
+<p>PID=528 は　Worker ではなく uWSGI の httpd のプロセスなので、ファイルは出力されません。</p>
+
+<p>あとはスレッドダンプを出力したいプロセスのファイルを指定して <code>pystuck</code> コマンドを起動します。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">root@6caf7639d198:/# pystuck --unix-socket /tmp/utd-527
+Welcome to the pystuck interactive shell.
+Use the &#39;modules&#39; dictionary to access remote modules (like &#39;os&#39;, or &#39;__main__&#39;)
+Use the `%show threads` magic to display all thread stack traces.
+
+In [1]: %show threads
+&lt;Thread(Thread-2, started daemon 139703068108544)&gt;
+  File &#34;/usr/local/lib/python3.7/threading.py&#34;, line 890, in _bootstrap
+    self._bootstrap_inner()
+  File &#34;/usr/local/lib/python3.7/threading.py&#34;, line 926, in _bootstrap_inner
+    self.run()
+  File &#34;/usr/local/lib/python3.7/threading.py&#34;, line 870, in run
+    self._target(*self._args, **self._kwargs)
+  File &#34;/root/works/app.py&#34;, line 25, in process
+    print(f&#34;i: {i}&#34;)
+
+&lt;Thread(Thread-5, started daemon 139703076501248)&gt;
+  File &#34;/usr/local/lib/python3.7/threading.py&#34;, line 890, in _bootstrap
+    self._bootstrap_inner()
+  File &#34;/usr/local/lib/python3.7/threading.py&#34;, line 926, in _bootstrap_inner
+    self.run()
+  File &#34;/usr/local/lib/python3.7/threading.py&#34;, line 870, in run
+    self._target(*self._args, **self._kwargs)
+  File &#34;/usr/local/lib/python3.7/site-packages/rpyc/utils/server.py&#34;, line 262, in start
+    self.accept()
+  File &#34;/usr/local/lib/python3.7/site-packages/rpyc/utils/server.py&#34;, line 138, in accept
+    sock, addrinfo = self.listener.accept()
+  File &#34;/usr/local/lib/python3.7/socket.py&#34;, line 212, in accept
+    fd, addr = self._accept()</code></pre></div>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p><a href="https://github.com/alonho/pystuck">pystuck</a> を使って uWSGI の Master / Worker のスレッドダンプが見れるようになりました。</p>
+
+<p>スレッドダンプツールとしては、他に <a href="https://github.com/wooparadog/pystack">pystack</a> を試してみましたが、空のファイルが生成されるだけでスレッドダンプを出力することができませんでした。(理由は追いかけてません)</p>
+
+<p>最初は Linux の signal を trap してスレッドダンプを出力しようとしたのですが、uWSGI が trap しているらしく、handler が呼ばれませんでした。</p>
+
+<p>また、<a href="https://gist.github.com/charles-dyfis-net/1424448">uWSGI thread dump trigger</a> という gist にアップされたコードも試してみました。これは uWSGI が独自で持つ Signal Framework を使っています。実際に試してみたところ、uWSGI の signal の handler を実行するスレッドが HTTP Request を処理するスレッドと同じだった為、HTTP Requet が滞留している原因を調べる用途には使えないと思い、このアプローチは採用しませんでした。</p>
+
+<p>これで HTTP リクエストが詰まっても原因究明ができそうです。</p>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2019 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>

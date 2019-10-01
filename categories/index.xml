@@ -6,7 +6,7 @@
     <description>Recent content in Categories on act-act</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja</language>
-    <lastBuildDate>Mon, 23 Sep 2019 00:00:01 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 01 Oct 2019 00:00:01 +0000</lastBuildDate>
     
 	<atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,7 +14,7 @@
     <item>
       <title>flask</title>
       <link>/categories/flask/</link>
-      <pubDate>Mon, 23 Sep 2019 00:00:01 +0000</pubDate>
+      <pubDate>Tue, 01 Oct 2019 00:00:01 +0000</pubDate>
       
       <guid>/categories/flask/</guid>
       <description></description>
@@ -23,7 +23,7 @@
     <item>
       <title>python</title>
       <link>/categories/python/</link>
-      <pubDate>Mon, 23 Sep 2019 00:00:01 +0000</pubDate>
+      <pubDate>Tue, 01 Oct 2019 00:00:01 +0000</pubDate>
       
       <guid>/categories/python/</guid>
       <description></description>
@@ -32,7 +32,7 @@
     <item>
       <title>uwsgi</title>
       <link>/categories/uwsgi/</link>
-      <pubDate>Mon, 23 Sep 2019 00:00:01 +0000</pubDate>
+      <pubDate>Tue, 01 Oct 2019 00:00:01 +0000</pubDate>
       
       <guid>/categories/uwsgi/</guid>
       <description></description>
