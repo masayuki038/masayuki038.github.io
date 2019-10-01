@@ -12,7 +12,7 @@
     
     
     <item>
-      <title>uWSGI の 各プロセスのスレッドダンプを見る</title>
+      <title>uWSGI の 各プロセスのスレッドダンプを取得する</title>
       <link>/blog/2019/10/01/thread-dump-uwsgi/</link>
       <pubDate>Tue, 01 Oct 2019 00:00:01 +0000</pubDate>
       
