@@ -6,10 +6,19 @@
     <description>Recent content on act-act</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja</language>
-    <lastBuildDate>Tue, 01 Oct 2019 00:00:01 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 07 Nov 2019 00:00:01 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Calcite Code Reading Part 2</title>
+      <link>/blog/2019/11/07/calcite-code-reading-part2/</link>
+      <pubDate>Thu, 07 Nov 2019 00:00:01 +0000</pubDate>
+      
+      <guid>/blog/2019/11/07/calcite-code-reading-part2/</guid>
+      <description>Image by 949158 from Pixabay Calcite Adapter Calcite には Adapter という要素があります。Adapter は、SQL で問い合せるデータの種別ごと用意します。例えば、前回の説明で使用した CSV Adapter</description>
+    </item>
     
     <item>
       <title>uWSGI の 各プロセスのスレッドダンプを取得する</title>

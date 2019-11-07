@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Calcite Code Reading Part 2</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="Image by 949158 from Pixabay Calcite Adapter Calcite には Adapter という要素があります。Adapter は、SQL で問い合せるデータの種別ごと用意します。例えば、前回の説明で使用した CSV Adapter" />
+
+  
+  
+  <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://masayuki038.github.io/images/calcite/calcite-728760_1280.jpg"/>
+
+<meta name="twitter:title" content="Calcite Code Reading Part 2"/>
+<meta name="twitter:description" content="Image by 949158 from Pixabay Calcite Adapter Calcite には Adapter という要素があります。Adapter は、SQL で問い合せるデータの種別ごと用意します。例えば、前回の説明で使用した CSV Adapter"/>
+
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Calcite Code Reading Part 2" />
+  <meta property="og:description" content="Image by 949158 from Pixabay Calcite Adapter Calcite には Adapter という要素があります。Adapter は、SQL で問い合せるデータの種別ごと用意します。例えば、前回の説明で使用した CSV Adapter" />
+  <meta property="og:url" content="/blog/2019/11/06/calcite-code-reading-part2/" />
+  <meta property="og:image" content="/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="/blog/2019/11/06/calcite-code-reading-part2/" />
+<link rel="alternative" href="/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="/css/bundle.css" />
+<link rel="stylesheet" href="/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+
+<nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Calcite Code Reading Part 2</h1>
+      <p class="post-meta">@Masayuki Takahashi · Nov 7, 2019 · 6 min read</p>
+    </header>
+    <article class="post-content">
+
+<p><img src="/images/calcite/calcite-728760_1280.jpg" alt="calcite" /></p>
+
+<p>Image by <a href="https://pixabay.com/users/949158-949158/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=728760">949158</a> from <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=728760">Pixabay</a></p>
+
+<h1 id="calcite-adapter">Calcite Adapter</h1>
+
+<p>Calcite には <a href="https://calcite.apache.org/docs/adapter.html#schema-adapters">Adapter</a> という要素があります。<a href="https://calcite.apache.org/docs/adapter.html#schema-adapters">Adapter</a> は、SQL で問い合せるデータの種別ごと用意します。例えば、<a href="/blog/2019/06/04/calcite-code-reading-part1/">前回の説明</a>で使用した <a href="https://github.com/apache/calcite/tree/master/example/csv">CSV Adapter</a> は、CSV 形式のデータを SQL で問い合わせる機能を提供します。今回は <a href="https://avro.apache.org/">Avro</a> 形式のデータを SQL で問い合わせる Avro Adapter を実装していきながら、Calcite のクラスを眺めていきます。</p>
+
+<p>但し Adapter を一から作るのは大変なので、大部分の処理は Calcite の core パッケージにある <a href="https://github.com/apache/calcite/tree/master/core/src/main/java/org/apache/calcite/adapter/enumerable">Enumerable Adapter</a> を使います。<a href="https://github.com/apache/calcite/tree/master/core/src/main/java/org/apache/calcite/adapter/enumerable">Enumerable Adapter</a>は、row-wise な検索を行う為に必要な機能を持つ <a href="https://calcite.apache.org/docs/adapter.html#schema-adapters">Adapter</a> です。<a href="https://github.com/apache/calcite/tree/master/example/csv">CSV Adapter</a> も <a href="https://github.com/apache/calcite/tree/master/core/src/main/java/org/apache/calcite/adapter/enumerable">Enumerable Adapter</a> の機能を使っています。</p>
+
+<h1 id="schemafactory">SchemaFactory</h1>
+
+<p><a href="https://calcite.apache.org/docs/adapter.html#schema-adapters">Adapter</a> を作るにあたり、最初に作成するクラスは <code>SchemaFactory</code> です。これは Calcite の <code>Schema</code> クラスのインスタンスを作成して返すシンプルな Factory クラスです。作成した <code>SchemaFactory</code> のクラス名を、JSON 形式の設定ファイルの <code>factory</code> に指定します。今回はこの JSON ファイルを <code>model.json</code> とします。 <code>model.json</code> の内容は以下のとおりです。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;1.0&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;defaultSchema&#34;</span><span class="p">:</span> <span class="s2">&#34;SAMPLES&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;schemas&#34;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;SAMPLES&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;custom&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;factory&#34;</span><span class="p">:</span> <span class="s2">&#34;net.wrap_trap.calcite_avro_sample.AvroSchemaFactory&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;operand&#34;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&#34;directory&#34;</span><span class="p">:</span> <span class="s2">&#34;samples&#34;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span></code></pre></div>
+
+<p>このファイルは、JDBC の <code>getConnection</code> を呼び出す際に以下のように指定します。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="n">Connection</span> <span class="n">conn</span> <span class="o">=</span> <span class="n">DriverManager</span><span class="o">.</span><span class="na">getConnection</span><span class="o">(</span><span class="s">&#34;jdbc:calcite:model=target/test-classes/model.json&#34;</span><span class="o">);</span></code></pre></div>
+
+<p><code>SchemaFactory</code> クラスのコードは以下のとおりです。</p>
+
+<ul>
+<li>AvroSchemaFactory.java</li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln"> 1</span><span class="kn">package</span> <span class="nn">net.wrap_trap.calcite_avro_sample</span><span class="o">;</span>
+<span class="ln"> 2</span>
+<span class="ln"> 3</span><span class="kn">import</span> <span class="nn">org.apache.calcite.model.ModelHandler</span><span class="o">;</span>
+<span class="ln"> 4</span><span class="kn">import</span> <span class="nn">org.apache.calcite.schema.Schema</span><span class="o">;</span>
+<span class="ln"> 5</span><span class="kn">import</span> <span class="nn">org.apache.calcite.schema.SchemaFactory</span><span class="o">;</span>
+<span class="ln"> 6</span><span class="kn">import</span> <span class="nn">org.apache.calcite.schema.SchemaPlus</span><span class="o">;</span>
+<span class="ln"> 7</span>
+<span class="ln"> 8</span><span class="kn">import</span> <span class="nn">java.io.File</span><span class="o">;</span>
+<span class="ln"> 9</span><span class="kn">import</span> <span class="nn">java.util.Map</span><span class="o">;</span>
+<span class="ln">10</span>
+<span class="ln">11</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AvroSchemaFactory</span> <span class="kd">implements</span>  <span class="n">SchemaFactory</span> <span class="o">{</span>
+<span class="ln">12</span>  <span class="kd">public</span> <span class="n">Schema</span> <span class="nf">create</span><span class="o">(</span><span class="n">SchemaPlus</span> <span class="n">parentSchema</span><span class="o">,</span> <span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">operand</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">13</span>    <span class="n">String</span> <span class="n">directory</span> <span class="o">=</span> <span class="o">(</span><span class="n">String</span><span class="o">)</span> <span class="n">operand</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&#34;directory&#34;</span><span class="o">);</span>
+<span class="ln">14</span>    <span class="n">File</span> <span class="n">base</span> <span class="o">=</span> <span class="o">(</span><span class="n">File</span><span class="o">)</span> <span class="n">operand</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">ModelHandler</span><span class="o">.</span><span class="na">ExtraOperand</span><span class="o">.</span><span class="na">BASE_DIRECTORY</span><span class="o">.</span><span class="na">camelName</span><span class="o">);</span>
+<span class="ln">15</span>    <span class="n">File</span> <span class="n">directoryFile</span> <span class="o">=</span> <span class="k">new</span> <span class="n">File</span><span class="o">(</span><span class="n">directory</span><span class="o">);</span>
+<span class="ln">16</span>    <span class="k">if</span> <span class="o">(</span><span class="n">base</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">directoryFile</span><span class="o">.</span><span class="na">isAbsolute</span><span class="o">())</span> <span class="o">{</span>
+<span class="ln">17</span>      <span class="n">directoryFile</span> <span class="o">=</span> <span class="k">new</span> <span class="n">File</span><span class="o">(</span><span class="n">base</span><span class="o">,</span> <span class="n">directory</span><span class="o">);</span>
+<span class="ln">18</span>    <span class="o">}</span>
+<span class="ln">19</span>    <span class="k">return</span> <span class="k">new</span> <span class="n">AvroSchema</span><span class="o">(</span><span class="n">directoryFile</span><span class="o">);</span>
+<span class="ln">20</span>  <span class="o">}</span>
+<span class="ln">21</span><span class="o">}</span></code></pre></div>
+
+<p><code>SchemaFactory</code> クラスでは、この json ファイルの <code>operand</code> の値を読むことができます。今回は <code>operand</code> に Avro データファイルを置くディレクトリ名を指定しています。</p>
+
+<h1 id="schema">Schema</h1>
+
+<p><code>Schema</code> は Calcite の <code>Table</code> を管理するクラスです。この <code>AvroSchema</code> は、前記の <code>model.json</code> の <code>operand</code> で指定したディレクトリパスの下にある [TableName].avro ファイルを読み、Avro の スキーマ (Calcite の <code>Schema</code> とは異なります) と Avro のレコード(GenericData.Record) を取り出して <code>AvroTable</code> に渡しています。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln"> 1</span><span class="kn">package</span> <span class="nn">net.wrap_trap.calcite_avro_sample</span><span class="o">;</span>
+<span class="ln"> 2</span>
+<span class="ln"> 3</span><span class="kn">import</span> <span class="nn">org.apache.avro.Schema</span><span class="o">;</span>
+<span class="ln"> 4</span><span class="kn">import</span> <span class="nn">org.apache.avro.file.DataFileReader</span><span class="o">;</span>
+<span class="ln"> 5</span><span class="kn">import</span> <span class="nn">org.apache.avro.generic.GenericData</span><span class="o">;</span>
+<span class="ln"> 6</span><span class="kn">import</span> <span class="nn">org.apache.avro.generic.GenericDatumReader</span><span class="o">;</span>
+<span class="ln"> 7</span><span class="kn">import</span> <span class="nn">org.apache.calcite.schema.Table</span><span class="o">;</span>
+<span class="ln"> 8</span><span class="kn">import</span> <span class="nn">org.apache.calcite.schema.impl.AbstractSchema</span><span class="o">;</span>
+<span class="ln"> 9</span>
+<span class="ln">10</span><span class="kn">import</span> <span class="nn">java.io.File</span><span class="o">;</span>
+<span class="ln">11</span><span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+<span class="ln">12</span><span class="kn">import</span> <span class="nn">java.util.*</span><span class="o">;</span>
+<span class="ln">13</span>
+<span class="ln">14</span>
+<span class="ln">15</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AvroSchema</span> <span class="kd">extends</span> <span class="n">AbstractSchema</span> <span class="o">{</span>
+<span class="ln">16</span>  <span class="kd">private</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Table</span><span class="o">&gt;</span> <span class="n">tableMap</span><span class="o">;</span>
+<span class="ln">17</span>  <span class="kd">private</span> <span class="n">File</span> <span class="n">directory</span><span class="o">;</span>
+<span class="ln">18</span>
+<span class="ln">19</span>  <span class="kd">public</span> <span class="nf">AvroSchema</span><span class="o">(</span><span class="n">File</span> <span class="n">directory</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">20</span>    <span class="k">this</span><span class="o">.</span><span class="na">directory</span> <span class="o">=</span> <span class="n">directory</span><span class="o">;</span>
+<span class="ln">21</span>  <span class="o">}</span>
+<span class="ln">22</span>
+<span class="ln">23</span>  <span class="nd">@Override</span>
+<span class="ln">24</span>  <span class="kd">public</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Table</span><span class="o">&gt;</span> <span class="nf">getTableMap</span><span class="o">()</span> <span class="o">{</span>
+<span class="ln">25</span>    <span class="k">if</span> <span class="o">(</span><span class="n">tableMap</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">26</span>      <span class="n">tableMap</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span>
+<span class="ln">27</span>      <span class="n">File</span><span class="o">[]</span> <span class="n">avroFiles</span> <span class="o">=</span> <span class="n">directory</span><span class="o">.</span><span class="na">listFiles</span><span class="o">((</span><span class="n">dir</span><span class="o">,</span> <span class="n">name</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">name</span><span class="o">.</span><span class="na">endsWith</span><span class="o">(</span><span class="s">&#34;.avro&#34;</span><span class="o">));</span>
+<span class="ln">28</span>      <span class="n">Arrays</span><span class="o">.</span><span class="na">stream</span><span class="o">(</span><span class="n">avroFiles</span><span class="o">).</span><span class="na">forEach</span><span class="o">(</span><span class="n">file</span> <span class="o">-&gt;</span> <span class="o">{</span>
+<span class="ln">29</span>        <span class="n">GenericDatumReader</span><span class="o">&lt;</span><span class="n">GenericData</span><span class="o">.</span><span class="na">Record</span><span class="o">&gt;</span> <span class="n">datum</span> <span class="o">=</span> <span class="k">new</span> <span class="n">GenericDatumReader</span><span class="o">&lt;&gt;();</span>
+<span class="ln">30</span>
+<span class="ln">31</span>        <span class="k">try</span> <span class="o">(</span><span class="n">DataFileReader</span><span class="o">&lt;</span><span class="n">GenericData</span><span class="o">.</span><span class="na">Record</span><span class="o">&gt;</span> <span class="n">reader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataFileReader</span><span class="o">&lt;&gt;(</span><span class="n">file</span><span class="o">,</span> <span class="n">datum</span><span class="o">))</span> <span class="o">{</span>
+<span class="ln">32</span>          <span class="n">Schema</span> <span class="n">schema</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="na">getSchema</span><span class="o">();</span>
+<span class="ln">33</span>          <span class="n">List</span><span class="o">&lt;</span><span class="n">GenericData</span><span class="o">.</span><span class="na">Record</span><span class="o">&gt;</span> <span class="n">records</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+<span class="ln">34</span>          <span class="k">while</span> <span class="o">(</span><span class="n">reader</span><span class="o">.</span><span class="na">hasNext</span><span class="o">())</span> <span class="o">{</span>
+<span class="ln">35</span>            <span class="n">GenericData</span><span class="o">.</span><span class="na">Record</span> <span class="n">record</span> <span class="o">=</span> <span class="k">new</span> <span class="n">GenericData</span><span class="o">.</span><span class="na">Record</span><span class="o">(</span><span class="n">schema</span><span class="o">);</span>
+<span class="ln">36</span>            <span class="n">reader</span><span class="o">.</span><span class="na">next</span><span class="o">(</span><span class="n">record</span><span class="o">);</span>
+<span class="ln">37</span>            <span class="n">records</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">record</span><span class="o">);</span>
+<span class="ln">38</span>          <span class="o">}</span>
+<span class="ln">39</span>          <span class="n">tableMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span>
+<span class="ln">40</span>            <span class="n">trim</span><span class="o">(</span><span class="n">file</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span> <span class="s">&#34;.avro&#34;</span><span class="o">).</span><span class="na">toUpperCase</span><span class="o">(),</span>
+<span class="ln">41</span>            <span class="k">new</span> <span class="n">AvroTable</span><span class="o">(</span><span class="n">schema</span><span class="o">,</span> <span class="n">records</span><span class="o">));</span>
+<span class="ln">42</span>        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">43</span>          <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalStateException</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
+<span class="ln">44</span>        <span class="o">}</span>
+<span class="ln">45</span>      <span class="o">});</span>
+<span class="ln">46</span>    <span class="o">}</span>
+<span class="ln">47</span>    <span class="k">return</span> <span class="n">tableMap</span><span class="o">;</span>
+<span class="ln">48</span>  <span class="o">}</span></code></pre></div>
+
+<h1 id="table">Table</h1>
+
+<h2 id="table-abstracttable">Table (AbstractTable)</h2>
+
+<p>Calcite の <a href="https://calcite.apache.org/apidocs/org/apache/calcite/schema/Table.html">Table</a> は、テーブルの種別(Table, View 等)やフィールドタイプを返すインターフェースです。<code>AvroTable</code> では Avro ファイルから取り出したデータの各フィールドの型を参照し、Calcite のテーブルの型情報に変換する <code>getRowType</code> を実装しています。なお、以下のコードの <code>schema</code> は、前述の Calcite の Schema クラスではなく、Avro のスキーマを表す <code>Schema</code> クラスです。</p>
+
+<ul>
+<li>AvroTable.java</li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln">42</span>  <span class="nd">@Override</span>
+<span class="ln">43</span>  <span class="kd">public</span> <span class="n">RelDataType</span> <span class="nf">getRowType</span><span class="o">(</span><span class="n">RelDataTypeFactory</span> <span class="n">relDataTypeFactory</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">44</span>    <span class="n">JavaTypeFactory</span> <span class="n">typeFactory</span> <span class="o">=</span> <span class="o">(</span><span class="n">JavaTypeFactory</span><span class="o">)</span> <span class="n">relDataTypeFactory</span><span class="o">;</span>
+<span class="ln">45</span>
+<span class="ln">46</span>    <span class="n">List</span><span class="o">&lt;</span><span class="n">Pair</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">RelDataType</span><span class="o">&gt;&gt;</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="na">getFields</span><span class="o">().</span><span class="na">stream</span><span class="o">().</span><span class="na">map</span><span class="o">(</span><span class="n">field</span> <span class="o">-&gt;</span> <span class="o">{</span>
+<span class="ln">47</span>      <span class="n">Schema</span><span class="o">.</span><span class="na">Type</span> <span class="n">avroFieldType</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="na">schema</span><span class="o">().</span><span class="na">getType</span><span class="o">();</span>
+<span class="ln">48</span>      <span class="k">if</span> <span class="o">(</span><span class="n">avroFieldType</span> <span class="o">==</span> <span class="n">Schema</span><span class="o">.</span><span class="na">Type</span><span class="o">.</span><span class="na">UNION</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">49</span>        <span class="n">avroFieldType</span> <span class="o">=</span> <span class="n">getAvroNullableField</span><span class="o">(</span><span class="n">field</span><span class="o">);</span>
+<span class="ln">50</span>      <span class="o">}</span>
+<span class="ln">51</span>      <span class="n">RelDataType</span> <span class="n">relDataType</span> <span class="o">=</span> <span class="n">AvroFieldType</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">avroFieldType</span><span class="o">).</span><span class="na">toType</span><span class="o">(</span><span class="n">typeFactory</span><span class="o">);</span>
+<span class="ln">52</span>      <span class="k">return</span> <span class="k">new</span> <span class="n">Pair</span><span class="o">&lt;&gt;(</span><span class="n">field</span><span class="o">.</span><span class="na">name</span><span class="o">().</span><span class="na">toUpperCase</span><span class="o">(),</span> <span class="n">relDataType</span><span class="o">);</span>
+<span class="ln">53</span>    <span class="o">}).</span><span class="na">collect</span><span class="o">(</span><span class="n">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">());</span>
+<span class="ln">54</span>    <span class="k">return</span> <span class="n">relDataTypeFactory</span><span class="o">.</span><span class="na">createStructType</span><span class="o">(</span><span class="n">ret</span><span class="o">);</span>
+<span class="ln">55</span>  <span class="o">}</span></code></pre></div>
+
+<h2 id="translatabletable">TranslatableTable</h2>
+
+<p><a href="https://calcite.apache.org/apidocs/org/apache/calcite/schema/TranslatableTable.html">TranslatableTable</a> は <code>Table</code> を Relational Expression に変換する方法(toRel)を定義するインターフェースです。Relational Expression とは、Scan や Filter、Projection といった 実行計画に表れる要素です。ここでは <code>AvroTable</code> を <code>AvroTableScan</code> に変更しています。</p>
+
+<ul>
+<li>AvroTable.java</li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln">72</span>  <span class="nd">@Override</span>
+<span class="ln">73</span>  <span class="kd">public</span> <span class="n">RelNode</span> <span class="nf">toRel</span><span class="o">(</span><span class="n">RelOptTable</span><span class="o">.</span><span class="na">ToRelContext</span> <span class="n">context</span><span class="o">,</span> <span class="n">RelOptTable</span> <span class="n">relOptTable</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">74</span>    <span class="kt">int</span> <span class="n">fieldCount</span> <span class="o">=</span> <span class="n">relOptTable</span><span class="o">.</span><span class="na">getRowType</span><span class="o">().</span><span class="na">getFieldCount</span><span class="o">();</span>
+<span class="ln">75</span>    <span class="n">Integer</span><span class="o">[]</span> <span class="n">fields</span> <span class="o">=</span> <span class="n">AvroEnumerator</span><span class="o">.</span><span class="na">identityList</span><span class="o">(</span><span class="n">fieldCount</span><span class="o">);</span>
+<span class="ln">76</span>    <span class="k">return</span> <span class="k">new</span> <span class="n">AvroTableScan</span><span class="o">(</span><span class="n">context</span><span class="o">.</span><span class="na">getCluster</span><span class="o">(),</span> <span class="n">relOptTable</span><span class="o">,</span> <span class="n">fields</span><span class="o">);</span>
+<span class="ln">77</span>  <span class="o">}</span></code></pre></div>
+
+<h2 id="その他-project">その他(project)</h2>
+
+<p><code>project</code> メソッドは直接どこからも呼び出されてません。これは後述する <code>TableScan</code> で生成するコードから呼び出されるメソッドです。Avro ファイルから読んだデータ(GenericData.Record)を Enumerator に詰めて返します。 <code>fields</code> には SELECT 句で指定されたフィールドのインデックスが格納されています。</p>
+
+<ul>
+<li>AvroTable.java</li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln">16</span>  <span class="kd">public</span> <span class="n">Enumerable</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="nf">project</span><span class="o">(</span><span class="n">DataContext</span> <span class="n">root</span><span class="o">,</span> <span class="n">Integer</span><span class="o">[]</span> <span class="n">fields</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">17</span>    <span class="k">return</span> <span class="k">new</span> <span class="n">AbstractEnumerable</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;()</span> <span class="o">{</span>
+<span class="ln">18</span>      <span class="kd">public</span> <span class="n">Enumerator</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="nf">enumerator</span><span class="o">()</span> <span class="o">{</span>
+<span class="ln">19</span>        <span class="k">return</span> <span class="k">new</span> <span class="n">AvroEnumerator</span><span class="o">(</span><span class="n">records</span><span class="o">,</span> <span class="n">fields</span><span class="o">);</span>
+<span class="ln">20</span>      <span class="o">}</span>
+<span class="ln">21</span>    <span class="o">};</span>
+<span class="ln">22</span>  <span class="o">}</span></code></pre></div>
+
+<p>Enumerator の形式に詰めて返したインスタンスは、Enumerable Adapter を経由して JDBC の ResultSet から呼び出されるようになります。</p>
+
+<ul>
+<li>AvroEnumerable.java</li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln">10</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AvroEnumerator</span> <span class="kd">implements</span> <span class="n">Enumerator</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="o">{</span>
+<span class="ln">11</span>
+<span class="ln">12</span>  <span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">GenericData</span><span class="o">.</span><span class="na">Record</span><span class="o">&gt;</span> <span class="n">records</span><span class="o">;</span>
+<span class="ln">13</span>  <span class="kd">private</span> <span class="n">Integer</span><span class="o">[]</span> <span class="n">fields</span><span class="o">;</span>
+<span class="ln">14</span>  <span class="kd">private</span> <span class="kt">int</span> <span class="n">pos</span><span class="o">;</span>
+<span class="ln">15</span>
+<span class="ln">16</span>  <span class="kd">public</span> <span class="nf">AvroEnumerator</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">GenericData</span><span class="o">.</span><span class="na">Record</span><span class="o">&gt;</span> <span class="n">records</span><span class="o">,</span> <span class="n">Integer</span><span class="o">[]</span> <span class="n">fields</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">17</span>    <span class="k">this</span><span class="o">.</span><span class="na">records</span> <span class="o">=</span> <span class="n">records</span><span class="o">;</span>
+<span class="ln">18</span>    <span class="k">this</span><span class="o">.</span><span class="na">fields</span> <span class="o">=</span> <span class="n">fields</span><span class="o">;</span>
+<span class="ln">19</span>    <span class="k">this</span><span class="o">.</span><span class="na">pos</span> <span class="o">=</span> <span class="o">-</span><span class="n">1</span><span class="o">;</span>
+<span class="ln">20</span>  <span class="o">}</span>
+<span class="ln">21</span>
+<span class="ln">22</span>  <span class="nd">@Override</span>
+<span class="ln">23</span>  <span class="kd">public</span> <span class="n">Object</span> <span class="nf">current</span><span class="o">()</span> <span class="o">{</span>
+<span class="ln">24</span>    <span class="n">GenericData</span><span class="o">.</span><span class="na">Record</span> <span class="n">record</span> <span class="o">=</span> <span class="n">records</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">pos</span><span class="o">);</span>
+<span class="ln">25</span>    <span class="k">return</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">stream</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">fields</span><span class="o">)</span>
+<span class="ln">26</span>             <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="nl">record:</span><span class="o">:</span><span class="n">get</span><span class="o">).</span><span class="na">collect</span><span class="o">(</span><span class="n">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">()).</span><span class="na">toArray</span><span class="o">();</span>
+<span class="ln">27</span>  <span class="o">}</span>
+<span class="ln">28</span>
+<span class="ln">29</span>  <span class="nd">@Override</span>
+<span class="ln">30</span>  <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">moveNext</span><span class="o">()</span> <span class="o">{</span>
+<span class="ln">31</span>    <span class="k">return</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">records</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&gt;</span> <span class="o">(++</span><span class="k">this</span><span class="o">.</span><span class="na">pos</span><span class="o">));</span>
+<span class="ln">32</span>  <span class="o">}</span>
+<span class="ln">33</span>
+<span class="ln">34</span>  <span class="nd">@Override</span>
+<span class="ln">35</span>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">reset</span><span class="o">()</span> <span class="o">{</span>
+<span class="ln">36</span>    <span class="k">this</span><span class="o">.</span><span class="na">pos</span> <span class="o">=</span> <span class="o">-</span><span class="n">1</span><span class="o">;</span>
+<span class="ln">37</span>  <span class="o">}</span>
+<span class="ln">38</span>
+<span class="ln">39</span>  <span class="nd">@Override</span>
+<span class="ln">40</span>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">close</span><span class="o">()</span> <span class="o">{}</span></code></pre></div>
+
+<h1 id="tablescan">TableScan</h1>
+
+<p>TableScan はテーブルのデータ (Row) を Scan する Relational Expression です。<code>AvroTableScan</code> の役割は、 <code>AvroTable</code> が保持している Avro のデータを Enumerator に詰めて後続の処理に渡すコードを生成することです。
+いつくかポイントになる部分を説明していきます。</p>
+
+<p>今回は <a href="https://github.com/apache/calcite/tree/master/core/src/main/java/org/apache/calcite/adapter/enumerable">Enumerable Adapter</a>
+ をベースに使うので、<code>AvroTableScan</code> は <code>EnumerableRel</code> を implements し、<a href="https://github.com/apache/calcite/tree/master/core/src/main/java/org/apache/calcite/adapter/enumerable">Enumerable Adapter</a> から呼び出させるようにします。こうすることで、検索対象のデータを読み込む部分は <code>AvroAdapter</code> で行い、Filter や Aggregation といった処理は <a href="https://github.com/apache/calcite/tree/master/core/src/main/java/org/apache/calcite/adapter/enumerable">Enumerable Adapter</a> の機能を使うことになります。</p>
+
+<ul>
+<li>AvroTableScan.java</li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln">19</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AvroTableScan</span> <span class="kd">extends</span> <span class="n">TableScan</span> <span class="kd">implements</span> <span class="n">EnumerableRel</span> <span class="o">{</span>
+<span class="ln">20</span>  <span class="kd">private</span> <span class="n">Integer</span><span class="o">[]</span> <span class="n">fields</span><span class="o">;</span></code></pre></div>
+
+<p>次に <code>deriveRowType</code> を実装します。<code>deriveRowType</code> は、SELECT 句で指定されたフィールドの型を返す為のメソッドです。 <code>getTable().getRowType()</code> で <code>AvroTable</code> の全フィールドの情報を取得し、その中から SELECT 句で指定されたフィールドのインデックス <code>fields</code> に該当する型情報だけを返します。</p>
+
+<ul>
+<li>AvroTableScan.java</li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln">33</span>  <span class="nd">@Override</span>
+<span class="ln">34</span>  <span class="kd">public</span> <span class="n">RelDataType</span> <span class="nf">deriveRowType</span><span class="o">()</span> <span class="o">{</span>
+<span class="ln">35</span>    <span class="n">List</span><span class="o">&lt;</span><span class="n">RelDataTypeField</span><span class="o">&gt;</span> <span class="n">fieldList</span> <span class="o">=</span> <span class="n">getTable</span><span class="o">().</span><span class="na">getRowType</span><span class="o">().</span><span class="na">getFieldList</span><span class="o">();</span>
+<span class="ln">36</span>    <span class="n">RelDataTypeFactory</span><span class="o">.</span><span class="na">Builder</span> <span class="n">builder</span> <span class="o">=</span> <span class="n">getCluster</span><span class="o">().</span><span class="na">getTypeFactory</span><span class="o">().</span><span class="na">builder</span><span class="o">();</span>
+<span class="ln">37</span>    <span class="n">Arrays</span><span class="o">.</span><span class="na">stream</span><span class="o">(</span><span class="n">fields</span><span class="o">).</span><span class="na">forEach</span><span class="o">(</span><span class="n">field</span> <span class="o">-&gt;</span> <span class="n">builder</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">fieldList</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">field</span><span class="o">)));</span>
+<span class="ln">38</span>    <span class="k">return</span> <span class="n">builder</span><span class="o">.</span><span class="na">build</span><span class="o">();</span>
+<span class="ln">39</span>  <span class="o">}</span></code></pre></div>
+
+<p><code>register</code> では、Relational Expression の変換ルールを登録します。 <code>AvroProjectTableScanRule.INSTANCE</code> は文字通り <code>AvroProjectTableScanRule</code> のインスタンスです。このインスタンスがどのように Relation Expression を変換するかは後述します。</p>
+
+<ul>
+<li>AvroTableScan.java</li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln">40</span>  <span class="nd">@Override</span>
+<span class="ln">41</span>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">register</span><span class="o">(</span><span class="n">RelOptPlanner</span> <span class="n">planner</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">42</span>    <span class="n">planner</span><span class="o">.</span><span class="na">addRule</span><span class="o">(</span><span class="n">AvroProjectTableScanRule</span><span class="o">.</span><span class="na">INSTANCE</span><span class="o">);</span>
+<span class="ln">43</span>  <span class="o">}</span></code></pre></div>
+
+<p><code>implement</code> は <code>EnumerableRel</code> インターフェースで定義しているメソッドで、<a href="https://github.com/apache/calcite/tree/master/core/src/main/java/org/apache/calcite/adapter/enumerable">Enumerable Adapter</a> から呼び出されます。ここでは、前述したように Avro のデータを後続の処理に渡すコードを生成しています。Java コードの生成には <a href="https://github.com/apache/calcite/tree/master/linq4j">linq4j</a> というライブラリを使っています。</p>
+
+<ul>
+<li>AvroTableScan.java</li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln">45</span>  <span class="nd">@Override</span>
+<span class="ln">46</span>  <span class="kd">public</span> <span class="n">Result</span> <span class="nf">implement</span><span class="o">(</span><span class="n">EnumerableRelImplementor</span> <span class="n">implementor</span><span class="o">,</span> <span class="n">Prefer</span> <span class="n">pref</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">47</span>    <span class="n">PhysType</span> <span class="n">physType</span> <span class="o">=</span> <span class="n">PhysTypeImpl</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">implementor</span><span class="o">.</span><span class="na">getTypeFactory</span><span class="o">(),</span> <span class="n">getRowType</span><span class="o">(),</span> <span class="n">pref</span><span class="o">.</span><span class="na">preferArray</span><span class="o">());</span>
+<span class="ln">48</span>    <span class="k">return</span> <span class="n">implementor</span><span class="o">.</span><span class="na">result</span><span class="o">(</span><span class="n">physType</span><span class="o">,</span> <span class="n">Blocks</span><span class="o">.</span><span class="na">toBlock</span><span class="o">(</span>
+<span class="ln">49</span>      <span class="n">Expressions</span><span class="o">.</span><span class="na">call</span><span class="o">(</span>
+<span class="ln">50</span>        <span class="k">this</span><span class="o">.</span><span class="na">table</span><span class="o">.</span><span class="na">getExpression</span><span class="o">(</span><span class="n">AvroTable</span><span class="o">.</span><span class="na">class</span><span class="o">),</span>
+<span class="ln">51</span>        <span class="s">&#34;project&#34;</span><span class="o">,</span>
+<span class="ln">52</span>        <span class="n">implementor</span><span class="o">.</span><span class="na">getRootExpression</span><span class="o">(),</span>
+<span class="ln">53</span>        <span class="n">Expressions</span><span class="o">.</span><span class="na">constant</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">fields</span><span class="o">)</span>
+<span class="ln">54</span>      <span class="o">)</span>
+<span class="ln">55</span>    <span class="o">));</span>
+<span class="ln">56</span>  <span class="o">}</span>
+<span class="ln">57</span><span class="o">}</span></code></pre></div>
+
+<p>どのようなコードが生成されるかについては、<a href="/blog/2019/06/04/calcite-code-reading-part1/#implement">前回の Implement のセクション</a>を参照してください。</p>
+
+<h1 id="rule">Rule</h1>
+
+<p><code>Rule</code> は Relational Expression を変換するルールを定義しています。変換する(置き換える)実行計画のシーケンスを、コンストラクタで定義します。</p>
+
+<ul>
+<li>AvroProjectTableScanRule.java</li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln">12</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AvroProjectTableScanRule</span> <span class="kd">extends</span> <span class="n">RelOptRule</span> <span class="o">{</span>
+<span class="ln">13</span>
+<span class="ln">14</span>  <span class="kd">static</span> <span class="kd">final</span> <span class="n">AvroProjectTableScanRule</span> <span class="n">INSTANCE</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AvroProjectTableScanRule</span><span class="o">();</span>
+<span class="ln">15</span>
+<span class="ln">16</span>  <span class="kd">public</span> <span class="nf">AvroProjectTableScanRule</span><span class="o">()</span> <span class="o">{</span>
+<span class="ln">17</span>    <span class="kd">super</span><span class="o">(</span><span class="n">RelOptRule</span><span class="o">.</span><span class="na">operand</span><span class="o">(</span>
+<span class="ln">18</span>      <span class="n">LogicalProject</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
+<span class="ln">19</span>      <span class="n">RelOptRule</span><span class="o">.</span><span class="na">operand</span><span class="o">(</span><span class="n">AvroTableScan</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">RelOptRule</span><span class="o">.</span><span class="na">none</span><span class="o">())</span>
+<span class="ln">20</span>    <span class="o">),</span> <span class="s">&#34;AvroProjectTableScanRule&#34;</span><span class="o">);</span>
+<span class="ln">21</span>  <span class="o">}</span></code></pre></div>
+
+<p>上記のコンストラクタでは、実行計画の一部が、</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">LogicalProject(EMP_ID=[$0], NAME=[$2])
+  AvroTableScan(table=[[SAMPLES, TEST]])
+    (END)</code></pre></div>
+
+<p>の場合に変換が行われることを意味します。変換が行われる場合は、以下の <code>onMatch</code> メソッドが呼び出されます。SELECT 句のどのフィールドが指定されたかを <code>LogicalProject</code> から取り出し <code>LogicalProject</code> + <code>AvroTableScan</code> を1つの <code>AvroTableScan</code> に変換します。</p>
+
+<ul>
+<li>AvroProjectTableScanRule.java</li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln">23</span>  <span class="nd">@Override</span>
+<span class="ln">24</span>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onMatch</span><span class="o">(</span><span class="n">RelOptRuleCall</span> <span class="n">call</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">25</span>    <span class="n">LogicalProject</span> <span class="n">project</span> <span class="o">=</span> <span class="n">call</span><span class="o">.</span><span class="na">rel</span><span class="o">(</span><span class="n">0</span><span class="o">);</span>
+<span class="ln">26</span>    <span class="n">AvroTableScan</span> <span class="n">scan</span> <span class="o">=</span> <span class="n">call</span><span class="o">.</span><span class="na">rel</span><span class="o">(</span><span class="n">1</span><span class="o">);</span>
+<span class="ln">27</span>    <span class="n">Integer</span><span class="o">[]</span> <span class="n">fields</span> <span class="o">=</span> <span class="n">getProjectFields</span><span class="o">(</span><span class="n">project</span><span class="o">.</span><span class="na">getProjects</span><span class="o">());</span>
+<span class="ln">28</span>
+<span class="ln">29</span>    <span class="n">call</span><span class="o">.</span><span class="na">transformTo</span><span class="o">(</span>
+<span class="ln">30</span>      <span class="k">new</span> <span class="n">AvroTableScan</span><span class="o">(</span><span class="n">scan</span><span class="o">.</span><span class="na">getCluster</span><span class="o">(),</span> <span class="n">scan</span><span class="o">.</span><span class="na">getTable</span><span class="o">(),</span> <span class="n">fields</span><span class="o">)</span>
+<span class="ln">31</span>    <span class="o">);</span>
+<span class="ln">32</span>  <span class="o">}</span></code></pre></div>
+
+<p>このルールを登録した状態で <code>select emp_id, name from test where emp_id=?</code> を実行すると、まずこの SQL から Logical Plan として</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">LogicalFilter(condition=[=($0, ?0)])
+  LogicalProject(EMP_ID=[$0], NAME=[$2])
+    AvroTableScan(table=[[SAMPLES, TEST]])</code></pre></div>
+
+<p>が生成され <code>AvroProjectTableScanRule</code> で定義したルールや <a href="https://github.com/apache/calcite/tree/master/core/src/main/java/org/apache/calcite/adapter/enumerable">Enumerable Adapter</a> のルールによって以下のような Physical Plan に変換され、実行されます。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">EnumerableFilter(condition=[=($0, ?0)]): rowcount = 15.0, cumulative cost = {115.0 rows, 201.0 cpu, 0.0 io}, id = 41
+  AvroTableScan(table=[[SAMPLES, TEST]]): rowcount = 100.0, cumulative cost = {100.0 rows, 101.0 cpu, 0.0 io}, id = 39</code></pre></div>
+
+<h1 id="test-code">Test Code</h1>
+
+<p>テストコードでは、JDBC API を使って SQL を発行し、Avro ファイル内のデータを取得できるか確認しています。</p>
+
+<ul>
+<li>JdbcTest.java</li>
+</ul>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln">15</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">JdbcTest</span> <span class="o">{</span>
+<span class="ln">16</span>
+<span class="ln">17</span>  <span class="kd">private</span> <span class="kd">final</span> <span class="kd">static</span> <span class="n">String</span> <span class="n">CONNECTION_URL</span> <span class="o">=</span> <span class="s">&#34;jdbc:calcite:model=target/test-classes/model.json&#34;</span><span class="o">;</span>
+<span class="ln">18</span>
+<span class="ln">19</span>  <span class="nd">@BeforeClass</span>
+<span class="ln">20</span>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">setUpOnce</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">ClassNotFoundException</span> <span class="o">{</span>
+<span class="ln">21</span>    <span class="n">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="s">&#34;org.apache.calcite.jdbc.Driver&#34;</span><span class="o">);</span>
+<span class="ln">22</span>  <span class="o">}</span>
+<span class="ln">23</span>
+<span class="ln">24</span>  <span class="nd">@Test</span>
+<span class="ln">25</span>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">filterByEmpId</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+<span class="ln">26</span>    <span class="k">try</span> <span class="o">(</span><span class="n">Connection</span> <span class="n">conn</span> <span class="o">=</span> <span class="n">DriverManager</span><span class="o">.</span><span class="na">getConnection</span><span class="o">(</span><span class="n">CONNECTION_URL</span><span class="o">))</span> <span class="o">{</span>
+<span class="ln">27</span>       <span class="k">try</span> <span class="o">(</span><span class="n">PreparedStatement</span> <span class="n">pstmt</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="na">prepareStatement</span><span class="o">(</span><span class="s">&#34;select emp_id, name from test where emp_id=?&#34;</span><span class="o">))</span> <span class="o">{</span>
+<span class="ln">28</span>         <span class="n">pstmt</span><span class="o">.</span><span class="na">setLong</span><span class="o">(</span><span class="n">1</span><span class="o">,</span> <span class="n">1L</span><span class="o">);</span>
+<span class="ln">29</span>        <span class="k">try</span> <span class="o">(</span><span class="n">ResultSet</span> <span class="n">rs</span> <span class="o">=</span> <span class="n">pstmt</span><span class="o">.</span><span class="na">executeQuery</span><span class="o">())</span> <span class="o">{</span>
+<span class="ln">30</span>          <span class="k">while</span> <span class="o">(</span><span class="n">rs</span><span class="o">.</span><span class="na">next</span><span class="o">())</span> <span class="o">{</span>
+<span class="ln">31</span>            <span class="n">assertThat</span><span class="o">(</span><span class="n">rs</span><span class="o">.</span><span class="na">getLong</span><span class="o">(</span><span class="s">&#34;emp_id&#34;</span><span class="o">),</span> <span class="n">is</span><span class="o">(</span><span class="n">1L</span><span class="o">));</span>
+<span class="ln">32</span>            <span class="n">assertThat</span><span class="o">(</span><span class="n">rs</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">&#34;name&#34;</span><span class="o">),</span> <span class="n">is</span><span class="o">(</span><span class="s">&#34;test1&#34;</span><span class="o">));</span>
+<span class="ln">33</span>          <span class="o">}</span>
+<span class="ln">34</span>        <span class="o">}</span>
+<span class="ln">35</span>      <span class="o">}</span>
+<span class="ln">36</span>    <span class="o">}</span>
+<span class="ln">37</span>  <span class="o">}</span>
+<span class="ln">38</span>
+<span class="ln">39</span>  <span class="nd">@Test</span>
+<span class="ln">40</span>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">filterByName</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+<span class="ln">41</span>    <span class="k">try</span> <span class="o">(</span><span class="n">Connection</span> <span class="n">conn</span> <span class="o">=</span> <span class="n">DriverManager</span><span class="o">.</span><span class="na">getConnection</span><span class="o">(</span><span class="n">CONNECTION_URL</span><span class="o">))</span> <span class="o">{</span>
+<span class="ln">42</span>      <span class="k">try</span> <span class="o">(</span><span class="n">PreparedStatement</span> <span class="n">pstmt</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="na">prepareStatement</span><span class="o">(</span><span class="s">&#34;select emp_id, name from test where name=?&#34;</span><span class="o">))</span> <span class="o">{</span>
+<span class="ln">43</span>        <span class="n">pstmt</span><span class="o">.</span><span class="na">setString</span><span class="o">(</span><span class="n">1</span><span class="o">,</span> <span class="s">&#34;test2&#34;</span><span class="o">);</span>
+<span class="ln">44</span>        <span class="k">try</span> <span class="o">(</span><span class="n">ResultSet</span> <span class="n">rs</span> <span class="o">=</span> <span class="n">pstmt</span><span class="o">.</span><span class="na">executeQuery</span><span class="o">())</span> <span class="o">{</span>
+<span class="ln">45</span>          <span class="k">while</span> <span class="o">(</span><span class="n">rs</span><span class="o">.</span><span class="na">next</span><span class="o">())</span> <span class="o">{</span>
+<span class="ln">46</span>            <span class="n">assertThat</span><span class="o">(</span><span class="n">rs</span><span class="o">.</span><span class="na">getLong</span><span class="o">(</span><span class="s">&#34;emp_id&#34;</span><span class="o">),</span> <span class="n">is</span><span class="o">(</span><span class="n">2L</span><span class="o">));</span>
+<span class="ln">47</span>            <span class="n">assertThat</span><span class="o">(</span><span class="n">rs</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">&#34;name&#34;</span><span class="o">),</span> <span class="n">is</span><span class="o">(</span><span class="s">&#34;test2&#34;</span><span class="o">));</span>
+<span class="ln">48</span>          <span class="o">}</span>
+<span class="ln">49</span>        <span class="o">}</span>
+<span class="ln">50</span>      <span class="o">}</span>
+<span class="ln">51</span>    <span class="o">}</span>
+<span class="ln">52</span>  <span class="o">}</span>
+<span class="ln">53</span><span class="o">}</span></code></pre></div>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>Avro Adapter を実装しながら、主要なクラスを見てきました。今回説明したコードは以下にアップしています。</p>
+
+<ul>
+<li><a href="https://github.com/masayuki038/calcite-avro-sample">calcite-avro-sample</a></li>
+</ul>
+
+<p>今回のように、Calcite の <a href="https://github.com/apache/calcite/tree/master/core/src/main/java/org/apache/calcite/adapter/enumerable">Enumerable Adapter</a> を使うことにより、任意のデータ種別に対して SQL で問い合わせすることが簡単にできるようになっています。</p>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2019 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>
