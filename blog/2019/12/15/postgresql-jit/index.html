@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>PostgreSQL の JIT が生成するコードを眺めてみる</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="Postgres Advent Calendar 2019 の 15 日目の記事です。 PostgreSQL 12 で、JIT が default で on になりました。そこで JIT まわりのパラメータを変更しながら、生成されるコードや、クエリの応答速" />
+
+  
+  
+  <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://masayuki038.github.io/images/postgres-jit/jit_performance.png"/>
+
+<meta name="twitter:title" content="PostgreSQL の JIT が生成するコードを眺めてみる"/>
+<meta name="twitter:description" content="Postgres Advent Calendar 2019 の 15 日目の記事です。 PostgreSQL 12 で、JIT が default で on になりました。そこで JIT まわりのパラメータを変更しながら、生成されるコードや、クエリの応答速"/>
+
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="PostgreSQL の JIT が生成するコードを眺めてみる" />
+  <meta property="og:description" content="Postgres Advent Calendar 2019 の 15 日目の記事です。 PostgreSQL 12 で、JIT が default で on になりました。そこで JIT まわりのパラメータを変更しながら、生成されるコードや、クエリの応答速" />
+  <meta property="og:url" content="/blog/2019/12/15/postgresql-jit/" />
+  <meta property="og:image" content="/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="/blog/2019/12/15/postgresql-jit/" />
+<link rel="alternative" href="/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="/css/bundle.css" />
+<link rel="stylesheet" href="/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+
+<nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">PostgreSQL の JIT が生成するコードを眺めてみる</h1>
+      <p class="post-meta">@Masayuki Takahashi · Dec 15, 2019 · 3 min read</p>
+    </header>
+    <article class="post-content">
+
+<p><a href="https://qiita.com/advent-calendar/2019/postgresql">Postgres Advent Calendar 2019</a> の 15 日目の記事です。</p>
+
+<p>PostgreSQL 12 で、JIT が default で on になりました。そこで JIT まわりのパラメータを変更しながら、生成されるコードや、クエリの応答速度がどう変わるかを確認してみました。</p>
+
+<h1 id="disassemble-code">Disassemble Code</h1>
+
+<p>JIT でクエリを処理した時に生成されたコードをファイルに出力するには、<code>jit_dump_bitcode</code> を on にします。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">set jit_dump_bitcode to on;</code></pre></div>
+
+<p>まずは簡単な SQL を実行して、生成されるコードを眺めてみます。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">select l_orderkey, l_partkey, l_suppkey from lineitem where l_tax &gt; 0.07;</code></pre></div>
+
+<p>クエリを投げると、以下の場所に <code>.bc</code> ファイルが生成されます。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">ls -l /var/lib/postgresql/12/main/*.bc
+ -rw------- 1 postgres postgres 11268 Dec 14 08:35 /var/lib/postgresql/12/main/2832.0.bc
+ -rw------- 1 postgres postgres  7260 Dec 14 08:35 /var/lib/postgresql/12/main/2832.0.optimized.bc</code></pre></div>
+
+<p>この <code>.bc</code> ファイルを <code>llvm-dis</code> で disassemble して LLVM IR を出力します。ついでに <code>llvm-cbe</code> で C言語のコードとしても出力してみます。(.optimized.bc は読むのがツラそうなので触れません…)</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">llvm-dis -o 2832.0.ll /var/lib/postgresql/12/main/2832.0.bc
+llvm-cbe -o 2832.0.c /var/lib/postgresql/12/main/2832.0.bc</code></pre></div>
+
+<p>出力されたコードは、サイズが大きいので以下にアップしました。</p>
+
+<ul>
+<li>2832.0.ll: <a href="https://gist.github.com/masayuki038/cee2b28e0d6032de357829063447b922">https://gist.github.com/masayuki038/cee2b28e0d6032de357829063447b922</a></li>
+<li>2832.0.c: <a href="https://gist.github.com/masayuki038/63940753083bc34e80279036ae1574bd">https://gist.github.com/masayuki038/63940753083bc34e80279036ae1574bd</a></li>
+</ul>
+
+<p>しかし、出力してみたものの、思った以上に読めなそうです…。取り敢えず、読めそうなところを読んでみます。</p>
+
+<h1 id="read-code">Read Code</h1>
+
+<h2 id="filter-output">Filter / Output</h2>
+
+<p>生成されたコードを見る前に、コードを出力したクエリの実行計画を見ておきます。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">testdb=# explain verbose select l_orderkey, l_partkey, l_suppkey from lineitem where l_tax &gt; 0.07;
+                                  QUERY PLAN                                   
+-------------------------------------------------------------------------------
+ Seq Scan on public.lineitem  (cost=0.00..1874334.60 rows=6652160 width=12)
+   Output: l_orderkey, l_partkey, l_suppkey
+   Filter: (lineitem.l_tax &gt; 0.07)
+ JIT:
+   Functions: 4
+   Options: Inlining true, Optimization true, Expressions true, Deforming true
+(6 rows)</code></pre></div>
+
+<p>実行計画から、Seq Scan / Output / Filter の各処理があることがわかります。</p>
+
+<p>コードの構成を軽く眺めてみます。生成されたコードは、Struct の定義 + 2つの関数(evalexpr_0_0, evalexpr_0_2) という 3 つのパートで構成されています。それぞれの関数は、<code>deform_0_0</code>, <code>deform_0_2</code> という関数を呼び出しています。この <code>deform</code> というのは、ディスク上のタプルをメモリ上の表現に変換する処理です。</p>
+
+<p><code>evalexpr_0_2</code> には、<code>numeric_gt</code> という関数を呼び出している箇所があります。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="nl">llvm_cbe_b_2e_2_2e_no_2d_null_2d_args</span><span class="p">:</span>
+<span class="p">(...</span> <span class="n">snip</span> <span class="p">...)</span>
+  <span class="n">llvm_cbe_funccall</span> <span class="o">=</span> <span class="n">numeric_gt</span><span class="p">(((</span><span class="k">struct</span> <span class="n">l_struct_struct_OC_FunctionCallInfoBaseData</span><span class="o">*</span>
+<span class="p">(...</span> <span class="n">snip</span> <span class="p">...)</span> 
+  <span class="k">goto</span> <span class="n">llvm_cbe_b_2e_op_2e_3_2e_start</span><span class="p">;</span></code></pre></div>
+
+<p>ここから <code>evalexpr_0_2</code> は Filter の時に生成される関数であると考えられます。試しに where 句を除いた SQL を実行して IR を見てみます。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">select l_orderkey, l_partkey, l_suppkey from lineitem;</code></pre></div>
+
+<ul>
+<li>3410.ll: <a href="https://gist.github.com/masayuki038/fcdf3d0b07c177efb2582c8ecd8b71ec">https://gist.github.com/masayuki038/fcdf3d0b07c177efb2582c8ecd8b71ec</a></li>
+</ul>
+
+<p>すると、やはり <code>evalexpr_0_2</code> は出力されませんでした。このことから、<code>evalexpr_0_2</code> は Filter で、<code>evalexpr_0_0</code> は Output にあたる処理と考えられます。</p>
+
+<p><code>evalexpr_0_0</code> から呼び出される <code>deform_0_1</code> の以下のブロックが、最終的に出力される <code>l_orderkey</code> , <code>l_partkey</code> , <code>l_suppkey</code> という 3 つのフィールドを読み出しているのではないかと思います。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="nl">llvm_cbe_find_startblock</span><span class="p">:</span>
+  <span class="n">llvm_cbe_tmp__18</span> <span class="o">=</span> <span class="o">*</span><span class="n">llvm_cbe_tmp__15</span><span class="p">;</span>
+  <span class="k">switch</span> <span class="p">(</span><span class="n">llvm_cbe_tmp__18</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">default</span><span class="o">:</span>
+    <span class="k">goto</span> <span class="n">llvm_cbe_deadblock</span><span class="p">;</span>
+  <span class="k">case</span> <span class="p">((</span><span class="n">uint16_t</span><span class="p">)</span><span class="mi">0</span><span class="p">)</span><span class="o">:</span>
+    <span class="k">goto</span> <span class="n">llvm_cbe_block_2e_attr_2e_0_2e_attcheckattno</span><span class="p">;</span>
+  <span class="k">case</span> <span class="p">((</span><span class="n">uint16_t</span><span class="p">)</span><span class="mi">1</span><span class="p">)</span><span class="o">:</span>
+    <span class="k">goto</span> <span class="n">llvm_cbe_block_2e_attr_2e_1_2e_attcheckattno</span><span class="p">;</span>
+  <span class="k">case</span> <span class="p">((</span><span class="n">uint16_t</span><span class="p">)</span><span class="mi">2</span><span class="p">)</span><span class="o">:</span>
+    <span class="k">goto</span> <span class="n">llvm_cbe_block_2e_attr_2e_2_2e_attcheckattno</span><span class="p">;</span>
+  <span class="p">}</span></code></pre></div>
+
+<h2 id="deforming-on-off">Deforming on / off</h2>
+
+<p><code>jit_tuple_deforming</code> が on の時には、<code>op.0.fetch</code> で以下のような IR が生成されます。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">op.0.fetch:                                       ; preds = %b.op.0.start
+  call void @deform_0_1(%struct.TupleTableSlot* %v_scanslot)
+  br label %b.op.1.start</code></pre></div>
+
+<p>そして <code>@deform_0_1</code> 関数も生成されます。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">; Function Attrs: norecurse nounwind uwtable
+define internal void @deform_0_1(%struct.TupleTableSlot* align 8) #0 {
+... (snip) ...</code></pre></div>
+
+<p>しかし、また、<code>jit_tuple_deforming</code> を off にすると、それぞれの関数 ( <code>evalexpr_0_0</code> ,  <code>evalexpr_0_2</code> ）に対応する <code>deform</code> 関数は生成されなくなります。</p>
+
+<p><code>op.0.fetch</code> は以下のように変わります。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">op.0.fetch:                                       ; preds = %b.op.0.start
+  call void bitcast (void (%struct.TupleTableSlot.9302*, i32)* @slot_getsomeattrs_int to void (%struct.TupleTableSlot*, i32)*)(%struct.TupleTableSlot* %v_scanslot, i32 8)
+  br label %b.op.1.start</code></pre></div>
+
+<h1 id="performance">Performance</h1>
+
+<p>手元の環境(vCPU x 4、メモリ 15 GB) で、JIT のオプションを変えながら、PC-H Q01 の SQL を 5回ずつ計測してみました。</p>
+
+<ul>
+<li>non-jit: JIT を無効</li>
+<li>jit (all on): デフォルト</li>
+<li>jit deforming off: deforming を off</li>
+<li>jit inline off:  jit_inline_above_cost の値を上げて、インライン化を避ける</li>
+<li>jit optimize off: jit_optimize_above_cost の値を上げて、最適化を避ける</li>
+</ul>
+
+<p>TPC-H 測定用のデータを DBGEN で生成しています。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">./dbgen -s 10</code></pre></div>
+
+<p><img src="/images/postgres-jit/jit_performance.png" alt="jit" /></p>
+
+<p>今回の環境では、non-jit に対して jit が 10% 程度速い結果となりました。また、deforming / inline / optimization の何れを off にしても遅くなりました。</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>今回は PostgreSQL の JIT で生成されるコードを眺めてみました。LLVM IR と C 言語で出力してみましたが、思った以上に読みにくいコードが生成されていたので、これらの理解にはもうちょっと知識と技を身に付ける必要がありますね…。それでも LLVM を知る良い機会となりました。</p>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2019 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>

@@ -208,6 +208,19 @@
       
         <article class="post-entry">
   <header class="post-header">
+    <h3 class="post-title"><a href="/blog/2014/05/30/couchdb-code-reading3/" class="post-link">CouchDB Source Code Reading part3</a></h3>
+    <p class="post-meta">@Masayuki Takahashi · May 30, 2014 · 8 min read</p>
+  </header>
+  
+  <p class="post-summary">couch_db_updater:init_db/6の以下の部分を掘り下げてみたいと思います。 couch_db_updater.erl: 1 {ok, IdBtree} = couch_btree:open(Header#db_header.fulldocinfo_by_id_btree_state, Fd, 2 [{split, fun(X) -&gt; btree_by_id_split(X) end}, 3 {join, fun(X,Y) -&gt; btree_by_id_join(X,Y) end}, 4 {reduce, fun(X,Y) -&gt;</p>
+  <footer class="post-footer">
+    <a class="read-more" href="/blog/2014/05/30/couchdb-code-reading3/">Read More →</a>
+  </footer>
+</article>
+
+      
+        <article class="post-entry">
+  <header class="post-header">
     <h3 class="post-title"><a href="/blog/2014/05/25/couchdb-code-reading2/" class="post-link">CouchDB Source Code Reading part2</a></h3>
     <p class="post-meta">@Masayuki Takahashi · May 25, 2014 · 5 min read</p>
   </header>
@@ -319,19 +332,6 @@
   <p class="post-summary">Simple package manager for Emacs 前回Erlangの開発環境の話を書きましたが、普段はEmacsを使うことがあまりないので、Emacs事情に詳しくありません。そんな</p>
   <footer class="post-footer">
     <a class="read-more" href="/blog/2013/09/21/package-el-and-init-loader-el/">Read More →</a>
-  </footer>
-</article>
-
-      
-        <article class="post-entry">
-  <header class="post-header">
-    <h3 class="post-title"><a href="/blog/2013/09/16/devenv-for-erlang/" class="post-link">Little improvement in development environment for Erlang</a></h3>
-    <p class="post-meta">@Masayuki Takahashi · Sep 16, 2013 · 3 min read</p>
-  </header>
-  
-  <p class="post-summary">erl-shib ここ最近は、Erlangの習作としてshibのクローンを作ってました。erl-shibと言います。HQLを実行して結果を取得するところまで</p>
-  <footer class="post-footer">
-    <a class="read-more" href="/blog/2013/09/16/devenv-for-erlang/">Read More →</a>
   </footer>
 </article>
 
