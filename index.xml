@@ -6,10 +6,19 @@
     <description>Recent content on act-act</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja</language>
-    <lastBuildDate>Sun, 15 Dec 2019 00:00:01 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 12 Jan 2020 00:00:01 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>『Towards a One Size Fits All Database Architecture』を読んだ</title>
+      <link>/blog/2020/01/12/one-size-fit-all-db-arch/</link>
+      <pubDate>Sun, 12 Jan 2020 00:00:01 +0000</pubDate>
+      
+      <guid>/blog/2020/01/12/one-size-fit-all-db-arch/</guid>
+      <description>昨年から、HTAP (Hybrid Transactional/Analytical Processing) を実現する為の手法に興味を持っています。 HTAP を実現する為に、DB の内部では row-wise / column-wise それぞれの形式でレコードを保持するのが</description>
+    </item>
     
     <item>
       <title>PostgreSQL の JIT が生成するコードを眺めてみる</title>
