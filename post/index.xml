@@ -6,10 +6,19 @@
     <description>Recent content in Posts on act-act</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja</language>
-    <lastBuildDate>Sun, 12 Jan 2020 00:00:01 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 26 Jan 2020 00:00:01 +0000</lastBuildDate>
     
 	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Truffle の Host にオブジェクトを返す</title>
+      <link>/blog/2020/01/26/truffle-expose-to-host/</link>
+      <pubDate>Sun, 26 Jan 2020 00:00:01 +0000</pubDate>
+      
+      <guid>/blog/2020/01/26/truffle-expose-to-host/</guid>
+      <description>Apache Calcite で Java のコードを生成する際に使っている linq4j の代わりに Truffle が使えないか調べてみたところ、truffle-sql というプロジェクトがあり、それを fork</description>
+    </item>
     
     <item>
       <title>『Towards a One Size Fits All Database Architecture』を読んだ</title>

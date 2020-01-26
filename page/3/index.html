@@ -201,6 +201,19 @@
       
         <article class="post-entry">
   <header class="post-header">
+    <h3 class="post-title"><a href="/blog/2017/05/06/migrate-to-jekyll3/" class="post-link">Migrate to Jekyll3</a></h3>
+    <p class="post-meta">@Masayuki Takahashi · May 6, 2017 · 2 min read</p>
+  </header>
+  
+  <p class="post-summary">Blog upgrade once a year 昨年のGW中にOctopressのupgradeをしたのを最後にblogの更新をしなかったので、もう改めて手を入れる必要はないと思</p>
+  <footer class="post-footer">
+    <a class="read-more" href="/blog/2017/05/06/migrate-to-jekyll3/">Read More →</a>
+  </footer>
+</article>
+
+      
+        <article class="post-entry">
+  <header class="post-header">
     <h3 class="post-title"><a href="/blog/2016/05/04/update-octopress/" class="post-link">Update Octopress to 3.0</a></h3>
     <p class="post-meta">@Masayuki Takahashi · May 4, 2016 · 4 min read</p>
   </header>
@@ -312,19 +325,6 @@
   <p class="post-summary">couch_httpd_db:db_req/2 前回までドキュメントの取得の流れを見てきたので、次に更新まわりを見ていこうと思います。 couch_httpd_db.erl: 1db_req(#httpd{method=&#39;POST&#39;,path_parts=[_DbName]}=Req, Db) -&gt; 2 couch_httpd:validate_ctype(Req, &#34;application/json&#34;), 3 Doc = couch_doc:from_json_obj(couch_httpd:json_body(Req)), 4 validate_attachment_names(Doc), 5 Doc2 = case Doc#doc.id of 6 &lt;&lt;&#34;&#34;&gt;&gt; -&gt; 7 Doc#doc{id=couch_uuids:new(), revs={0, []}};</p>
   <footer class="post-footer">
     <a class="read-more" href="/blog/2014/07/05/couchdb-code-reading6/">Read More →</a>
-  </footer>
-</article>
-
-      
-        <article class="post-entry">
-  <header class="post-header">
-    <h3 class="post-title"><a href="/blog/2014/06/21/couchdb-code-reading5/" class="post-link">CouchDB Source Code Reading part5</a></h3>
-    <p class="post-meta">@Masayuki Takahashi · Jun 21, 2014 · 7 min read</p>
-  </header>
-  
-  <p class="post-summary">couch_db:open_doc_int/3 前回はcouch_db_updater:refresh_validate_doc_funs/1を読んでいく中でDesignDocsを取得す</p>
-  <footer class="post-footer">
-    <a class="read-more" href="/blog/2014/06/21/couchdb-code-reading5/">Read More →</a>
   </footer>
 </article>
 

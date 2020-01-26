@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Truffle の Host にオブジェクトを返す</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="Apache Calcite で Java のコードを生成する際に使っている linq4j の代わりに Truffle が使えないか調べてみたところ、truffle-sql というプロジェクトがあり、それを fork" />
+
+  
+  
+  <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://masayuki038.github.io/images/truffle/truffle-boundary.jpg"/>
+
+<meta name="twitter:title" content="Truffle の Host にオブジェクトを返す"/>
+<meta name="twitter:description" content="Apache Calcite で Java のコードを生成する際に使っている linq4j の代わりに Truffle が使えないか調べてみたところ、truffle-sql というプロジェクトがあり、それを fork"/>
+
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Truffle の Host にオブジェクトを返す" />
+  <meta property="og:description" content="Apache Calcite で Java のコードを生成する際に使っている linq4j の代わりに Truffle が使えないか調べてみたところ、truffle-sql というプロジェクトがあり、それを fork" />
+  <meta property="og:url" content="/blog/2020/01/26/truffle-expose-to-host/" />
+  <meta property="og:image" content="/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="/blog/2020/01/26/truffle-expose-to-host/" />
+<link rel="alternative" href="/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="/css/bundle.css" />
+<link rel="stylesheet" href="/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+
+<nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Truffle の Host にオブジェクトを返す</h1>
+      <p class="post-meta">@Masayuki Takahashi · Jan 26, 2020 · 4 min read</p>
+    </header>
+    <article class="post-content">
+
+<p><a href="https://calcite.apache.org/">Apache Calcite</a> で Java のコードを生成する際に使っている <a href="https://github.com/apache/calcite/tree/master/linq4j">linq4j</a> の代わりに Truffle が使えないか調べてみたところ、<a href="https://github.com/fivetran/truffle-sql">truffle-sql</a> というプロジェクトがあり、それを fork して <a href="https://arrow.apache.org/">Apache Arrow</a> のデータを SQL で問い合わせる仕組みを作り始めました。</p>
+
+<p>そこで、自分で定義したクラスのインスタンスを Truffle の中で生成し、Truffle の外に返す際にエラーが出てうまく取り出せなかったので、調べてみました。</p>
+
+<h1 id="code">Code</h1>
+
+<p>事象を確認する為に、小さなコードを書きました。まず、Truffle の外に返したいクラスは以下です。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln"> 1</span><span class="kn">package</span> <span class="nn">net.wrap_trap.tos</span><span class="o">;</span>
+<span class="ln"> 2</span>
+<span class="ln"> 3</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TransferObject</span> <span class="o">{</span>
+<span class="ln"> 4</span>
+<span class="ln"> 5</span>  <span class="kd">private</span> <span class="kt">int</span> <span class="n">result</span><span class="o">;</span>
+<span class="ln"> 6</span>
+<span class="ln"> 7</span>  <span class="kd">public</span> <span class="nf">TransferObject</span><span class="o">(</span><span class="kt">int</span> <span class="n">result</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln"> 8</span>    <span class="k">this</span><span class="o">.</span><span class="na">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">;</span>
+<span class="ln"> 9</span>  <span class="o">}</span>
+<span class="ln">10</span>
+<span class="ln">11</span>  <span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">&#34;unused&#34;</span><span class="o">)</span>
+<span class="ln">12</span>  <span class="kd">public</span> <span class="kt">int</span> <span class="nf">result</span><span class="o">()</span> <span class="o">{</span>
+<span class="ln">13</span>    <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">result</span><span class="o">;</span>
+<span class="ln">14</span>  <span class="o">}</span>
+<span class="ln">15</span><span class="o">}</span></code></pre></div>
+
+<p>Truffle 側で処理する為に、構文が一切無い <code>TruffleLanguage</code> を作成します。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln"> 1</span><span class="kn">package</span> <span class="nn">net.wrap_trap.tos</span><span class="o">;</span>
+<span class="ln"> 2</span>
+<span class="ln"> 3</span><span class="kn">import</span> <span class="nn">com.oracle.truffle.api.CallTarget</span><span class="o">;</span>
+<span class="ln"> 4</span><span class="kn">import</span> <span class="nn">com.oracle.truffle.api.Truffle</span><span class="o">;</span>
+<span class="ln"> 5</span><span class="kn">import</span> <span class="nn">com.oracle.truffle.api.TruffleLanguage</span><span class="o">;</span>
+<span class="ln"> 6</span><span class="kn">import</span> <span class="nn">com.oracle.truffle.api.nodes.ExecutableNode</span><span class="o">;</span>
+<span class="ln"> 7</span>
+<span class="ln"> 8</span><span class="nd">@TruffleLanguage.Registration</span><span class="o">(</span><span class="n">id</span><span class="o">=</span><span class="s">&#34;tso&#34;</span><span class="o">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&#34;TruffleSampleLanguage&#34;</span><span class="o">,</span> <span class="n">version</span> <span class="o">=</span> <span class="s">&#34;0.1&#34;</span><span class="o">,</span> <span class="n">mimeType</span> <span class="o">=</span> <span class="n">TruffleSampleLanguage</span><span class="o">.</span><span class="na">MIME_TYPE</span><span class="o">)</span>
+<span class="ln"> 9</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TruffleSampleLanguage</span> <span class="kd">extends</span> <span class="n">TruffleLanguage</span><span class="o">&lt;</span><span class="n">TruffleSampleLanguage</span><span class="o">.</span><span class="na">TruffleSampleContext</span><span class="o">&gt;</span> <span class="o">{</span>
+<span class="ln">10</span>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">MIME_TYPE</span> <span class="o">=</span> <span class="s">&#34;application/x-truffle-sample&#34;</span><span class="o">;</span>
+<span class="ln">11</span>
+<span class="ln">12</span>  <span class="nd">@Override</span>
+<span class="ln">13</span>  <span class="kd">protected</span> <span class="n">TruffleSampleContext</span> <span class="nf">createContext</span><span class="o">(</span><span class="n">TruffleLanguage</span><span class="o">.</span><span class="na">Env</span> <span class="n">env</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">14</span>    <span class="k">return</span> <span class="k">new</span> <span class="n">TruffleSampleContext</span><span class="o">();</span>
+<span class="ln">15</span>  <span class="o">}</span>
+<span class="ln">16</span>
+<span class="ln">17</span>  <span class="nd">@Override</span>
+<span class="ln">18</span>  <span class="kd">protected</span> <span class="n">ExecutableNode</span> <span class="nf">parse</span><span class="o">(</span><span class="n">TruffleLanguage</span><span class="o">.</span><span class="na">InlineParsingRequest</span> <span class="n">request</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+<span class="ln">19</span>    <span class="k">throw</span> <span class="k">new</span> <span class="n">UnsupportedOperationException</span><span class="o">();</span>
+<span class="ln">20</span>  <span class="o">}</span>
+<span class="ln">21</span>
+<span class="ln">22</span>  <span class="nd">@Override</span>
+<span class="ln">23</span>  <span class="kd">protected</span> <span class="n">Object</span> <span class="nf">findExportedSymbol</span><span class="o">(</span><span class="n">TruffleSampleContext</span> <span class="n">context</span><span class="o">,</span> <span class="n">String</span> <span class="n">globalName</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">onlyExplicit</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">24</span>    <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+<span class="ln">25</span>  <span class="o">}</span>
+<span class="ln">26</span>
+<span class="ln">27</span>  <span class="nd">@Override</span>
+<span class="ln">28</span>  <span class="kd">protected</span> <span class="n">Object</span> <span class="nf">getLanguageGlobal</span><span class="o">(</span><span class="n">TruffleSampleContext</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">29</span>    <span class="k">return</span> <span class="n">context</span><span class="o">;</span>
+<span class="ln">30</span>  <span class="o">}</span>
+<span class="ln">31</span>
+<span class="ln">32</span>  <span class="nd">@Override</span>
+<span class="ln">33</span>  <span class="kd">protected</span> <span class="kt">boolean</span> <span class="nf">isObjectOfLanguage</span><span class="o">(</span><span class="n">Object</span> <span class="n">object</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">34</span>    <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+<span class="ln">35</span>  <span class="o">}</span>
+<span class="ln">36</span>
+<span class="ln">37</span>  <span class="nd">@Override</span>
+<span class="ln">38</span>  <span class="kd">protected</span> <span class="n">CallTarget</span> <span class="nf">parse</span><span class="o">(</span><span class="n">TruffleLanguage</span><span class="o">.</span><span class="na">ParsingRequest</span> <span class="n">request</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+<span class="ln">39</span>    <span class="n">TruffleSampleRootNode</span> <span class="n">root</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TruffleSampleRootNode</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+<span class="ln">40</span>    <span class="k">return</span> <span class="n">Truffle</span><span class="o">.</span><span class="na">getRuntime</span><span class="o">().</span><span class="na">createCallTarget</span><span class="o">(</span><span class="n">root</span><span class="o">);</span>
+<span class="ln">41</span>  <span class="o">}</span>
+<span class="ln">42</span>
+<span class="ln">43</span>  <span class="kd">static</span> <span class="kd">class</span> <span class="nc">TruffleSampleContext</span> <span class="o">{}</span>
+<span class="ln">44</span><span class="o">}</span></code></pre></div>
+
+<p>構文の RootNode のみを作成します。実行すると <code>TransferObject</code> のインスタンスを返します。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln"> 1</span><span class="kn">package</span> <span class="nn">net.wrap_trap.tos</span><span class="o">;</span>
+<span class="ln"> 2</span>
+<span class="ln"> 3</span><span class="kn">import</span> <span class="nn">com.oracle.truffle.api.frame.FrameDescriptor</span><span class="o">;</span>
+<span class="ln"> 4</span><span class="kn">import</span> <span class="nn">com.oracle.truffle.api.frame.VirtualFrame</span><span class="o">;</span>
+<span class="ln"> 5</span><span class="kn">import</span> <span class="nn">com.oracle.truffle.api.nodes.RootNode</span><span class="o">;</span>
+<span class="ln"> 6</span>
+<span class="ln"> 7</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TruffleSampleRootNode</span> <span class="kd">extends</span> <span class="n">RootNode</span> <span class="o">{</span>
+<span class="ln"> 8</span>
+<span class="ln"> 9</span>  <span class="kd">public</span> <span class="nf">TruffleSampleRootNode</span><span class="o">(</span><span class="n">TruffleSampleLanguage</span> <span class="n">language</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">10</span>    <span class="kd">super</span><span class="o">(</span><span class="n">language</span><span class="o">,</span> <span class="k">new</span> <span class="n">FrameDescriptor</span><span class="o">());</span>
+<span class="ln">11</span>  <span class="o">}</span>
+<span class="ln">12</span>
+<span class="ln">13</span>  <span class="nd">@Override</span>
+<span class="ln">14</span>  <span class="kd">public</span> <span class="n">Object</span> <span class="nf">execute</span><span class="o">(</span><span class="n">VirtualFrame</span> <span class="n">frame</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">15</span>    <span class="k">return</span> <span class="k">new</span> <span class="n">TransferObject</span><span class="o">(</span><span class="n">1</span><span class="o">);</span>
+<span class="ln">16</span>  <span class="o">}</span>
+<span class="ln">17</span><span class="o">}</span></code></pre></div>
+
+<p>この Language の eval を呼び出すテストコードは以下です。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln"> 1</span><span class="kn">package</span> <span class="nn">net.wrap_trap.tos</span><span class="o">;</span>
+<span class="ln"> 2</span>
+<span class="ln"> 3</span><span class="kn">import</span> <span class="nn">org.graalvm.polyglot.Context</span><span class="o">;</span>
+<span class="ln"> 4</span><span class="kn">import</span> <span class="nn">org.graalvm.polyglot.Value</span><span class="o">;</span>
+<span class="ln"> 5</span><span class="kn">import</span> <span class="nn">org.junit.Test</span><span class="o">;</span>
+<span class="ln"> 6</span><span class="kn">import static</span> <span class="nn">org.hamcrest.CoreMatchers.notNullValue</span><span class="o">;</span>
+<span class="ln"> 7</span><span class="kn">import static</span> <span class="nn">org.junit.Assert.assertThat</span><span class="o">;</span>
+<span class="ln"> 8</span>
+<span class="ln"> 9</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TruffleBoundaryTest</span> <span class="o">{</span>
+<span class="ln">10</span>
+<span class="ln">11</span>  <span class="nd">@Test</span>
+<span class="ln">12</span>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">truffleBoundaryTest</span><span class="o">()</span> <span class="o">{</span>
+<span class="ln">13</span>    <span class="n">Context</span> <span class="n">context</span> <span class="o">=</span> <span class="n">Context</span><span class="o">.</span><span class="na">newBuilder</span><span class="o">(</span><span class="s">&#34;tso&#34;</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
+<span class="ln">14</span>    <span class="n">Value</span> <span class="n">value</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="na">eval</span><span class="o">(</span><span class="s">&#34;tso&#34;</span><span class="o">,</span> <span class="s">&#34;&#34;</span><span class="o">);</span>
+<span class="ln">15</span>    <span class="n">assertThat</span><span class="o">(</span><span class="n">value</span><span class="o">,</span> <span class="n">notNullValue</span><span class="o">());</span>
+<span class="ln">16</span>    <span class="n">assertThat</span><span class="o">(</span><span class="n">value</span><span class="o">.</span><span class="na">as</span><span class="o">(</span><span class="n">TransferObject</span><span class="o">.</span><span class="na">class</span><span class="o">),</span> <span class="n">notNullValue</span><span class="o">());</span>
+<span class="ln">17</span>  <span class="o">}</span>
+<span class="ln">18</span><span class="o">}</span></code></pre></div>
+
+<h1 id="boundary">Boundary</h1>
+
+<p>前のセクションで「Truffle の中」「Truffle の外」と書きましたが、<a href="https://github.com/oracle/graal/tree/master/truffle">graal/truffle</a> ではこれらを Host と Guest として区別しています。</p>
+
+<p><img src="/images/truffle/truffle-boundary.jpg" alt="Truffle Boundary" /></p>
+
+<p><code>eval</code> の実行結果を、自分で作成したクラスのオブジェクトを使って Host 側に返そうとするとエラーになります。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln"> 1</span><span class="n">org</span><span class="o">.</span><span class="na">graalvm</span><span class="o">.</span><span class="na">polyglot</span><span class="o">.</span><span class="na">PolyglotException</span><span class="o">:</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">AssertionError</span><span class="o">:</span> <span class="n">Not</span> <span class="n">a</span> <span class="n">valid</span> <span class="n">guest</span> <span class="nl">value:</span> <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">tos</span><span class="o">.</span><span class="na">TransferObject</span><span class="nd">@5cc7c2a6.</span> <span class="n">Only</span> <span class="n">interop</span> <span class="n">values</span> <span class="n">are</span> <span class="n">allowed</span> <span class="n">to</span> <span class="n">be</span> <span class="n">exported</span><span class="o">.</span>
+<span class="ln"> 2</span>
+<span class="ln"> 3</span>	<span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">oracle</span><span class="o">.</span><span class="na">truffle</span><span class="o">.</span><span class="na">polyglot</span><span class="o">.</span><span class="na">PolyglotLanguageContext</span><span class="o">.</span><span class="na">lookupValueCache</span><span class="o">(</span><span class="n">PolyglotLanguageContext</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">770</span><span class="o">)</span>
+<span class="ln"> 4</span>	<span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">oracle</span><span class="o">.</span><span class="na">truffle</span><span class="o">.</span><span class="na">polyglot</span><span class="o">.</span><span class="na">PolyglotLanguageContext</span><span class="o">.</span><span class="na">asValue</span><span class="o">(</span><span class="n">PolyglotLanguageContext</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">764</span><span class="o">)</span>
+<span class="ln"> 5</span>	<span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">oracle</span><span class="o">.</span><span class="na">truffle</span><span class="o">.</span><span class="na">polyglot</span><span class="o">.</span><span class="na">PolyglotContextImpl</span><span class="o">.</span><span class="na">eval</span><span class="o">(</span><span class="n">PolyglotContextImpl</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">824</span><span class="o">)</span>
+<span class="ln"> 6</span>	<span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="na">graalvm</span><span class="o">.</span><span class="na">polyglot</span><span class="o">.</span><span class="na">Context</span><span class="o">.</span><span class="na">eval</span><span class="o">(</span><span class="n">Context</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">344</span><span class="o">)</span>
+<span class="ln"> 7</span>	<span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="na">graalvm</span><span class="o">.</span><span class="na">polyglot</span><span class="o">.</span><span class="na">Context</span><span class="o">.</span><span class="na">eval</span><span class="o">(</span><span class="n">Context</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">370</span><span class="o">)</span>
+<span class="ln"> 8</span>	<span class="n">at</span> <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">tos</span><span class="o">.</span><span class="na">TruffleBoundaryTest</span><span class="o">.</span><span class="na">truffleBoundaryTest</span><span class="o">(</span><span class="n">TruffleBoundaryTest</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">14</span><span class="o">)</span>
+<span class="ln"> 9</span><span class="o">(...</span><span class="na">snip</span><span class="o">...)</span>
+<span class="ln">10</span><span class="n">Original</span> <span class="n">Internal</span> <span class="nl">Error:</span> 
+<span class="ln">11</span><span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">AssertionError</span><span class="o">:</span> <span class="n">Not</span> <span class="n">a</span> <span class="n">valid</span> <span class="n">guest</span> <span class="nl">value:</span> <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">tos</span><span class="o">.</span><span class="na">TransferObject</span><span class="nd">@5cc7c2a6.</span> <span class="n">Only</span> <span class="n">interop</span> <span class="n">values</span> <span class="n">are</span> <span class="n">allowed</span> <span class="n">to</span> <span class="n">be</span> <span class="n">exported</span><span class="o">.</span>
+<span class="ln">12</span>	<span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">oracle</span><span class="o">.</span><span class="na">truffle</span><span class="o">.</span><span class="na">polyglot</span><span class="o">.</span><span class="na">PolyglotLanguageContext</span><span class="o">.</span><span class="na">lookupValueCache</span><span class="o">(</span><span class="n">PolyglotLanguageContext</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">770</span><span class="o">)</span>
+<span class="ln">13</span>	<span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">oracle</span><span class="o">.</span><span class="na">truffle</span><span class="o">.</span><span class="na">polyglot</span><span class="o">.</span><span class="na">PolyglotLanguageContext</span><span class="o">.</span><span class="na">asValue</span><span class="o">(</span><span class="n">PolyglotLanguageContext</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">764</span><span class="o">)</span>
+<span class="ln">14</span><span class="o">(...</span><span class="na">snip</span><span class="o">...)</span>
+<span class="ln">15</span><span class="n">Caused</span> <span class="nl">by:</span> <span class="n">Attached</span> <span class="n">Guest</span> <span class="n">Language</span> <span class="nf">Frames</span> <span class="o">(</span><span class="n">0</span><span class="o">)</span></code></pre></div>
+
+<h1 id="truffleobject">TruffleObject</h1>
+
+<p>stacktrace と Exception の内容から、eval した結果が guest value として正しくない、と読めます。eval した結果に任意のクラスを使う場合は、そのクラスに TruffleObject を implements する必要があります。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TransferObject</span> <span class="kd">implements</span> <span class="n">TruffleObject</span> <span class="o">{</span></code></pre></div>
+
+<p>これで <code>eval</code> の結果を任意のクラスで返すことができる…とはなりません。次に、以下のようなエラーが発生します。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln"> 1</span><span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">ClassCastException</span><span class="o">:</span> <span class="n">Cannot</span> <span class="n">convert</span> <span class="err">&#39;</span><span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">tos</span><span class="o">.</span><span class="na">TransferObject</span><span class="nd">@3a883ce7</span><span class="err">&#39;</span><span class="o">(</span><span class="nl">language:</span> <span class="n">TruffleSampleLanguage</span><span class="o">,</span> <span class="nl">type:</span> <span class="n">Unknown</span><span class="o">)</span> <span class="n">to</span> <span class="n">Java</span> <span class="n">type</span> <span class="err">&#39;</span><span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">tos</span><span class="o">.</span><span class="na">TransferObject</span><span class="err">&#39;</span><span class="o">:</span> <span class="n">Unsupported</span> <span class="n">target</span> <span class="n">type</span><span class="o">.</span>
+<span class="ln"> 2</span>
+<span class="ln"> 3</span>	<span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">oracle</span><span class="o">.</span><span class="na">truffle</span><span class="o">.</span><span class="na">polyglot</span><span class="o">.</span><span class="na">HostInteropErrors</span><span class="o">.</span><span class="na">newClassCastException</span><span class="o">(</span><span class="n">HostInteropErrors</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">195</span><span class="o">)</span>
+<span class="ln"> 4</span>	<span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">oracle</span><span class="o">.</span><span class="na">truffle</span><span class="o">.</span><span class="na">polyglot</span><span class="o">.</span><span class="na">HostInteropErrors</span><span class="o">.</span><span class="na">cannotConvert</span><span class="o">(</span><span class="n">HostInteropErrors</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">74</span><span class="o">)</span>
+<span class="ln"> 5</span>	<span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">oracle</span><span class="o">.</span><span class="na">truffle</span><span class="o">.</span><span class="na">polyglot</span><span class="o">.</span><span class="na">ToHostNode</span><span class="o">.</span><span class="na">asJavaObject</span><span class="o">(</span><span class="n">ToHostNode</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">539</span><span class="o">)</span>
+<span class="ln"> 6</span>	<span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">oracle</span><span class="o">.</span><span class="na">truffle</span><span class="o">.</span><span class="na">polyglot</span><span class="o">.</span><span class="na">ToHostNode</span><span class="o">.</span><span class="na">convertImpl</span><span class="o">(</span><span class="n">ToHostNode</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">210</span><span class="o">)</span>
+<span class="ln"> 7</span>	<span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">oracle</span><span class="o">.</span><span class="na">truffle</span><span class="o">.</span><span class="na">polyglot</span><span class="o">.</span><span class="na">ToHostNode</span><span class="o">.</span><span class="na">doCached</span><span class="o">(</span><span class="n">ToHostNode</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">106</span><span class="o">)</span>
+<span class="ln"> 8</span>	<span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">oracle</span><span class="o">.</span><span class="na">truffle</span><span class="o">.</span><span class="na">polyglot</span><span class="o">.</span><span class="na">ToHostNodeGen</span><span class="o">.</span><span class="na">executeAndSpecialize</span><span class="o">(</span><span class="n">ToHostNodeGen</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">115</span><span class="o">)</span>
+<span class="ln"> 9</span>	<span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">oracle</span><span class="o">.</span><span class="na">truffle</span><span class="o">.</span><span class="na">polyglot</span><span class="o">.</span><span class="na">ToHostNodeGen</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">ToHostNodeGen</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">66</span><span class="o">)</span>
+<span class="ln">10</span>	<span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">oracle</span><span class="o">.</span><span class="na">truffle</span><span class="o">.</span><span class="na">polyglot</span><span class="o">.</span><span class="na">PolyglotValue$InteropCodeCache$AsClassLiteralNode</span><span class="o">.</span><span class="na">executeImpl</span><span class="o">(</span><span class="n">PolyglotValue</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">1126</span><span class="o">)</span>
+<span class="ln">11</span>	<span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">oracle</span><span class="o">.</span><span class="na">truffle</span><span class="o">.</span><span class="na">polyglot</span><span class="o">.</span><span class="na">HostToGuestRootNode</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">HostToGuestRootNode</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">98</span><span class="o">)</span>
+<span class="ln">12</span>	<span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">oracle</span><span class="o">.</span><span class="na">truffle</span><span class="o">.</span><span class="na">api</span><span class="o">.</span><span class="na">impl</span><span class="o">.</span><span class="na">DefaultCallTarget</span><span class="o">.</span><span class="na">call</span><span class="o">(</span><span class="n">DefaultCallTarget</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">102</span><span class="o">)</span>
+<span class="ln">13</span>	<span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">oracle</span><span class="o">.</span><span class="na">truffle</span><span class="o">.</span><span class="na">api</span><span class="o">.</span><span class="na">impl</span><span class="o">.</span><span class="na">DefaultCallTarget$2</span><span class="o">.</span><span class="na">call</span><span class="o">(</span><span class="n">DefaultCallTarget</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">130</span><span class="o">)</span>
+<span class="ln">14</span>	<span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">oracle</span><span class="o">.</span><span class="na">truffle</span><span class="o">.</span><span class="na">polyglot</span><span class="o">.</span><span class="na">PolyglotValue$InteropValue</span><span class="o">.</span><span class="na">as</span><span class="o">(</span><span class="n">PolyglotValue</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">2285</span><span class="o">)</span>
+<span class="ln">15</span>	<span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="na">graalvm</span><span class="o">.</span><span class="na">polyglot</span><span class="o">.</span><span class="na">Value</span><span class="o">.</span><span class="na">as</span><span class="o">(</span><span class="n">Value</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">973</span><span class="o">)</span>
+<span class="ln">16</span>	<span class="n">at</span> <span class="n">net</span><span class="o">.</span><span class="na">wrap_trap</span><span class="o">.</span><span class="na">tos</span><span class="o">.</span><span class="na">TruffleBoundaryTest</span><span class="o">.</span><span class="na">truffleBoundaryTest</span><span class="o">(</span><span class="n">TruffleBoundaryTest</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">20</span><span class="o">)</span>
+<span class="ln">17</span><span class="o">(...</span><span class="na">snip</span><span class="o">...)</span></code></pre></div>
+
+<p>この Exception は、<code>eval</code> した時ではなく、任意のクラスのオブジェクトを Host 側で受け取る為の型変換  <code>Value#as(Class)</code> を呼び出した時に発生しています。色々試してみましたが、ここで任意の型に直接変換することはできませんでした。変換できる型は、<a href="https://www.graalvm.org/truffle/javadoc/org/graalvm/polyglot/Value.html">JavaDoc</a> に記載されています。</p>
+
+<h1 id="interop-library">Interop Library</h1>
+
+<p>Truffle には 言語間のメッセージプロトコルのやり取りをサポートする Interop Library という仕組みがあります。このライブラリを使い、<code>TransferObject</code> を Host 側で Map として見えるようにしてみます。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln"> 1</span><span class="kn">package</span> <span class="nn">net.wrap_trap.tos</span><span class="o">;</span>
+<span class="ln"> 2</span>
+<span class="ln"> 3</span><span class="kn">import</span> <span class="nn">com.oracle.truffle.api.CompilerDirectives</span><span class="o">;</span>
+<span class="ln"> 4</span><span class="kn">import</span> <span class="nn">com.oracle.truffle.api.interop.InteropLibrary</span><span class="o">;</span>
+<span class="ln"> 5</span><span class="kn">import</span> <span class="nn">com.oracle.truffle.api.interop.TruffleObject</span><span class="o">;</span>
+<span class="ln"> 6</span><span class="kn">import</span> <span class="nn">com.oracle.truffle.api.interop.UnknownIdentifierException</span><span class="o">;</span>
+<span class="ln"> 7</span><span class="kn">import</span> <span class="nn">com.oracle.truffle.api.interop.UnsupportedMessageException</span><span class="o">;</span>
+<span class="ln"> 8</span><span class="kn">import</span> <span class="nn">com.oracle.truffle.api.library.ExportLibrary</span><span class="o">;</span>
+<span class="ln"> 9</span><span class="kn">import</span> <span class="nn">com.oracle.truffle.api.library.ExportMessage</span><span class="o">;</span>
+<span class="ln">10</span>
+<span class="ln">11</span><span class="nd">@SuppressWarnings</span><span class="o">({</span><span class="s">&#34;static-method&#34;</span><span class="o">,</span> <span class="s">&#34;unused&#34;</span><span class="o">})</span>
+<span class="ln">12</span><span class="nd">@ExportLibrary</span><span class="o">(</span><span class="n">InteropLibrary</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="ln">13</span><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">TransferObject</span> <span class="kd">implements</span> <span class="n">TruffleObject</span> <span class="o">{</span>
+<span class="ln">14</span>
+<span class="ln">15</span>  <span class="kd">private</span> <span class="kt">int</span> <span class="n">result</span><span class="o">;</span>
+<span class="ln">16</span>
+<span class="ln">17</span>  <span class="kd">public</span> <span class="nf">TransferObject</span><span class="o">(</span><span class="kt">int</span> <span class="n">result</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">18</span>    <span class="k">this</span><span class="o">.</span><span class="na">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">;</span>
+<span class="ln">19</span>  <span class="o">}</span>
+<span class="ln">20</span>
+<span class="ln">21</span>  <span class="nd">@ExportMessage</span>
+<span class="ln">22</span>  <span class="kt">boolean</span> <span class="nf">hasMembers</span><span class="o">()</span> <span class="o">{</span>
+<span class="ln">23</span>    <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+<span class="ln">24</span>  <span class="o">}</span>
+<span class="ln">25</span>
+<span class="ln">26</span>  <span class="nd">@ExportMessage</span>
+<span class="ln">27</span>  <span class="nd">@CompilerDirectives.TruffleBoundary</span>
+<span class="ln">28</span>  <span class="n">Object</span> <span class="nf">readMember</span><span class="o">(</span><span class="n">String</span> <span class="n">member</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">UnsupportedMessageException</span><span class="o">,</span> <span class="n">UnknownIdentifierException</span> <span class="o">{</span>
+<span class="ln">29</span>    <span class="k">if</span> <span class="o">((</span><span class="n">member</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="o">(</span><span class="n">member</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">&#34;result&#34;</span><span class="o">)))</span> <span class="o">{</span>
+<span class="ln">30</span>      <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">result</span><span class="o">;</span>
+<span class="ln">31</span>    <span class="o">}</span>
+<span class="ln">32</span>    <span class="k">throw</span> <span class="k">new</span> <span class="n">UnsupportedOperationException</span><span class="o">();</span>
+<span class="ln">33</span>  <span class="o">}</span>
+<span class="ln">34</span>
+<span class="ln">35</span>  <span class="nd">@ExportMessage</span>
+<span class="ln">36</span>  <span class="nd">@CompilerDirectives.TruffleBoundary</span>
+<span class="ln">37</span>  <span class="n">Object</span> <span class="nf">getMembers</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">includeInternal</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">UnsupportedMessageException</span> <span class="o">{</span>
+<span class="ln">38</span>    <span class="k">throw</span> <span class="k">new</span> <span class="n">UnsupportedOperationException</span><span class="o">();</span>
+<span class="ln">39</span>  <span class="o">}</span>
+<span class="ln">40</span>
+<span class="ln">41</span>  <span class="nd">@ExportMessage</span>
+<span class="ln">42</span>  <span class="nd">@CompilerDirectives.TruffleBoundary</span>
+<span class="ln">43</span>  <span class="n">Object</span> <span class="nf">writeMember</span><span class="o">(</span><span class="n">String</span> <span class="n">member</span><span class="o">,</span> <span class="n">Object</span> <span class="n">value</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">UnsupportedMessageException</span><span class="o">,</span> <span class="n">UnknownIdentifierException</span> <span class="o">{</span>
+<span class="ln">44</span>    <span class="k">throw</span> <span class="k">new</span> <span class="n">UnsupportedOperationException</span><span class="o">();</span>
+<span class="ln">45</span>  <span class="o">}</span>
+<span class="ln">46</span>
+<span class="ln">47</span>  <span class="nd">@ExportMessage</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;isMemberModifiable&#34;</span><span class="o">)</span>
+<span class="ln">48</span>  <span class="nd">@ExportMessage</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;isMemberReadable&#34;</span><span class="o">)</span>
+<span class="ln">49</span>  <span class="nd">@CompilerDirectives.TruffleBoundary</span>
+<span class="ln">50</span>  <span class="kt">boolean</span> <span class="nf">isMemberReadable</span><span class="o">(</span><span class="n">String</span> <span class="n">member</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">51</span>    <span class="k">return</span> <span class="n">member</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">member</span><span class="o">);</span>
+<span class="ln">52</span>  <span class="o">}</span>
+<span class="ln">53</span>
+<span class="ln">54</span>  <span class="nd">@ExportMessage</span>
+<span class="ln">55</span>  <span class="nd">@CompilerDirectives.TruffleBoundary</span>
+<span class="ln">56</span>  <span class="kt">boolean</span> <span class="nf">isMemberInsertable</span><span class="o">(</span><span class="n">String</span> <span class="n">member</span><span class="o">)</span> <span class="o">{</span>
+<span class="ln">57</span>    <span class="k">return</span> <span class="o">!</span><span class="n">member</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">member</span><span class="o">);</span>
+<span class="ln">58</span>  <span class="o">}</span>
+<span class="ln">59</span><span class="o">}</span></code></pre></div>
+
+<p>こうすることにより、<code>eval</code> で Value を取得して Map に変換することで <code>TransferObject</code> が保持している値を取り出すことができます。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="ln">1</span>  <span class="nd">@Test</span>
+<span class="ln">2</span>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">truffleBoundaryTest</span><span class="o">()</span> <span class="o">{</span>
+<span class="ln">3</span>    <span class="n">Context</span> <span class="n">context</span> <span class="o">=</span> <span class="n">Context</span><span class="o">.</span><span class="na">newBuilder</span><span class="o">(</span><span class="s">&#34;tso&#34;</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
+<span class="ln">4</span>    <span class="n">Value</span> <span class="n">value</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="na">eval</span><span class="o">(</span><span class="s">&#34;tso&#34;</span><span class="o">,</span> <span class="s">&#34;&#34;</span><span class="o">);</span>
+<span class="ln">5</span>    <span class="n">assertThat</span><span class="o">(</span><span class="n">value</span><span class="o">,</span> <span class="n">notNullValue</span><span class="o">());</span>
+<span class="ln">6</span>    <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">map</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="na">as</span><span class="o">(</span><span class="n">Map</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+<span class="ln">7</span>    <span class="n">assertThat</span><span class="o">(</span><span class="n">map</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&#34;result&#34;</span><span class="o">),</span> <span class="n">is</span><span class="o">(</span><span class="n">1</span><span class="o">));</span>
+<span class="ln">8</span>  <span class="o">}</span></code></pre></div>
+
+<p>同じように Array として見えるようすることもできます。詳細は <a href="https://github.com/oracle/graal/blob/master/truffle/src/com.oracle.truffle.api.test/src/com/oracle/truffle/api/test/host/AsCollectionsTest.java#L289">Truffle のテストコード</a> を参照してください。</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>Truffle の <code>eval</code> の結果を Host から取り出す方法について記載しました。Truffle の記事は2016年あたりのものが多く、最新の API に対して参考にできるものが少ない印象です。</p>
+
+<p>ただ、graalvm の Slack は質問に対して reply を返しているので、Web で見つからなければ Slack を検索し、それでも解決しない場合は Slack で質問してみるのも良さそうです。あとは <a href="https://github.com/oracle/graal/tree/master/truffle/src/com.oracle.truffle.api.test/src/com/oracle/truffle/api/test">Truffle のテストコード</a>と、<a href="https://github.com/graalvm/simplelanguage">SimpleLanguage というリファレンス実装</a>が参考になりました。</p>
+
+<p><a href="https://arrow.apache.org/">Apache Arrow</a> のデータに対して SQL で問い合わせるコードは、以下に置いています。projection しかできませんが…</p>
+
+<p><a href="https://github.com/masayuki038/truffle-arrow">https://github.com/masayuki038/truffle-arrow</a></p>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2020 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>
