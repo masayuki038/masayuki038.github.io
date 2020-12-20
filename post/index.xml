@@ -6,10 +6,19 @@
     <description>Recent content in Posts on act-act</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja</language>
-    <lastBuildDate>Sun, 26 Jan 2020 00:00:01 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 19 Dec 2020 00:00:01 +0000</lastBuildDate>
     
 	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Apache Calcite &#43; Graal / Truffle でクエリエンジンを作ってる話</title>
+      <link>/blog/2020/12/20/truffle-arrow/</link>
+      <pubDate>Sat, 19 Dec 2020 00:00:01 +0000</pubDate>
+      
+      <guid>/blog/2020/12/20/truffle-arrow/</guid>
+      <description>Motivation MPP クエリエンジンに興味があったのですが、仕事で Impala を使ってみて益々興味が湧き、自分で作ってみたいと思うようになって作り始めました。 イチから作</description>
+    </item>
     
     <item>
       <title>Truffle の Host にオブジェクトを返す</title>

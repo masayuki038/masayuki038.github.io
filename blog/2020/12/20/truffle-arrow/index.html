@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Apache Calcite &#43; Graal / Truffle でクエリエンジンを作ってる話</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Masayuki Takahashi" />
+  <meta name="description" content="Motivation MPP クエリエンジンに興味があったのですが、仕事で Impala を使ってみて益々興味が湧き、自分で作ってみたいと思うようになって作り始めました。 イチから作" />
+
+  
+  
+  <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://"/>
+
+<meta name="twitter:title" content="Apache Calcite &#43; Graal / Truffle でクエリエンジンを作ってる話"/>
+<meta name="twitter:description" content="Motivation MPP クエリエンジンに興味があったのですが、仕事で Impala を使ってみて益々興味が湧き、自分で作ってみたいと思うようになって作り始めました。 イチから作"/>
+
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Apache Calcite &#43; Graal / Truffle でクエリエンジンを作ってる話" />
+  <meta property="og:description" content="Motivation MPP クエリエンジンに興味があったのですが、仕事で Impala を使ってみて益々興味が湧き、自分で作ってみたいと思うようになって作り始めました。 イチから作" />
+  <meta property="og:url" content="/blog/2020/12/20/truffle-arrow/" />
+  <meta property="og:image" content="/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="/blog/2020/12/20/truffle-arrow/" />
+<link rel="alternative" href="/index.xml" title="act-act" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
+
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="act-act" />
+<meta name="msapplication-tooltip" content="act-act" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="/css/bundle.css" />
+<link rel="stylesheet" href="/css/chroma-styles.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+
+<nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:masayuki038@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/masayuki038" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/masayuki" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/masayuki038" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/masayuki038" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="/">Home</a>
+          </li>
+      
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Apache Calcite &#43; Graal / Truffle でクエリエンジンを作ってる話</h1>
+      <p class="post-meta">@Masayuki Takahashi · Dec 19, 2020 · 3 min read</p>
+    </header>
+    <article class="post-content">
+
+<h1 id="motivation">Motivation</h1>
+
+<p>MPP クエリエンジンに興味があったのですが、仕事で Impala を使ってみて益々興味が湧き、自分で作ってみたいと思うようになって作り始めました。
+イチから作るのはとても時間がかかるので、色んなライブラリを使っています。今回はそれらの紹介をしたいと思います。</p>
+
+<h1 id="how-query-engines-work">How Query Engines Work</h1>
+
+<p>最初はどうやってクエリエンジンを作れば良いのか分からなかったので、とりあえず参考書等を探して入り口を探しました。Amazon で書籍を探すといくつか洋書が出てくるのですが、それを読んでも実装できる気がしなかったので、まずは <a href="https://github.com/apache/drill">Apache Drill</a> のコードを読んでいました。</p>
+
+<p>最近は、Apache Arrow の PMC の <a href="https://twitter.com/andygrove73">Andy Groove</a> が『<a href="https://leanpub.com/how-query-engines-work">How Query Engines Work</a>』という書籍をリリースしているので、興味のある方は読んでみてください。彼自身も Rust と Apache Arrow を使って <a href="https://github.com/apache/arrow/tree/master/rust/datafusion">DataFusion</a> というクエリエンジンを書いています。</p>
+
+<h1 id="parsing-sql-and-building-an-execution-plan">Parsing SQL and Building an execution plan</h1>
+
+<p>SQL の parse から実行計画(Logical Plan)の構築までは、Apache Calcite を使っています。Apache Calcite については以前 blog を書いたので、そちらを参考にしてください。</p>
+
+<p><a href="https://masayuki038.github.io/blog/2019/06/04/calcite-code-reading-part1/">https://masayuki038.github.io/blog/2019/06/04/calcite-code-reading-part1/</a></p>
+
+<p>あとは、Logical Plan から Physical Plan を生成し、Physical Plan から先で SQL の処理を行い、結果を返すだけです。</p>
+
+<p>Physical Plan の生成も、Apache Calcite がサポートします。Physical Plan の RelNode のクラスを作り、Logical Plan の各 RelNode を Physical Plan の RelNode に変換していきます。1:1 で対応させていく必要はなく、2 つの RelNode を 1 つに纏めたり、RelNode を組み替えたりすることができます。</p>
+
+<p><img src="/images/truffle-arrow/apache-calcite.png" alt="apache-calcite" /></p>
+
+<h1 id="data-source">Data Source</h1>
+
+<p>内部では Apache Arrow 形式のデータを処理しています。Apache Arrow については、以下を参照してください。</p>
+
+<p><a href="https://www.slideshare.net/kou/ossforumapachearrow">https://www.slideshare.net/kou/ossforumapachearrow</a></p>
+
+<p>現状は Arrow 形式のデータを予めカラムごとに分けて出力し、実行計画を見て必要なカラムのファイルを読むようにしています。</p>
+
+<h1 id="code-generation">Code Generation</h1>
+
+<p>Apache Calcite の標準実装的な位置付けである Enumerable Adapter は、実行計画を参照しながら Java のコードを生成し、最後にそれらをコンパイルして実行し、結果を返すようになっています。Apache Calcite の arrow adapter を書いていた頃は、Enumerable Adapter と同じように <a href="https://issues.apache.org/jira/browse/CALCITE-2173?focusedCommentId=16458618&amp;page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-16458618">Java のコードを生成していた</a>のですが、Java のコードを生成する Java コードを書くのがどうにもシンドくなってしまい、別の方法を探すことにしました。</p>
+
+<p>暫くして Graal / Truffle を知り、コード生成の部分に Truffle が使えないかと思うようになりました。そして Web を探してみた結果、Calcite + Truffle で実装しているプロジェクトを見つけました。</p>
+
+<p><a href="https://github.com/fivetran/truffle-sql">https://github.com/fivetran/truffle-sql</a></p>
+
+<p>このプロジェクトの開発はすでに終わっているようですが、このプロジェクトを fork して Arrow Adapter のコードを組み合わせて動かしてみるようにしたのが、trffle-arrow のベースになっています。</p>
+
+<h1 id="expression-evaluation">Expression Evaluation</h1>
+
+<p>Apache Calcite では、実行計画の Scan / Filter / Project 等を RelNode、SQL 文の中の式等を RexNode というオブジェクトとして扱います。</p>
+
+<p><a href="https://github.com/fivetran/truffle-sql">truffle-sql</a> では、この RexNode を Truffle の Node に置き換えていきます。そして RelNode を下から順に実行していきます。RelNode の中では Truffle の Node を評価し、結果を Truffle の VirtualFrame に書き込みます。最後に VirtualFrame から結果を取り出して、JDBC の ResultSet 経由で値を取り出せるようにしています。</p>
+
+<p><img src="/images/truffle-arrow/truffle-sql.png" alt="truffle-sql" /></p>
+
+<h1 id="jdbc-api">JDBC API</h1>
+
+<p>Apache Calcite の adapter の実行結果は JDBC API 経由で取得できるようになっています。しかし、ネットワークを介して結果を取得することはできません。そこで、<a href="https://calcite.apache.org/avatica/">Apache Avatica</a> を使ってネットワークを介して結果を取得できるようにしています。</p>
+
+<h1 id="source-code">Source Code</h1>
+
+<p>Scan / Filter / Project / Aggregate  まで実装したものを以下に置いています。</p>
+
+<p><a href="https://github.com/masayuki038/truffle-arrow">https://github.com/masayuki038/truffle-arrow</a></p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>クエリエンジンを作るために使っているライブラリを紹介しました。Java 系の言語を使って SQL クエリエンジンを作るのであれば、その取っ掛かりとして Apache Calcite を見てみることをお勧めします。</p>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2020 act-act</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+
+<script src="/js/bundle.js"></script>
+
+
+
+
+  </body>
+</html>
