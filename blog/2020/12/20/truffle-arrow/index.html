@@ -5,7 +5,7 @@
   <meta charset="utf-8" />
 
   
-  <title>Apache Calcite &#43; Graal / Truffle でクエリエンジンを作ってる話</title>
+  <title>Apache Calcite &#43; Truffle でクエリエンジンを作ってる話</title>
 
   
   
@@ -16,22 +16,22 @@
 
   
   <meta name="author" content="Masayuki Takahashi" />
-  <meta name="description" content="Motivation MPP クエリエンジンに興味があったのですが、仕事で Impala を使ってみて益々興味が湧き、自分で作ってみたいと思うようになって作り始めました。 イチから作" />
+  <meta name="description" content="自作DBMS Advent Calender 2020 の 20 日目の記事です。 現在、truffle-arrow というクエリエンジンを作っているので、その話を書きます。 『How Query Engines W" />
 
   
   
   <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://"/>
+<meta name="twitter:image" content="https://masayuki038.github.io/images/truffle-arrow/truffle-sql.png"/>
 
-<meta name="twitter:title" content="Apache Calcite &#43; Graal / Truffle でクエリエンジンを作ってる話"/>
-<meta name="twitter:description" content="Motivation MPP クエリエンジンに興味があったのですが、仕事で Impala を使ってみて益々興味が湧き、自分で作ってみたいと思うようになって作り始めました。 イチから作"/>
+<meta name="twitter:title" content="Apache Calcite &#43; Truffle でクエリエンジンを作ってる話"/>
+<meta name="twitter:description" content="自作DBMS Advent Calender 2020 の 20 日目の記事です。 現在、truffle-arrow というクエリエンジンを作っているので、その話を書きます。 『How Query Engines W"/>
 
   
 
   
   <meta property="og:type" content="article" />
-  <meta property="og:title" content="Apache Calcite &#43; Graal / Truffle でクエリエンジンを作ってる話" />
-  <meta property="og:description" content="Motivation MPP クエリエンジンに興味があったのですが、仕事で Impala を使ってみて益々興味が湧き、自分で作ってみたいと思うようになって作り始めました。 イチから作" />
+  <meta property="og:title" content="Apache Calcite &#43; Truffle でクエリエンジンを作ってる話" />
+  <meta property="og:description" content="自作DBMS Advent Calender 2020 の 20 日目の記事です。 現在、truffle-arrow というクエリエンジンを作っているので、その話を書きます。 『How Query Engines W" />
   <meta property="og:url" content="/blog/2020/12/20/truffle-arrow/" />
   <meta property="og:image" content="/img/avatar.jpg" />
 
@@ -201,73 +201,95 @@
 
   <section class="main post-detail">
     <header class="post-header">
-      <h1 class="post-title">Apache Calcite &#43; Graal / Truffle でクエリエンジンを作ってる話</h1>
-      <p class="post-meta">@Masayuki Takahashi · Dec 19, 2020 · 3 min read</p>
+      <h1 class="post-title">Apache Calcite &#43; Truffle でクエリエンジンを作ってる話</h1>
+      <p class="post-meta">@Masayuki Takahashi · Dec 20, 2020 · 5 min read</p>
     </header>
     <article class="post-content">
 
-<h1 id="motivation">Motivation</h1>
+<p><a href="https://adventar.org/calendars/5548">自作DBMS Advent Calender 2020</a> の 20 日目の記事です。</p>
 
-<p>MPP クエリエンジンに興味があったのですが、仕事で Impala を使ってみて益々興味が湧き、自分で作ってみたいと思うようになって作り始めました。
-イチから作るのはとても時間がかかるので、色んなライブラリを使っています。今回はそれらの紹介をしたいと思います。</p>
+<p>現在、<a href="https://github.com/masayuki038/truffle-arrow">truffle-arrow</a> というクエリエンジンを作っているので、その話を書きます。</p>
 
-<h1 id="how-query-engines-work">How Query Engines Work</h1>
+<h1 id="how-query-engines-work">『How Query Engines Work』</h1>
 
-<p>最初はどうやってクエリエンジンを作れば良いのか分からなかったので、とりあえず参考書等を探して入り口を探しました。Amazon で書籍を探すといくつか洋書が出てくるのですが、それを読んでも実装できる気がしなかったので、まずは <a href="https://github.com/apache/drill">Apache Drill</a> のコードを読んでいました。</p>
+<p>仕事で Cloudera Impala に触れ、クエリエンジンに興味が湧き、自分で作ってみたいと思うようになって作り始めました。最初はクエリエンジンの作り方が分からなかったので、とりあえず参考書等を探して入り口を探しました。しかしそれらを読んでも実装できる気がしなかったので、まずは <a href="https://github.com/apache/drill">Apache Drill</a> のコードを読んでいました。</p>
 
-<p>最近は、Apache Arrow の PMC の <a href="https://twitter.com/andygrove73">Andy Groove</a> が『<a href="https://leanpub.com/how-query-engines-work">How Query Engines Work</a>』という書籍をリリースしているので、興味のある方は読んでみてください。彼自身も Rust と Apache Arrow を使って <a href="https://github.com/apache/arrow/tree/master/rust/datafusion">DataFusion</a> というクエリエンジンを書いています。</p>
+<p>今年、Apache Arrow の PMC の <a href="https://twitter.com/andygrove73">Andy Groove</a> が『<a href="https://leanpub.com/how-query-engines-work">How Query Engines Work</a>』という書籍をリリースしているので、興味のある方は読んでみてください。彼自身も Rust と Apache Arrow を使って <a href="https://github.com/apache/arrow/tree/master/rust/datafusion">DataFusion</a> というクエリエンジンを書いています。</p>
+
+<p>イチから作るのはとても時間がかかるので、色んなライブラリを使っています。今回はそれらの紹介をしたいと思います。</p>
 
 <h1 id="parsing-sql-and-building-an-execution-plan">Parsing SQL and Building an execution plan</h1>
 
-<p>SQL の parse から実行計画(Logical Plan)の構築までは、Apache Calcite を使っています。Apache Calcite については以前 blog を書いたので、そちらを参考にしてください。</p>
+<p>SQL の parse から実行計画(Logical Plan)の構築までは、<a href="https://calcite.apache.org/">Apache Calcite</a> を使っています。Calcite については以前 blog を書いたので、そちらを参考にしてください。<a href="https://github.com/masayuki038/truffle-arrow">truffle-arrow</a> の前は、Calcite の <a href="https://issues.apache.org/jira/browse/CALCITE-2173">Arrow Adapter</a> を書いていました。</p>
 
-<p><a href="https://masayuki038.github.io/blog/2019/06/04/calcite-code-reading-part1/">https://masayuki038.github.io/blog/2019/06/04/calcite-code-reading-part1/</a></p>
+<ul>
+<li><a href="https://masayuki038.github.io/blog/2019/06/04/calcite-code-reading-part1/">Calcite Code Reading Part 1</a></li>
+<li><a href="https://masayuki038.github.io/blog/2019/11/07/calcite-code-reading-part2/">Calcite Code Reading Part 2</a></li>
+</ul>
 
-<p>あとは、Logical Plan から Physical Plan を生成し、Physical Plan から先で SQL の処理を行い、結果を返すだけです。</p>
+<p>SQL を入力すれば Calcite が Logical Plan まで作成してくれるので、あとはそこから Physical Plan を生成し、Physical Plan から先で SQL の処理を実行して結果を返すだけです。Physical Plan の生成も Calcite がサポートします。</p>
 
-<p>Physical Plan の生成も、Apache Calcite がサポートします。Physical Plan の RelNode のクラスを作り、Logical Plan の各 RelNode を Physical Plan の RelNode に変換していきます。1:1 で対応させていく必要はなく、2 つの RelNode を 1 つに纏めたり、RelNode を組み替えたりすることができます。</p>
+<p>Calcite では、実行計画の Scan / Filter / Project 等を RelNode というオブジェクトとして扱います。Physical Plan の RelNode のクラスを作り、Logical Plan の各 RelNode を Physical Plan の RelNode に変換していきます(<a href="https://calcite.apache.org/javadocAggregate/org/apache/calcite/rel/convert/ConverterRule.html">ConverterRule</a>)。1:1 で対応させていく必要はなく、2 つの RelNode を 1 つに纏めたり、RelNode を組み替えたりすることができます。</p>
 
 <p><img src="/images/truffle-arrow/apache-calcite.png" alt="apache-calcite" /></p>
+
+<p>Physical Plan の RelNode が、入力された SQL を処理していきます。Calcite の標準実装的な位置付けである Enumerable Adapter は、これらの RelNode の中で実行計画を参照しながら Java のコードを生成し、最後にそれらをコンパイルして実行し、結果を返すようになっています。</p>
 
 <h1 id="data-source">Data Source</h1>
 
 <p>内部では Apache Arrow 形式のデータを処理しています。Apache Arrow については、以下を参照してください。</p>
 
-<p><a href="https://www.slideshare.net/kou/ossforumapachearrow">https://www.slideshare.net/kou/ossforumapachearrow</a></p>
+<ul>
+<li><a href="https://www.slideshare.net/kou/ossforumapachearrow">Apache Arrow - データ処理ツールの次世代プラットフォーム</a></li>
+</ul>
 
-<p>現状は Arrow 形式のデータを予めカラムごとに分けて出力し、実行計画を見て必要なカラムのファイルを読むようにしています。</p>
+<p>現時点では Arrow 形式のデータを予めカラムごとに分けて出力し、実行計画を見て必要なカラムのファイルを読むようにしています。</p>
 
 <h1 id="code-generation">Code Generation</h1>
 
-<p>Apache Calcite の標準実装的な位置付けである Enumerable Adapter は、実行計画を参照しながら Java のコードを生成し、最後にそれらをコンパイルして実行し、結果を返すようになっています。Apache Calcite の arrow adapter を書いていた頃は、Enumerable Adapter と同じように <a href="https://issues.apache.org/jira/browse/CALCITE-2173?focusedCommentId=16458618&amp;page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-16458618">Java のコードを生成していた</a>のですが、Java のコードを生成する Java コードを書くのがどうにもシンドくなってしまい、別の方法を探すことにしました。</p>
+<p>以前 Calcite の Arrow Adapter を書いていた頃は、Enumerable Adapter と同じように <a href="https://issues.apache.org/jira/browse/CALCITE-2173?focusedCommentId=16458618&amp;page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-16458618">Java のコードを生成していた</a>のですが、Java のコードを生成する Java コードを書くのがどうにもシンドくなってしまい、別の方法を探すことにしました。</p>
 
-<p>暫くして Graal / Truffle を知り、コード生成の部分に Truffle が使えないかと思うようになりました。そして Web を探してみた結果、Calcite + Truffle で実装しているプロジェクトを見つけました。</p>
+<p>暫くして Graal / Truffle を知り、コード生成の部分に <a href="https://github.com/oracle/graal/tree/master/truffle">Truffle</a> が使えないかと思うようになりました。<a href="https://github.com/oracle/graal/tree/master/truffle">Truffle</a> は言語実装フレームワークです。Truffle については、以下を参照してください。</p>
 
-<p><a href="https://github.com/fivetran/truffle-sql">https://github.com/fivetran/truffle-sql</a></p>
+<ul>
+<li><a href="https://www.slideshare.net/jyukutyo/graalvmjvm">GraalVMで使われている、他言語をJVM上に実装する仕組みを学ぼう</a></li>
+</ul>
 
-<p>このプロジェクトの開発はすでに終わっているようですが、このプロジェクトを fork して Arrow Adapter のコードを組み合わせて動かしてみるようにしたのが、trffle-arrow のベースになっています。</p>
+<p>そして Web を探してみた結果、Calcite + Truffle で実装しているプロジェクトを見つけました。</p>
+
+<ul>
+<li><a href="https://github.com/fivetran/truffle-sql">fivetran/truffle-sql: Experimental data-lake implemented using Truffle / Graal</a></li>
+</ul>
+
+<p>このプロジェクトは現在 Update されていませんが、この <a href="https://github.com/fivetran/truffle-sql">truffle-sql</a> と Arrow Adapter のコードを組み合わせたのが、truffle-arrow のベースになっています。</p>
 
 <h1 id="expression-evaluation">Expression Evaluation</h1>
 
-<p>Apache Calcite では、実行計画の Scan / Filter / Project 等を RelNode、SQL 文の中の式等を RexNode というオブジェクトとして扱います。</p>
-
-<p><a href="https://github.com/fivetran/truffle-sql">truffle-sql</a> では、この RexNode を Truffle の Node に置き換えていきます。そして RelNode を下から順に実行していきます。RelNode の中では Truffle の Node を評価し、結果を Truffle の VirtualFrame に書き込みます。最後に VirtualFrame から結果を取り出して、JDBC の ResultSet 経由で値を取り出せるようにしています。</p>
+<p>Calcite では、SQL 文の中の式等を RexNode というオブジェクトとして扱います。<a href="https://github.com/fivetran/truffle-sql">truffle-sql</a> では、この RexNode を Truffle の Node に置き換えていきます。Truffle の Node に置き換えれたオブジェクトグラフは式を表します。この式を構築する際に、評価した結果を Truffle の <a href="https://www.graalvm.org/truffle/javadoc/com/oracle/truffle/api/frame/VirtualFrame.html">VirtualFrame</a> という Truffle 上のスタックに書き込むようにしておきます。</p>
 
 <p><img src="/images/truffle-arrow/truffle-sql.png" alt="truffle-sql" /></p>
 
+<p>そして最後に RelNode を下から順に実行していきます。最初の Scan では、必要なデータを load して VirtualFrame に書き込んでおきます。それ以降の RelNode では、VirtualFrame から値を取り出して評価し、結果を VirtualFrame に書き込みます。最後に、VirtualFrame から JDBC の ResultSet 経由で値を取り出せるようにしています。</p>
+
+<p>Java のコード生成が Truffle に変わったことで、大分楽になりました。とはいえ Truffle は言語実装フレームワークなので、Calcite の RexNode を置き換えて評価するには色々と合わない部分もあります。Truffle に関しては、困ったら <a href="https://www.graalvm.org/slack-invitation/">Slack</a> で質問していました。</p>
+
 <h1 id="jdbc-api">JDBC API</h1>
 
-<p>Apache Calcite の adapter の実行結果は JDBC API 経由で取得できるようになっています。しかし、ネットワークを介して結果を取得することはできません。そこで、<a href="https://calcite.apache.org/avatica/">Apache Avatica</a> を使ってネットワークを介して結果を取得できるようにしています。</p>
+<p>特に実装しなくても、Calcite の実行結果は JDBC API 経由で取得できるようになっています。しかし、ネットワークを介して結果を取得することはできません。そこで、<a href="https://calcite.apache.org/avatica/">Apache Avatica</a> を使ってネットワークを介して結果を取得できるようにしています。</p>
+
+<p>Avatica を使うことにより、HTTP + <a href="https://calcite.apache.org/avatica/docs/client_reference.html#serialization">JSON か Protocol Buffers</a> で DB とデータをやり取りすることができます。クライアント側は Avatica の JDBC Driver を使うことになります。</p>
 
 <h1 id="source-code">Source Code</h1>
 
-<p>Scan / Filter / Project / Aggregate  まで実装したものを以下に置いています。</p>
+<p>Scan / Filter / Project / Aggregate(+ count 関数) まで実装したものを以下に置いています。</p>
 
 <p><a href="https://github.com/masayuki038/truffle-arrow">https://github.com/masayuki038/truffle-arrow</a></p>
 
 <h1 id="conclusion">Conclusion</h1>
 
-<p>クエリエンジンを作るために使っているライブラリを紹介しました。Java 系の言語を使って SQL クエリエンジンを作るのであれば、その取っ掛かりとして Apache Calcite を見てみることをお勧めします。</p>
+<p>クエリエンジンを作るために使っているライブラリを紹介しました。Java 系の言語を使って SQL クエリエンジンを作るのであれば、その取っ掛かりとして<a href="https://calcite.apache.org/">Apache Calcite</a> を見てみることをお勧めします。</p>
+
+<p><a href="https://github.com/masayuki038/truffle-arrow">truffle-arrow</a> は現在 Parallel Query を実装しようとしています。それが終わったら、一旦パフォーマンスを計測してみようと思っています。</p>
 </article>
     <footer class="post-footer">
       
